@@ -1,0 +1,4 @@
+# リポジトリのセッティング
+
+# opencv.js ファイルは LF 終端にする
+opencv.js text eol=lf

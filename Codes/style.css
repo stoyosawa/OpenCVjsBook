@@ -1,0 +1,36 @@
+/* 共通 CSS */
+
+/* Body */
+body {
+	background-color: AliceBlue;
+}
+
+/* ページタイトル */
+h1 {
+	font-size: 20px;
+	color: DarkSlateBlue;
+}
+
+/* キャンバスなど画像を表示するエリアの輪郭線 */
+.placeholder {
+	outline: 2px gray dotted;                       /* 周囲に点線で枠 */
+}
+
+/* <input> に付属するラベル <label> の属性。現在値を目立たせる。 */
+span.currentValue {
+	color: DarkMagenta;
+	background-color: MistyRose;
+	margin-left: 1em;
+	padding: 3px 7px 3px 7px;
+	border-radius: 5px;
+}
+
+/* ビデオ関連リソースを削除するボタン */
+input[type="button"].release {
+	color: LightBlue;
+	border-width: 0px;
+	border-radius: 5px;
+	background-color: Crimson;
+	padding: 10px;
+	margin-left: 1em;
+}

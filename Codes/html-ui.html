@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8"></head>
+  <link rel=stylesheet type="text/css" href="style.css">
+<body>
+
+<h1>HTML の UI</h1>
+
+<div>
+  <img id="imageTag" width="320" height="240" class="placeholder"
+    onload="imageLoaded(event);"/>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+<div>
+  <input id="fileInputTag" type="file" onchange="fileSelected(event);"/>
+  横幅 <input id="sizeInputTag" type="range" onchange="sizeChanged(event);"/>
+  <span id="sizeSpanTag" class="currentValue">横幅調節</span>
+  <input id="reverseButtonTag" type="button" value="反転"
+    onclick="reversed(event);"/>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem = document.getElementById('canvasTag');
+  let ctx = canvasElem.getContext('2d');
+  let fileElem =  document.getElementById('fileInputTag');
+  let rangeElem = document.getElementById('sizeInputTag');
+  let spanElem = document.getElementById('sizeSpanTag');
+
+  function logging(evt) {
+    let i = imgElem;                      // 1行が長くならないように...
+    console.log(`Evt ${evt.type}@<${evt.target.tagName}>, "${evt.target.id}",
+      Image: ${i.width}x${i.height}, ${i.naturalWidth}x${i.naturalHeight},
+      Canvas: ${canvasElem.width}x${canvasElem.height},
+      Range: ${rangeElem.min} - ${rangeElem.value} - ${rangeElem.max}`
+    );
+  }
+
+  function setSpan() {
+    // <span>に現在の画像サイズを数値で示す
+    rangeElem.min = 10;
+    rangeElem.max = imgElem.naturalWidth;
+    rangeElem.value = canvasElem.width;
+    spanElem.innerHTML = `${rangeElem.min}≦${rangeElem.value}≦${rangeElem.max}`;
+  }
+
+  function imageLoaded(evt) {
+    // 画像が読み込まれた（ファイルが選択された）ので、画像をキャンバスにコピーする
+    canvasElem.width = imgElem.width;
+    canvasElem.height = imgElem.height;
+    ctx.drawImage(imgElem, 0, 0, canvasElem.width, canvasElem.height);
+    setSpan()
+    logging(evt);
+  }
+
+  function fileSelected(evt) {
+    // ファイルが選択されたので、画像を<img>に書き込む
+    let fileFile = fileElem.files[0];
+    imgElem.src = URL.createObjectURL(fileFile);
+    logging(evt);
+  }
+
+  function sizeChanged(evt) {
+    // サイズが変更されたので、変更後のサイズで画像をキャンバスにコピーする
+    let aspect = imgElem.naturalHeight / imgElem.naturalWidth;
+    canvasElem.width = Number(rangeElem.value);
+    canvasElem.height = aspect * canvasElem.width;
+    ctx.drawImage(imgElem, 0, 0, canvasElem.width, canvasElem.height);
+    setSpan();
+    logging(evt);
+  }
+
+  function reversed(evt) {
+    // 画像が反転されたので、反転画像をキャンバスにコピーする
+    ctx.translate(canvasElem.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(imgElem, 0, 0, canvasElem.width, canvasElem.height);
+    logging(evt);
+  }
+</script>
+
+</body>
+</html>

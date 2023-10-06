@@ -1,0 +1,39 @@
+<!--
+  インデントは2文字
+  コメントのハイフンは2文字
+-->
+<!DOCTYPE html>
+<html lang="ja-JP"><!-- HTML のところには lang -->
+<head>
+  <!-- HEAD は META > LINK > SCRIPT (JS) の順 -->
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>タイトル部分は H1。体言止め。</h1>
+
+<p>他に用法などの説明があれば P を使う。</p>
+
+<div>
+  画像、ビデオ、キャンバスはこの最初の div でくくる。
+  属性は id - type - width/height - src - class - style - onevent の順。id を tag の横にすると、参照間違いがすくなくなる。
+  alt は使わない。
+  タグの id は image、video、camera、キャンバス
+  <img id="image" width="320" src="Samples/Sheep.jpg" onload="showImage();"/>
+  <canvas id="canvas" class="placeholder"></canvas>
+</div>
+<div>
+  input などの制御部分。数値を表示するときにもこれを使う。
+  input タグの id は xxxInput。xxx 部分は file、size、threshold など、その値の意味。
+</div>
+
+
+<script>
+
+
+</script>
+
+</body>
+</html>

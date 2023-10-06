@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>OpenCV.jsで利用可能なコンストラクタ、メソッド</h1>
+
+<div>
+  <pre id="preTag"></pre>
+</div>
+
+<script>
+  let preElem = document.getElementById('preTag');
+
+  function listFunctions(obj) {
+    let keys = Object.keys(obj);
+    console.log(`${keys.length} entries in CV.`);
+
+    let functions = keys.filter(function(key) {
+      return typeof cv[key] === 'function';
+    }).sort();
+    console.log(`${functions.length} functions in CV.`);
+    preElem.innerHTML = functions.join('\n');
+  }
+
+  var Module = {
+    onRuntimeInitialized: function() {
+      console.log(`OpenCV ready`);
+      listFunctions(cv)
+    }
+  };
+</script>
+
+</body>
+</html>

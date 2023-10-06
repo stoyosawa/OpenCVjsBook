@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">  
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>OpenCVの定数</h1>
+
+<div>
+  <select id="selectTag">
+    <option value="noop" selected>定数を選択してください</option>
+    <option value="^CV_\d{1,2}[SUF]">データ型定数</option>
+    <option value="^COLOR_">色空間変換定数</option>
+    <option value="^THRESH_">閾値定数</option>
+  </select>
+</div>
+<div>
+  <pre id="preTag">定数表</pre>
+</div>
+
+<script> 
+  let selectElem = document.getElementById('selectTag');
+  let preElem = document.getElementById('preTag');
+
+  var Module = {
+    onRuntimeInitialized: opencvReady
+  }
+ 
+  function showConst(evt) {
+    let re = new RegExp(evt.currentTarget.value);
+    let keys = Object.keys(cv);
+
+    let selected = keys.filter(function(elem) {
+      return re.test(elem);
+    }).sort();
+
+    preElem.innerHTML = selected.map(function(elem) {
+      return `${elem} ${cv[elem]}`;
+    }).join('\n');
+
+    console.log(`RegExp ${re} extracted ${selected.length} keys.`);
+  }
+
+  function opencvReady() {
+    console.log('OpenCV ready.');
+    selectElem.addEventListener('change', showConst);
+  }
+</script>
+
+</body>
+</html>
