@@ -6,8 +6,14 @@ OpenCV.jsに関連するオンラインドキュメントを示します（ペ�
 
 <!-- 国旗絵文字は絵文字コード2つからなる。Sublime Text 3 ではまだ対応していないが、ブラウザなら OK。🇯🇵 U+1F1EF U+1F1F5 🇺🇸 U+1F1FA U+1F1F8 -->
 
+- [Canny Edge Detection](https://docs.opencv.org/3.4/da/d22/tutorial_py_canny.html "LINK") 🇺🇸 https://docs.opencv.org/3.4/da/d22/tutorial_py_canny.html  
+OpenCVチュートリアルに載っている、Cannyエッジ検出アルゴリズムの詳細な説明です。サンプルコードはPythonで書かれていますが、理論を学ぶぶんには何語でもかまわないでしょう。
+
 - [emscripten](https://emscripten.org/ "LINK") 🇺🇸 `https://emscripten.org/`  
-C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるようにコンパイルしたコンパイラ。OpenCV.jsの開発者でもなければ、中身は気にしなくても大丈夫です。
+C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるようにコンパイルしたコンパイラ。たとえば`Module`のAPIを知りたいときに参照しますが、OpenCV.jsの開発者でもなければ触れることもないでしょう。
+
+- [HTML Living Standard](https://html.spec.whatwg.org/ "LINK") 🇺🇸 `https://html.spec.whatwg.org/`  
+Web技術を開発するWHATWG（Web Hypertext Application Technology Working Group）によるHTMLの標準規格。たいていのことはMDNで済みますが、ほんとうの細部を知りたいときに役立ちます。たとえば`<script>`に`async`を付けたときと付けないときの動作の違いは、本ドキュメントの4.12.1節に図入りで説明されています。
 
 <!-- 地球マーク 🌐 は U+1F310 -->
 - [MDN Web docs](https://developer.mozilla.org/ja/docs/Web/JavaScript "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/JavaScript`  
