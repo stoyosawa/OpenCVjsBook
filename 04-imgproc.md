@@ -14,7 +14,7 @@ CSSフィルタ機能の`grayscale`という関数を使えば同じことがで
 <img style="filter: grayscale(1.0);" src="samples/redwood.png">
 ```
 
-先に、コードの実行結果を次の画面から示します。左が元画像、右がモノクロ化後のものです。
+先に、コードの実行結果を次の画面から示します。左が元画像、右がモノクロ化後のものです（モノクロ紙面では違いがわかりませんが…）。
 
 <img src="Images/Ch04/img-gray.png">
 
@@ -99,11 +99,24 @@ cv.cvtColor(rgb, hsv, cv.COLOR_RGB2HSV);                // RGB > HSV
 最後の`dstCn`引数には、変換先の画像のチャネル数を指定します。デフォルトの0は、チャネル数が変換元と色変換コードから自動的に決定されるという意味です。よほど凝ったことをしていないかぎり、使うことはないでしょう。
 
 
-### 4.2 セピア化
+### 4.2 セピア調と変換行列
 
-#### 変換行列
+#### 変換行列を用いた色変換の原理
 
-カラー画像のピクセルのRGBの値は、3要素のべクトル $\vec{P}(r, g, b)$ とみなすことができます。このベクトルに3×3の行列を掛ければ、新しい3要素のベクトル $\vec{P'}(r',g', b')$ が得られます。この数学的な線形変換は、画像にはピクセルの色の変換として現れます。
+カラー画像をセピア調、つまり茶褐色っぽい色合いに変換するには、それぞれのピクセルの値を所定の計算式に従って変換した値で置き換えます。これは、行列を用いた線形変換で達成できます。
+
+理論に入る前に、本節のコードで生成される画像を次に示します。左が元画像、右がセピア調に変換したあとの画像です（これも、モノクロ紙面では違いがほとんどわかりませんが、あえていえば、やや白っぽくなっています）。
+
+<img src="Images/Ch04/img-sepia-1.png">
+
+カラー画像のピクセルのRGBの値は、3要素のべクトル $\vec{P}(r, g, b)$ とみなすことができます。このベクトルに、次の図に示すように3×3の行列 $M$ を掛ければ、新しい3要素のベクトル $\vec{P'}(r',g', b')$ が得られます。そして、この $\vec{P'}$ による前のものの置き換えを、すべてのピクセル（たとえば、1024×768の画像ならば約79万個分）について行えば、もととは色合いの異なった画像が生成されます。
+
+<!-- 975 x 435 -->
+<img src="Images/Ch04/img-sepia-theory.png" width="450">
+
+<!-- 値は https://medium.com/dataseries/designing-image-filters-using-opencv-like-abode-photoshop-express-part-2-4479f99fb35 から -->
+<!-- こちらほうがわかりやすいかな。 https://dyclassroom.com/image-processing-project/how-to-convert-a-color-image-into-sepia-image -->
+セピア調にするには、次の行列を使います。
 
 $$\begin{pmatrix}
   0.393 & 0.769 & 0.189 \\
@@ -111,16 +124,198 @@ $$\begin{pmatrix}
   0.272 & 0.534 & 0.131
 \end{pmatrix}$$
 
+行列を使ったピクセルの置き換えは、`cv.transform()`メソッドから行います。
 
-とに、なんらかの計算式に従って別のR'G'B'の値に変換することができます。この操作は、端的には色を変化させます。
+#### セピア調変換
 
+次にセピア調変換のコードを示します。
 
-$$\sum_{n=0}^{\infty} \frac{(-1)^n}{2n + 1} = \frac{\pi}{4}$$
+```html
+[File] img-sepia1.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>セピア化</h1>
+ 11
+ 12  <div>
+ 13    <img id="imageTag" width="360" src="samples/weiner-rathaus.jpg"/>
+ 14    <canvas id="canvasTag" class="placeholder"></canvas>
+ 15  </div>
+ 16
+ 17  <script>
+ 18    let imgElem = document.getElementById('imageTag');
+ 19
+ 20    var Module = {
+ 21      onRuntimeInitialized: imgProc
+ 22    }
+ 23
+ 24    function imgProc() {
+ 25      let src = cv.imread(imgElem);
+ 26      let dst = new cv.Mat();
+ 27      let arr = [
+ 28        0.393, 0.769, 0.189,
+ 29        0.349, 0.686, 0.168,
+ 30        0.272, 0.534, 0.131
+ 31      ];
+ 32      let matrix = cv.matFromArray(3, 3, cv.CV_32FC1, arr);
+ 33      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+ 34      cv.transform(src, dst, matrix);
+ 35      cv.imshow('canvasTag', dst);
+ 36
+ 37      [src, dst, matrix].forEach(function(mat) {
+ 38        mat.delete();
+ 39      })
+ 40    }
+ 41  </script>
+ 42
+ 43  </body>
+ 44  </html>
+```
 
-    // Matrix from https://medium.com/dataseries/designing-image-filters-using-opencv-like-abode-photoshop-express-part-2-4479f99fb35
-    // also https://dyclassroom.com/image-processing-project/how-to-convert-a-color-image-into-sepia-image
+コードパターンは前節と同じで、`cv.imread()`で`HTMLImageElement`の中身を読み（25行目）、出力画像を収容する`cv.Mat`を用意します（26行目）。
 
-画像をカラーからモノクロに変換する処理は、カラーを構成するR、G、Bのそれぞれの値をもとに、所定の計算式に従って別の値に変換する操作です。
+セピア調変換の行列は、27～31行目で定義してあります。本来的には2次元の行列ですが、1次元の配列として表現しています。
+
+配列は、[3章どっか](TBA "INTERNAL")で説明した`cv.matFromArray()`メソッドで3×3の行列の`cv.Mat`に変換します（32行目）。データ型変換（第3引数）に、1チャネル32ビット浮動小数点数を意味する`cv.CV_32FC1`を指定してるところに注意してください。行列の値は小数点数以下なので、いつもの`cv.CV_8UC1`ではすべて0になってしまいます。
+
+<!-- ⋗ U+22D6 -->
+コンソールから試した結果を次の画面に示します。左手のプロンプトが`>`のところが手入力、`⋖`がその出力です。
+
+<img src="Images/Ch04/img-sepia-console.png">
+
+#### cv.transformメソッド
+
+RGBA構成の4チャネルな元画像は、RGBの3チャンネルに変換します（33行目）。行列が3×3（3チャネル）用だからです。色変換コードは`cv.COLOR_RGBA2RGB`です。
+
+線形変換メソッドの`cv.transform`（34行目）の定義を次に示します。
+
+```
+cv.transform(                  // 出力なし
+    Mat src,                   // 入力画像
+    Mat dst,                   // 出力画像
+    Mat m                      // 変換行列（浮動小数点数使用）
+);
+```
+
+入力が符号なし8ビット整数なので、変換行列が浮動小数点数であっても、出力は入力と同じ`cv.CV_8UC3`になります。
+
+37～39行目は確保した`cv.Mat`を開放しています。これまでのように`src.delete()`と逐一書いてもよいのですが、数が多くなってくると長くなるので、配列ループにしています。
+
+#### いろいろな色変換
+
+行列を変えれば、いろいろな色変換操作ができます。
+
+たとえば、カラーをモノクロに変換するには次の行列を用います
+
+$$\begin{pmatrix}
+  0.299 & 0.587 & 0.114 \\
+  0.299 & 0.587 & 0.114 \\
+  0.299 & 0.587 & 0.114
+\end{pmatrix}$$
+
+カラーのモノクロ変換式は $0.299 r + 0.587 g + 0.114 b$ です。すべての色のピクセル値の平均ではなく、係数が微妙に異なっているのは、ヒトの色覚細胞の感度が赤緑青で異なるからです。この式は単色ですが、同じ値をR、G、Bのどれにも収容すれば、構造上はカラーであってもモノクロな画像が得られます。
+
+色の順序の入れ替えもできます。たとえば、RGB画像をBGR画像に変換するには次の行列です。
+
+$$\begin{pmatrix}
+  0.0, 0.0, 1.0 \\
+  0.0, 1.0, 0.0 \\
+  1.0, 0.0, 0.0
+\end{pmatrix}$$
+
+最初の行は変換後のRの値ですが、式が $0 r + 0 g + 1 b$ なので、Bの値になります。同様に2行目はGの値、3行目はRの値になります。これでRとBの値が入れ替わります。
+
+緑成分だけで画像を構成するにはこの行列です。
+
+$$\begin{pmatrix}
+  0.0 & 0.0 & 0.0 \\
+  0.299 & 0.587 & 0.114 \\
+  0.0 & 0.0 & 0.0
+\end{pmatrix}$$
+
+2行目はモノクロ化と同じパターンです。つまり、モノクロ画像と同じ情報を緑と読み替えています。残りはすべて0なので、結果として全面が緑の画像になります。
+
+輝度調節もできます。次の行列は光量を半分（0.5倍）にします。
+
+$$\begin{pmatrix}
+  0.5 & 0.0 & 0.0 \\
+  0.0 & 0.5 & 0.0 \\
+  0.0 & 0.0 & 0.5 \\
+\end{pmatrix}$$
+
+パターンはRGB→BGRに似ています。1行目は $r' = 0.5 r$ と読むことができ、もとの値を半分にしています。残りも同様です。
+
+これら行列を`<select>`の`value`属性に収容し、ユーザから選択できるようにしたのが次のコードです。
+
+```html
+[File] img-sepia2.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>変換行列（3×3）を用いた色変換</h1>
+ 11
+ 12  <div>
+ 13    <img id="imageTag" width="360" src="samples/wiener-rathaus.jpg"/>
+ 14    <select id="selectTag">
+ 15      <option value="0.393,0.769,0.189,0.349,0.686,0.168,0.272,0.534,0.131">
+ 16        セピア調</option>
+ 17      <option value="0.299,0.587,0.114,0.299,0.587,0.114,0.299,0.587,0.114">
+ 18        モノクロ化</option>
+ 19      <option value="0,0,1,0,1,0,1,0,0" selected>
+ 20        BGR化</option>
+ 21      <option value="0,0,0,0.299,0.587,0.114,0,0,0">
+ 22        緑一色</option>
+ 23      <option value="0.5,0,0,0,0.5,0,0,0,0.5">
+ 24        減光</option>
+ 25    </select>
+ 26    <canvas id="canvasTag" class="placeholder"></canvas>
+ 27  </div>
+ 28
+ 29  <script>
+ 30    let imgElem = document.getElementById('imageTag');
+ 31    let selectElem = document.getElementById('selectTag');
+ 32
+ 33    var Module = {
+ 34      onRuntimeInitialized: function() {
+ 35        selectElem.addEventListener('change', imgProc);
+ 36        imgProc();
+ 37      }
+ 38    }
+ 39
+ 40    function imgProc() {
+ 41      let src = cv.imread(imgElem);
+ 42      let dst = new cv.Mat();
+ 43      let arr = selectElem.value.split(',').map(val => parseFloat(val));
+ 44      console.log(`Matrix: ${arr}`);
+ 45      let matrix = cv.matFromArray(3, 3, cv.CV_32FC1, arr);
+ 46      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+ 47      cv.transform(src, dst, matrix);
+ 48      cv.imshow('canvasTag', dst);
+ 49
+ 50      [src, dst, matrix].forEach(function(mat) {
+ 51        mat.delete();
+ 52      })
+ 53    }
+ 54  </script>
+ 55
+ 56  </body>
+ 57  </html>
+```
+
+`<select>`の用法は[2.2節](./02-opencv.md#22-OpenCVjsの定数と関数 "INTERNAL")の`opencv-consts.html`と同じです。`value`属性の値は文字列なので、最初にカンマ区切りを`split()`で分解し、その配列を`map()`で浮動小数点数に変換しているところがポイントです（43行目）。
+
 
 ### 4.4 線画の生成
 <!-- 残念ながら、OpenCV.js には cv.stylization()、cv.pencilSketch()、cv.edgePreservingFilter()、cv.detailEnhanve() といった Non-photorealistic 系は実装されていない。-->
