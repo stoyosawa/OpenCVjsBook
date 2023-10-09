@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>画像を色成分に分解</h1>
+
+<div>
+  <img id="imageTag" width="240" src="/Codes/samples/easter-eggs.jpg"/>
+</div>
+<div>
+  <div class="inline">
+    <span id="spanTag0">要素0</span>
+    <canvas id="canvasTag0" class="placeholder"></canvas>
+  </div>
+  <div class="inline">
+    <span id="spanTag1">要素1</span>
+    <canvas id="canvasTag1" class="placeholder"></canvas>
+  </div>
+  <div class="inline">
+    <span id="spanTag2">要素2</span>
+    <canvas id="canvasTag2" class="placeholder"></canvas>
+  </div>
+</div>
+<div>
+  <select id="selectTag">
+    <option value="RGB COLOR_BGR2RGB R G B">RGB</option>
+    <option value="HSV COLOR_BGR2HSV H S V">HSV</option>
+    <option value="YCrCb COLOR_BGR2YCrCb Y Cr Cb">YCrCb</option>
+  </select>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let selectElem = document.getElementById('selectTag');
+
+  var Module = {
+    onRuntimeInitialized: function() {
+      selectElem.addEventListener('change', imgProc);
+      imgProc();
+    }      
+  }
+
+  function imgProc(evt) {
+    let valueString = 'RGB COLOR_BGR2RGB R G B';
+    if (evt)
+      valueString = evt.target.value;
+
+    // <option> の value 文字列を分解する
+    let values = valueString.split(' ');
+    let colorSpaceName = values[0];
+    let colorSpaceCode = values[1];
+    let colorComponents = values.slice(2);
+    console.log(`"${colorSpaceName}" "${colorSpaceCode}" "${colorComponents}"`);
+
+    // <span> に色要素名を書き込む
+    for(let i=0; i<3; i++) {
+      let element = document.getElementById(`spanTag${i}`);
+      element.innerHTML = colorComponents[i];
+    }
+
+    // 色変換
+    let src = cv.imread(imgElem);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2BGR);
+    cv.cvtColor(src, src, cv[colorSpaceCode]);
+
+    // 分解
+    let dstMats = new cv.MatVector();
+    cv.split(src, dstMats);
+    for(let i=0; i<dstMats.size(); i++)
+      cv.imshow(`canvasTag${i}`, dstMats.get(i));
+
+    // release me
+    src.delete();
+    dstMats.delete();
+  }
+</script>
+
+</body>
+</html>

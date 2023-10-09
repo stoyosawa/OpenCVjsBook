@@ -16,6 +16,11 @@ h1 {
 	outline: 2px gray dotted;                       /* 周囲に点線で枠 */
 }
 
+/* <div> を横並びにする */
+div.inline {
+	display: inline-block;
+}
+	
 /* <input> に付属するラベル <label> の属性。現在値を目立たせる。 */
 span.currentValue {
 	color: DarkMagenta;
