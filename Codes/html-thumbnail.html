@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>ビデオ サムネール</h1>
+
+<div>
+  <video id="videoTag" width="480" src="samples/cat.mp4"></video>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let sheetSize = {width: 4, height: 3};
+  let imgWidth = 128;
+  let imgHeight = undefined;
+  let count = 0;
+  let timeSeries = undefined;
+
+  let videoElem = document.getElementById('videoTag');
+  let canvasElem = document.getElementById('canvasTag');
+  let ctx = canvasElem.getContext('2d');
+
+  function prepare() {
+    let aspect = videoElem.videoHeight / videoElem.videoWidth;
+    imgHeight = Math.floor(imgWidth * aspect);
+    canvasElem.width = imgWidth * sheetSize.width;
+    canvasElem.height = imgHeight * sheetSize.height;
+
+    let number = sheetSize.width * sheetSize.height;
+    let duration = videoElem.duration / number;
+    timeSeries = [...Array(number).keys()].map(i => i * duration);
+
+    videoElem.muted = true;
+    videoElem.play();
+  }
+
+  function pasteFrame() {
+    let pos_x = (count % sheetSize.width) * imgWidth;
+    let pos_y = Math.floor(count / sheetSize.width) * imgHeight;
+    ctx.drawImage(videoElem, pos_x, pos_y, imgWidth, imgHeight);
+  }
+
+  function timeUpdated() {
+    if (videoElem.currentTime > timeSeries[count]) {
+      console.log(`${count} at ${videoElem.currentTime}`);
+      pasteFrame();
+      count ++;
+    }
+  }
+
+  videoElem.addEventListener('loadeddata', prepare);
+  videoElem.addEventListener('timeupdate', timeUpdated);
+</script>
+
+</body>
+</html>

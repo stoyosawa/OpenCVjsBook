@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>カメラのオンオフ</h1>
+
+<div>
+  <video id="videoTag" controls muted></video>
+</div>
+<div>
+  <input type="button" id="buttonTag" value="起動" class="click";/>
+</div>
+
+<script>
+  let cameraSettings = {
+    audio: false,
+    video: {
+      width: 480,
+      height: 360,
+      facingMode: 'environment'
+    }
+  };
+  let cameraState = 0;                             // 0=停止中 1=起動中
+  let opString = ['起動', '停止'];
+
+  let videoElem = document.getElementById('videoTag');
+  let buttonElem = document.getElementById('buttonTag');
+
+  function cameraStart() {
+    navigator.mediaDevices.getUserMedia(cameraSettings)
+    .then(function(mediaStream) {
+      videoElem.srcObject = mediaStream;
+      videoElem.play();
+    });
+  }
+  
+  function cameraStop() {
+    videoElem.pause();
+    let tracks = videoElem.srcObject.getVideoTracks();
+    tracks.map(function(track) {
+      track.stop();
+    });
+    videoElem.srcObject = undefined;
+  }
+
+  function startStop() {
+    [cameraStart, cameraStop][cameraState]();
+    cameraState = 1 - cameraState;
+    buttonElem.value = opString[cameraState];
+  }
+
+  buttonElem.addEventListener('click', startStop);
+  videoElem.addEventListener('loadeddata', function(){
+      console.log(`Camera sizes:
+        width, height:       ${videoElem.width}x${videoElem.height}
+        offsetWidth, Height: ${videoElem.offsetWidth}x${videoElem.offsetHeight}
+        videoWidth, Height:  ${videoElem.videoWidth}x${videoElem.videoHeight}`);
+  });
+</script>
+
+</body>
+</html>

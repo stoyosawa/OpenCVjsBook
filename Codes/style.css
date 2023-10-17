@@ -21,7 +21,7 @@ div.inline {
 	display: inline-block;
 }
 	
-/* <input> に付属するラベル <label> の属性。現在値を目立たせる。 */
+/* <input> で変更される値を <span> でくくって示すとき、その値を目立たせる。 */
 span.currentValue {
 	color: DarkMagenta;
 	background-color: MistyRose;
@@ -30,12 +30,12 @@ span.currentValue {
 	border-radius: 5px;
 }
 
-/* ビデオ関連リソースを削除するボタン */
-input[type="button"].release {
+/* <input> ボタンを目立たせる */
+input[type="button"].click {
 	color: LightBlue;
 	border-width: 0px;
 	border-radius: 5px;
-	background-color: Crimson;
+	background-color: DarkCyan;
 	padding: 10px;
 	margin-left: 1em;
 }

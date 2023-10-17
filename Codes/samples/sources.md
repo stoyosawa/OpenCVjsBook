@@ -2,9 +2,12 @@
 
 本書で使用した画像はいずれも[Pixabay](https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/ "LINK")からダウンロードしたものです。投稿者の皆様、素敵な写真をありがとうございました。
 
+
 画像 | 使用箇所 | サイズ | 投稿者 | URL
 ---|---|---|---|---
 <img src="sheep.jpg" width="100" title="sheep.jpg: NZ、羊"/> | 1.1 | 1280x884 | VK1960 | `https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/`
+<img src="cat.png" width="100" title="cat.mp4: ぶちねこ, MP4"/> | 1.2, 1.3, 1.4, 1.6 | 640x360 | Luiz-Jorge-Artista | `https://pixabay.com/videos/cat-gata-feline-wall-animal-3245/`
+<img src="san-gimignano.jpg" width="100" title="san-gimignano.jpg: San Gimignano"/> | 1.7 | 1280x960 | Ben_Kerckx | `https://pixabay.com/photos/san-gimignano-buildings-architecture-228455/`
 <img src="bodega-bay.jpg" width="100" title="bodega-bay.jpg: Bodega Bay"/> | 1.2 | 1280x853 |  glynn424 | `https://pixabay.com/photos/school-bodega-bay-california-169135/`
 <img src="miyajima.jpg" width="100"/ title="miyajima.jpg: 宮島"/> | 2.3 |  1280x853 | IT-STUDIO | `https://pixabay.com/photos/shrine-torii-sunset-evening-sea-1030442/`
 <img src="redwood.jpg" width="100" title="redwood.jpg: Redwood, CA"/> | 4.1 モノクロ | 1280x847 | USA-Reiseblogger | `https://pixabay.com/photos/usa-america-california-sequoias-1669714/`

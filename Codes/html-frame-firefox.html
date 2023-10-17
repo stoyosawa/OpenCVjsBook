@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>フレーム単位処理（Firefox）</h1>
+
+<div>
+  <video id="videoTag" width="480" controls src="samples/cat.mp4"></video>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  if ('seekToNextFrame' in HTMLVideoElement.prototype) {
+    console.log('Good. seekToNextFrame is supported.');
+  }
+  else {
+    throw new Error('seekToNextFrame not supported.');
+  }
+
+  let videoElem = document.getElementById('videoTag');
+  let canvasElem = document.getElementById('canvasTag');
+  let ctx = canvasElem.getContext("2d");
+
+  function perFrame() {
+    canvasElem.width = videoElem.offsetWidth;
+    canvasElem.height = videoElem.offsetHeight;
+
+    setInterval(function() {
+      videoElem.seekToNextFrame()
+      .then(function() {
+        ctx.drawImage(videoElem, 0, 0, videoElem.offsetWidth, videoElem.offsetHeight);
+        ctx.font = '16px sans-serif';
+        ctx.fillText(videoElem.currentTime, 10, 30);
+      });
+    }, 33.33);  // 33 ms = (1000 ms / 30 fps);
+  }
+
+  videoElem.addEventListener('loadeddata', perFrame);
+</script>
+
+</body>
+</html>

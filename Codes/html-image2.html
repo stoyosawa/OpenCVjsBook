@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>部分画像を読み込み、キャンバスに原寸と1/2で表示</h1>
+
+<div>
+  <img id="imageTag" width="320" src="samples/sheep.jpg"/>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem1 = document.getElementById('canvasTag1');
+  let ctx1 = canvasElem1.getContext('2d');
+  let canvasElem2 = document.getElementById('canvasTag2');
+  let ctx2 = canvasElem2.getContext('2d');
+
+  let [x_img, y_img, w_img, h_img] = [65, 549, 415, 315];
+
+  function showImage() {
+    canvasElem1.width = w_img;
+    canvasElem1.height = h_img;
+    ctx1.drawImage(imgElem,
+      x_img, y_img, w_img, h_img,
+      0, 0, w_img, h_img
+    );
+
+    canvasElem2.width = Math.floor(w_img * 0.5);
+    canvasElem2.height = Math.floor(h_img * 0.5);
+    ctx2.drawImage(imgElem,
+      x_img, y_img, w_img, h_img,
+      0, 0, canvasElem2.width, canvasElem2.height
+    );
+  }
+
+  imgElem.addEventListener('load', showImage);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8"></head>
+  <link rel=stylesheet type="text/css" href="style.css">
+<body>
+
+<h1>ユーザ操作ー数値範囲選択 &lt;input type="range"&gt;</h1>
+
+<div>
+  <img id="imageTag" width="360" src="samples/bodega-bay.jpg"/>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+<div>
+  <input type="range" id="rangeTag"/>
+  <span id="spanTag" class="currentValue">横幅調節</span>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem = document.getElementById('canvasTag');
+  let ctx = canvasElem.getContext('2d');
+  let rangeElem = document.getElementById('rangeTag');
+  let spanElem = document.getElementById('spanTag');
+
+  function imageLoaded() {
+    canvasElem.width = imgElem.width;
+    canvasElem.height = imgElem.height;
+    ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height);
+    rangeElem.min = 10;
+    rangeElem.max = imgElem.naturalWidth;
+    rangeElem.value = imgElem.width;
+    spanElem.innerHTML = `${rangeElem.min}≦${rangeElem.value}≦${rangeElem.max}`;
+    rangeElem.addEventListener('input', sizeChanged);
+  }
+
+  function sizeChanged(evt) {
+    let aspect = imgElem.naturalHeight / imgElem.naturalWidth;
+    canvasElem.width = Number(rangeElem.value);
+    canvasElem.height = Math.floor(aspect * canvasElem.width);
+    ctx.drawImage(imgElem, 0, 0, canvasElem.width, canvasElem.height);
+    spanElem.innerHTML = `${rangeElem.min}≦${rangeElem.value}≦${rangeElem.max}`;
+  }
+
+  imgElem.addEventListener('load', imageLoaded);
+</script>
+
+</body>
+</html>

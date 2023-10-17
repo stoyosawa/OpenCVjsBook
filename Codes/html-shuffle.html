@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>ビデオ ランダムシャッフリング</h1>
+
+<p>ビデオ上で <kbd>ALT</kbd> キーを押しながらマウスクリックすれば、ランダムにシークします</p>
+
+<div>
+  <video id="videoTag" width="480" src="samples/cat.mp4"></video>
+</div>
+
+<script>
+  let videoElem = document.getElementById('videoTag');
+
+  function ready() {
+    videoElem.controls = false;
+    videoElem.loop = true;
+    videoElem.muted = true;
+    videoElem.play();
+  }
+
+  function seeked() {
+    console.log(`Seeked to ${videoElem.currentTime}`);
+  }
+
+  function clicked(evt) {
+    if (evt.altKey === true) {
+      let nextPos = videoElem.duration * Math.random();
+      videoElem.currentTime = nextPos;
+    }
+  }
+
+  videoElem.addEventListener('loadeddata', ready);
+  videoElem.addEventListener('click', clicked);
+  videoElem.addEventListener('seeked', seeked);
+</script>
+
+</body>
+</html>

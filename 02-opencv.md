@@ -363,7 +363,7 @@ OpenCV ready
 
 #### 画像のOpenCVへのコピーが失敗する
 
-OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込んだ画像をコピーし、処理し、結果を張り付けて示します（[1.1節](./01-html5.md#11-画像をキャンバスに表示する "INTERNAL")）。しかし、この作業は、ローカルファイルシステムから読み込んだHTMLファイル（たとえば、`file:///C:/opencv-cors.html`）で実行するとエラーを上げます。
+OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込んだ画像をコピーし、処理し、結果を貼り付けて示します（[1.1節](./01-html5.md#11-画像をキャンバスに表示する "INTERNAL")）。しかし、この作業は、ローカルファイルシステムから読み込んだHTMLファイル（たとえば、`file:///C:/opencv-cors.html`）で実行するとエラーを上げます。
 
 次のコードを考えます。
 
@@ -403,7 +403,7 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
  32  </html>
 ```
 
-25行目の`cv.imread()`は`<img>`要素から画像データを読み込む、26行目の`cv.imshow()`はその画像データを`<canvas>`要素に張り付けるOpenCV.jsのメソッドです。意図していることは、[1.1節](./01-html5.md#11-画像をキャンバスに表示する "INTERNAL")の`html-image.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバス（CSSで枠線の描かれた領域）に画像が張り付けられません。
+25行目の`cv.imread()`は`<img>`要素から画像データを読み込む、26行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCV.jsのメソッドです。意図していることは、[1.1節](./01-html5.md#11-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバス（CSSで枠線の描かれた領域）に画像が貼り付けられません。
 
 <img src="Images/Ch02/opencv-cors.png">
 
@@ -427,7 +427,7 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
 
 #### CORS制約の問題
 
-cross-originは、データ（ここでは画像）とHTMLとでオリジン（端的にはドメインとポート番号の組）が異なることを指します。たとえば、HTMLは`https://www.example.com/`から、画像は`https://www.example.net`から読み込まれているような状態です。それは、ページに他所の怪しいサイトから怪しいデータが入り込んでいる可能性を示すもので、セキュリティ上の問題があります。そのため、ブラウザが他所の画像を、ページに張り付けるのを拒絶したのです。
+cross-originは、データ（ここでは画像）とHTMLとでオリジン（端的にはドメインとポート番号の組）が異なることを指します。たとえば、HTMLは`https://www.example.com/`から、画像は`https://www.example.net`から読み込まれているような状態です。それは、ページに他所の怪しいサイトから怪しいデータが入り込んでいる可能性を示すもので、セキュリティ上の問題があります。そのため、ブラウザが他所の画像を、ページに貼り付けるのを拒絶したのです。
 
 異なるオリジン間でのデータ共有のメカニズムをCORS（Cross-Origin Resource Sharing）と言います。ブラウザにはどのようなCORS操作なら認められているかをデフォルトで定めており、昨今のセキュリティ問題を反映して、かなり厳しいものになっています。たとえば、`file:///`へのアクセスは、同じディレクトリにあっても拒否されます。
 
@@ -470,6 +470,7 @@ JavaScriptユーザならNode.jsのほうがよいかもしれません。コー
 > どんなWebサーバであれ、httpsにはself-signed証明書が必要なので、設定はかなりややこしいです。
 
 #### ブラウザのCORS緩和設定（Firefox）
+<!-- See https://stackoverflow.com/questions/72811082/security-error-loading-subtitles-on-html-video -->
 
 > 注意：本節の設定により、ブラウザのセキュリティレベルは著しく低下します。利用はOpenCVファイルのテスト中のみ、アクセス先は`localhost`にかぎります。
 
@@ -495,6 +496,7 @@ URLフィールドに`about:config`と入力することで、「高度な設定
 <img src="Images/Ch02/opencv-cors-firefox3.png">
 
 #### ブラウザのCORS緩和設定（ChromeおよびEdge）
+<!-- See https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md -->
 
 > 注意：本節の設定により、ブラウザのセキュリティレベルは著しく低下します。利用はOpenCVファイルのテスト中のみ、アクセス先は`localhost`にかぎります。
 

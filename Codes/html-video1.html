@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>ビデオ表示</h1>
+
+<div>
+  <video id="videoTag" width="480" controls src="samples/cat.mp4"
+    type="video/mp4">
+  </video>
+</div>
+
+<script>
+  let startTime = Date.now();
+  let videoElem = document.getElementById('videoTag');
+
+  function showMetadata(evt) {
+    console.log(`Video properties:
+      Size offset:    ${videoElem.offsetWidth} x ${videoElem.offsetHeight}
+      Size (element): ${videoElem.width} x ${videoElem.height}
+      Size video:     ${videoElem.videoWidth} x ${videoElem.videoHeight}
+      Duration:       ${videoElem.duration}s
+      CurrentTime:    ${videoElem.currentTime}s
+      Volume:         ${videoElem.volume} [0, 1]
+      Play rate:      ${videoElem.playbackRate}
+      Loop:           ${videoElem.loop}`
+    );
+  }
+
+  let events = [
+    'ended', 'error', 'loadeddata', 'loadedmetadata', 'loadstart', 'pause', 'play',
+    'seeked', 'seeking', 'suspend', 'volumechange'
+  ];
+  events.forEach(function(evt) {
+    videoElem.addEventListener(evt, function() {
+      let delta = (Date.now() - startTime).toLocaleString();
+      console.log(`${delta}. event: ${evt}`);
+    });
+  });
+
+  videoElem.addEventListener('loadedmetadata', showMetadata);
+</script>
+
+</body>
+</html>
