@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8"></head>
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script src="libs/regionselect.js" type="text/javascript"></script>  
+<body>
+
+<h1>マウス操作で部分領域を切り取る</h1>
+
+<div id="divTag">
+  <img id="imageTag" width="360" src="samples/avon-river.jpg"/>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem = document.getElementById('canvasTag');
+  let ctx = canvasElem.getContext('2d');
+
+  function imageLoaded() {
+    let rs = new RegionSelect('imageTag');
+    imgElem.addEventListener('regionselect', copyRegion);
+  }
+
+  function copyRegion(evt) {
+    let [x, y, width, height] = evt.detail;
+    let scale = imgElem.naturalWidth / imgElem.width;
+    let [x_img, y_img, w_img, h_img] = evt.detail.map(
+      elem => Math.floor(elem*scale));
+    canvasElem.width = width;
+    canvasElem.height = height;
+    ctx.drawImage(imgElem, x_img, y_img, w_img, h_img, 0, 0, width, height);
+    console.log(`Selected: ${evt.detail}
+      Source at (${x_img}, ${y_img}) ${w_img}x${h_img}`);
+  }
+
+  window.addEventListener('load', imageLoaded);
+</script>
+
+</body>
+</html>

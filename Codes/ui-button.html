@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>ビデオをキャプチャする &lt;input type="button"&gt;</h1>
+
+<div>
+  <video id="videoTag" width="480" autoplay muted src="samples/ny.mp4"></video>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+<div>
+  <input type="button" id="buttonTag" value="WAIT" class="click"/>
+</div>  
+
+<script>
+  let videoElem = document.getElementById('videoTag');
+  let canvasElem = document.getElementById('canvasTag');
+  let buttonElem = document.getElementById('buttonTag');
+  let ctx = canvasElem.getContext('2d');
+
+  function imageLoaded() {
+    canvasElem.width = videoElem.offsetWidth;
+    canvasElem.height = videoElem.offsetHeight;
+    buttonElem.addEventListener('click', showImage);
+    buttonElem.value = 'Snap!';
+    showImage();
+  }
+
+  function showImage() {
+    ctx.drawImage(videoElem, 0, 0, videoElem.offsetWidth, videoElem.offsetHeight);
+
+    let quality = videoElem.getVideoPlaybackQuality();
+    let frameNumber = quality.totalVideoFrames;
+    let currentTime = videoElem.currentTime;
+    ctx.font = '16px sans-serif';
+    ctx.fillStyle = 'red';
+    ctx.fillText(`Snapped at ${frameNumber} ${currentTime}`, 10, 30);
+  }
+
+  videoElem.addEventListener('loadeddata', imageLoaded);
+</script>
+
+</body>
+</html>

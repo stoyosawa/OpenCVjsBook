@@ -18,18 +18,21 @@ C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるように�
 - [HTML Living Standard](https://html.spec.whatwg.org/ "LINK") 🇺🇸 `https://html.spec.whatwg.org/`  
 Web技術を開発するWHATWG（Web Hypertext Application Technology Working Group）によるHTMLの標準規格。たいていのことはMDNで済みますが、ほんとうの細部を知りたいときに役立ちます。たとえば`<script>`に`async`を付けたときと付けないときの動作の違いは、本ドキュメントの4.12.1節に図入りで説明されています。
 
-- [HTMLVideoElement.requestVideoFrameCallback()](https://wicg.github.io/video-rvfc/ "LINK") 🇺🇸 https://wicg.github.io/video-rvfc/  
-W3Cのワーキンググループが開発中のフレーム単位でのビデオ処理のためのメソッドの仕様です。まだ「勧告」（標準規格）のレベルには達していないドラフト段階です。
-
-<!-- 地球マーク 🌐 は U+1F310 -->
-- [MDN Web docs](https://developer.mozilla.org/ja/docs/Web/JavaScript "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/JavaScript`  
-JavaScript、HTML/DOM、CSSの仕様やAPIを紹介するサイトはいくつもありますが、ひとつだけ挙げるとしたら、MDN（Mozilla Developpers Network）のものがメソッド、属性、プロパティが細かいところまで書かれているのでお勧めです。もっとも、素っ気ないところがあるので、慣れないと不親切に感じるかもしれません。ほとんどのリファレンスには和訳が用意されているので、検索で英語版がヒットしたら、そのページ右上の🌐から日本語を選択します。
+- [MDN Code values for keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values) 🇺🇸 `https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values`  
+`keydown`や`keyup`イベントで取得されるキーボードのキーコード（`code`プロパティ）の値のリストです。
 
 - [MDN filter](https://developer.mozilla.org/ja/docs/Web/CSS/filter) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/CSS/filter`  
 CSSプロパティから基本的な画像処理を実行できる`filter`の説明です。関数は現在10個定義されています。  
 
+- [MDN HTMLMediaElement](https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement`  
+`HTMLVideoElement`の親クラスの`HTMLMediaElement`の詳細ページです。`HTMLVideoElement`で利用できるメソッドやプロパティのほとんどはこのクラスから継承しています。
+
 - [MDN プロミスの使用](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises`  
 MDNの「JavaScriptガイド」に掲載されている、`Promise`の用法です。
+
+<!-- 地球マーク 🌐 は U+1F310 -->
+- [MDN Web docs](https://developer.mozilla.org/ja/docs/Web/JavaScript "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/JavaScript`  
+JavaScript、HTML/DOM、CSSの仕様やAPIを紹介するサイトはいくつもありますが、ひとつだけ挙げるとしたら、MDN（Mozilla Developpers Network）のものがメソッド、属性、プロパティが細かいところまで書かれているのでお勧めです。もっとも、素っ気ないところがあるので、慣れないと不親切に感じるかもしれません。ほとんどのリファレンスには和訳が用意されているので、検索で英語版がヒットしたら、そのページ右上の🌐から日本語を選択します。
 
 - [OpenCV](https://opencv.org/ "LINK") 🇺🇸 `https://opencv.org/`  
 OpenCV本家のメインページ。メソッド・関数の仕様なら［Documentation］から適当なバージョンへのリンクを選択します。
@@ -43,13 +46,22 @@ OpenCV.jsの公式チュートリアル。ある程度はOpenCVおよびJavaScri
 - [Python Downloads](https://www.python.org/downloads/ "LINK") 🇺🇸 `https://www.python.org/downloads/`  
 Pythonインストーラのダウンロードページです。Windowsならexeファイルが取得できるので、ワンクリックでインストールできます。JavaScriptの書籍でPythonでは申し訳ないですが。
 
+- [RRFC 4648 The Base16, Base32, and Base64 Data Encodings, October 2006](https://www.rfc-editor.org/info/rfc4648 "LINK") 🇺🇸 `https://www.rfc-editor.org/info/rfc4648`  
+`HTMLCanvasElement.toDataURL()`から得られる画像データのフォーマット（エンコーディング方法）であるBase64の仕様。
+
 - [Tags for Identifying Languages](https://www.rfc-editor.org/rfc/rfc5646.html) 🇺🇸 `https://www.rfc-editor.org/rfc/rfc5646.html`  
 `<track>`の`srclang`属性で指定できるja（日本語）などの言語タグを規定するインターネット標準文書で、文書番号はRFC 5646です。言語タグ文字列をどのように構成するかの規定なので、読んでもおもしろくないかもしれません。
 
 - [Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) 🇺🇸 `https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry`  
 現在登録されている言語タグをすべて収容したリストです。言語タグは`<track>`の`srclang`属性で指定できるja（日本語）などの文字列です。蛇足ですが、日本語にはjpx（琉球語も含む日本語族）、ojp（日本の古語）、jsl（日本語の手話）といった言語タグも定義されています。さらに蛇足ですが、クリンゴン語はtlhです。
 
-- [WebVTT: The Web Video Text Tracks Format](https://www.w3.org/TR/webvtt1/) 🇺🇸 https://www.w3.org/TR/webvtt1/  
+- [W3C HTMLVideoElement.requestVideoFrameCallback()](https://wicg.github.io/video-rvfc/ "LINK") 🇺🇸 `https://wicg.github.io/video-rvfc/`  
+W3Cのワーキンググループが開発中のフレーム単位でのビデオ処理のためのメソッドの仕様です。まだ「勧告」（標準規格）のレベルには達していないドラフト段階です。
+
+- [W3C WebCodecs](https://w3c.github.io/webcodecs/ "LINK") 🇺🇸 `https://w3c.github.io/webcodecs/#videoencoder-interface`
+W3Cのワーキンググループが開発中の、ビデオコーデックに直接アクセスすることでフレーム単位の処理を可能とするAPIの仕様です。まだドラフト段階です。
+
+- [W3C WebVTT: The Web Video Text Tracks Format](https://www.w3.org/TR/webvtt1/ "LINK") 🇺🇸 `https://www.w3.org/TR/webvtt1/``  
 W3Cのワーキンググループが開発中のHTMLビデオ字幕の仕様です。ただし、まだ「勧告」には至っていない「Candidate Recommendation」（標準候補）段階です。
 
 OpenCVに関する書籍はいくつか出版されていますが、おおむね言語別になっています。JavaScript版の和書は現時点では本書以外には刊行されていないので、購入するのなら、APIの近いC/C++版がよいでしょう。

@@ -4,12 +4,11 @@
 class RegionSelect {
 
 	/** コンストラクタ
-	 * @param {string} divTag - <canvas> のIDタグ
 	 * @param {string} imageTag - <img> のIDタグ
 	 */
-  constructor(divTag, imageTag) {
-    this.divElem = document.getElementById('divTag');
-    this.imgElem = document.getElementById('imageTag');
+  constructor(imageTag) {
+    this.imgElem = document.getElementById(imageTag);
+    this.divElem = this.imgElem.parentElement;
 
     let imgWidth = this.imgElem.offsetWidth;
     let imgHeight = this.imgElem.offsetHeight;
@@ -48,11 +47,10 @@ class RegionSelect {
 
   mouseDown(evt) {
     if (this.mouseState === undefined) {
+      this.mouseState = 'down';
 	    this.x = evt.offsetX;
 	    this.y = evt.offsetY;
 	    this.width = this.height = 0;
-	    this.mouseState = 'down';
-	    this.ctx.reset();
 	  }
   }
 

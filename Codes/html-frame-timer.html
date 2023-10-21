@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<h1>フレーム単位処理（タイマー使用）</h1>
+<h1>ビデオをフレーム単位で取得する（タイマー使用）</h1>
 
 <div>
   <video id="videoTag" width="480" controls src="samples/cat.mp4"></video>
@@ -39,7 +39,7 @@
   videoElem.addEventListener('play', videoStarted);
   ['suspend', 'pause', 'ended'].forEach(function(evt) {
     videoElem.addEventListener(evt, videoStopped);
-  })
+  });
 </script>
 
 </body>

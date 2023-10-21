@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script src="libs/overlay.js" type="text/javascript"></script>  
+</head>
+<body>
+
+<h1>日本語文字の重畳とキーボード処理（スクリプト版）</h1>
+
+<p>画像をフォーカスしてからキー操作。s=show(), h=hide(), c=changeText()</p>
+
+<div id="divTag">
+  <img id="imageTag" width="360" contenteditable="true"
+    src="samples/san-gimignano.jpg"/>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let o = new Overlay('divTag', 'San Gimignano');
+
+  function test(evt) {
+    switch(evt.code) {
+    case 'KeyS':
+      o.show();
+      break;
+    case 'KeyH':
+      o.hide();
+      break;
+    case 'KeyC':
+      let fontSize = Math.floor(Math.random()*10) + 12;
+      let x = Math.floor(Math.random() * imgElem.width);
+      let y = Math.floor(Math.random() * imgElem.height);
+      console.log(fontSize, x, y);
+      o.changeText('The City of Fine Towers', fontSize, x, y);
+      break;
+    }
+  }
+
+  imgElem.addEventListener('keydown', test);
+</script>
+
+</body>
+</html>

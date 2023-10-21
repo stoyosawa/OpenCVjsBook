@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8"></head>
+  <link rel=stylesheet type="text/css" href="style.css">
+<body>
+
+<h1>ローカルファイルを選択する &lt;input type="file"&gt;</h1>
+
+<div>
+  <img id="imageTag" width="360" height="240" class="placeholder"/>
+</div>
+<div>
+  <input type="file" id="fileTag"/>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let fileElem = document.getElementById('fileTag');
+
+  function loadImage() {
+    console.log(Date.now());
+    let file = fileElem.files[0];
+    console.log(`${file.name} Size: ${file.size}, Type: ${file.type}`);
+    imgElem.src = URL.createObjectURL(file);
+    console.log(Date.now());
+  }
+
+  function changeSize() {
+    console.log(Date.now());
+    let aspect = imgElem.naturalHeight / imgElem.naturalWidth;
+    imgElem.height = Math.floor(imgElem.width * aspect);
+  } 
+
+  fileElem.addEventListener('change', loadImage);
+  imgElem.addEventListener('load', changeSize);
+</script>
+
+</body>
+</html>

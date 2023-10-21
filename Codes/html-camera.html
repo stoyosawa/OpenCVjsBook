@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>カメラの映像を流す</h1>
+
+<div>
+  <video id="videoTag" controls muted></video>
+</div>
+
+<script>
+  let videoElem = document.getElementById('videoTag');
+
+  let cameraSettings = {
+    audio: false,
+    video: {
+      width: 480,
+      height: 360,
+      facingMode: 'environment'
+    }
+  };
+
+  function cameraStart() {
+    navigator.mediaDevices.getUserMedia(cameraSettings)
+    .then(function(mediaStream) {
+      videoElem.srcObject = mediaStream;
+      videoElem.play();
+    });
+  }
+
+  function cameraStop() {
+    videoElem.pause();
+    let tracks = videoElem.srcObject.getVideoTracks();
+    tracks.forEach(function(track) {
+      track.stop();
+    });
+    videoElem.srcObject = undefined;
+  }
+
+  function cameraReady() {
+    console.log(`Camera sizes:
+      width, height:       ${videoElem.width}x${videoElem.height}
+      offsetWidth, Height: ${videoElem.offsetWidth}x${videoElem.offsetHeight}
+      videoWidth, Height:  ${videoElem.videoWidth}x${videoElem.videoHeight}`);
+  }
+  
+  cameraStart();
+  videoElem.addEventListener('loadeddata', cameraReady);
+  videoElem.addEventListener('pause', cameraStop);
+</script>
+
+</body>
+</html>

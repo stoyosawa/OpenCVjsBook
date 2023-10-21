@@ -6,38 +6,35 @@
 </head>
 <body>
 
-<h1>ビデオ ランダムシャッフリング</h1>
-
-<p>ビデオ上で <kbd>ALT</kbd> キーを押しながらマウスクリックすれば、ランダムにシークします</p>
+<h1>ビデオをランダムにシャッフルする</h1>
 
 <div>
   <video id="videoTag" width="480" src="samples/cat.mp4"></video>
 </div>
 
 <script>
+  let interval = undefined;
   let videoElem = document.getElementById('videoTag');
 
   function ready() {
-    videoElem.controls = false;
+    videoElem.controls = true;
     videoElem.loop = true;
     videoElem.muted = true;
     videoElem.play();
-  }
-
-  function seeked() {
-    console.log(`Seeked to ${videoElem.currentTime}`);
-  }
-
-  function clicked(evt) {
-    if (evt.altKey === true) {
+    interval = setInterval(function() {
       let nextPos = videoElem.duration * Math.random();
       videoElem.currentTime = nextPos;
-    }
+      console.log(`Skipped to ${nextPos}`);
+    }, 2500);
+  }
+
+  function stopInterval() {
+    clearInterval(interval);
+    console.log('Shuffle stopped');
   }
 
   videoElem.addEventListener('loadeddata', ready);
-  videoElem.addEventListener('click', clicked);
-  videoElem.addEventListener('seeked', seeked);
+  videoElem.addEventListener('pause', stopInterval);
 </script>
 
 </body>

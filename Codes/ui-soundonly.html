@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async id="scriptTag" src="libs/seele.js" type="text/javascript">
+    </script>
+</head>
+<body>
+
+<h1>カメラにオンオフボタンを加える（ポスター付）</h1>
+
+<div>
+  <video id="videoTag" muted></video>
+</div>
+<div>
+  <input type="button" id="buttonTag" value="起動" class="click";/>
+</div>
+
+<script>
+  let cameraSettings = {
+    audio: false,
+    video: {
+      width: 480,
+      height: 360,
+    }
+  };
+  let cameraState = 0;                             // 0=停止中 1=起動中
+  let opString = ['起動', '停止'];
+
+  let videoElem = document.getElementById('videoTag');
+  let buttonElem = document.getElementById('buttonTag');
+
+  function cameraStart() {
+    navigator.mediaDevices.getUserMedia(cameraSettings)
+    .then(function(mediaStream) {
+      videoElem.srcObject = mediaStream;
+      videoElem.play();
+    });
+  }
+  
+  function cameraStop() {
+    videoElem.pause();
+    let tracks = videoElem.srcObject.getVideoTracks();
+    tracks.map(function(track) {
+      track.stop();
+    });
+    videoElem.srcObject = undefined;
+  }
+
+  function startStop() {
+    [cameraStart, cameraStop][cameraState]();
+    cameraState = 1 - cameraState;
+    buttonElem.value = opString[cameraState];
+  }
+
+  buttonElem.addEventListener('click', startStop);
+  window.addEventListener('load', function() {
+    videoElem.poster = soundOnly(
+      cameraSettings.video.width,cameraSettings.video.height);
+    console.log(typeof videoElem.poster);
+    console.log(videoElem.poster.slice(0, 64));
+  });
+</script>
+
+</body>
+</html>
