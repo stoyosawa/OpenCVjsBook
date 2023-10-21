@@ -1,8 +1,10 @@
-## 第2章 OpenCV.jsの導入
+## 第3章 OpenCV.jsの導入
 
 本章ではJavaScript版OpenCVの導入方法を示します。また、非同期的に読み込まれるOpenCV.jsが利用可能になったことを知る方法、クロスサイトスクリプティングの制約についても説明します。
 
-### 2.1 OpenCV.jsの準備
+
+
+### 3.1 OpenCV.jsの準備
 
 #### opencv.jsファイル
 
@@ -18,7 +20,7 @@ OpenCV.jsで必要なファイルは`opencv.js`だけです。サイズは約10 
 
 ```https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async```
 
-JavaScriptだから読めるだろう、とエディタでは開かないように。ほとんどがBase64表現されたバイナリで埋め尽くされており、ヒトに読めるものではないからです（C/C++から起こされたWebAssemblyのバイナリコード）。
+JavaScriptだから読めるだろう、と、エディタでは開かないように。中身はC/C++から起こされたWebAssemblyのバイナリコードをBase64表現したもので、ヒトに読めるものではないからです（Base64については[2.3節](./02-ui.md#23-カメラにオンオフボタンを加える "INTERNAL")参照）。
 
 `opencv.js`が準備できれば、`cv`というOpenCV.jsのトップレベルのオブジェクトの変数が利用可能になります（`var cv`で定義されている）。以降、OpenCVの関数や定数は、すべてこのオブジェクトのプロパティとしてアクセスできます。
 
@@ -40,12 +42,12 @@ JavaScriptだから読めるだろう、とエディタでは開かないよう�
 ページはバージョン毎に整理されているので、とくに要求がなければ、最上端の最新版からzipをダウンロードします。次の画面では、バージョン4.8.0の「zip」へのリンクです。
 
 <!-- 枠線なし版あり -->
-<img src="Images/Ch02/opencv-docs-top.png">
+<img src="Images/Ch03/opencv-docs-top.png">
 
 OpenCVのリファレンスマニュアルがすべて含まれているので、ファイルサイズは約100 MBとかなり大きいです。Zipは展開し、`opencv.js`だけを抽出します。参考までに、次にZipファイルを展開したWindows エクスプローラの画面を示します。
 
 <!-- 枠線なし版あり -->
-<img src="Images/Ch02/opencv-zip.png">
+<img src="Images/Ch03/opencv-zip.png">
 
 これ以外のファイルは、必要に応じて適宜利用してください。画像ファイルは、オンラインドキュメントと同じ画像でテストをしたいときに使えます。`opencv.js`以外のJavaScriptファイルも重宝します。たとえば、`utils.js`はOpenCV.jsチュートリアルの内部で用いているもので、チュートリアルのコードを自分の環境で動作させるときに必要になります。
 
@@ -58,7 +60,7 @@ URLの間にあるディレクトリ名はバージョンで、上記では4.8.0
 ```https://docs.opencv.org/master/opencv.js```
 
 <!-- Rocket U+1F680 -->
-これは、OpenCVのGet Startedページ（トップページのロケットアイコン🚀の［Get Starated］からアクセス）に掲載されているテスト用HTMLページで用いられています。先ほどチェックしたとことろ、開発者版（dev）のものでしたが、実行的には変わりません。
+これは、OpenCVのGet Startedページ（トップページのロケットアイコン🚀の［Get Starated］からアクセス）に掲載されているテスト用HTMLページで用いられています。先ほどチェックしたとことろ、開発者版（dev）のものでしたが、実効的には変わりません。
 
 なお、これらURLにブラウザからアクセスすると中身が表示されます。問題は生じませんが、謎のBase64文字ばかりなので読めません。ターゲットURLからファイルにそのまま落とせる`curl`などのツールからダウンロードするとよいでしょう。
 
@@ -66,7 +68,7 @@ URLの間にあるディレクトリ名はバージョンで、上記では4.8.0
 
 `opencv.js`を適切な場所に置いたら、動作試験をします。
 
-ここでは、OpenCVメソッドの`cv.getBuildInformation()`からOpenCVバージョンなどのビルド情報を表示します。コードを次に示します。
+ここでは、OpenCVメソッドの`cv.getBuildInformation()`からOpenCVバージョンなどのビルド情報を表示します。コード`opencv-test.html`を次に示します。
 
 ```html
 [File] opencv-test.html
@@ -106,12 +108,13 @@ OpenCV.jsには、トップレベルに`Module`というオブジェクトが用
 
 実行します。HTMLを読み込んだ時点では15行目に従って「OpenCV Loading ...」と表示されますが、1秒後くらいにその部分にビルド情報が表示されます。結果を次に示します。
 
-<img src="Images/Ch02/opencv-test.png">
+<img src="Images/Ch03/opencv-test.png">
 
 バージョンが4.8.0、そのリリース（ビルド）は2023年6月28日なことがわかります。
 
-また、emscriptenというコンパイラが使われていることも読み取れます。OpenCV.jsにある大量のバイト列は、emscriptenというコンパイラでコンパイルされたWeb Assembly（wasm）コードだからです。ここで用いている`Module`は、そのAPIが定義するグローバルなオブジェクトです。興味のあるかたは、emscriptenのAPIリファレンスを参照してください。
+また、emscriptenというコンパイラが使われていることも読み取れます。OpenCV.jsにある大量のバイト列は、emscriptenというコンパイラでコンパイルされたWeb Assembly（wasm）コードだからです。ここで用いている`Module`は、そのAPIが定義するグローバルなオブジェクトです。興味のあるかたは、次のURLからemscriptenのAPIリファレンスを参照してください。
 
+```https://emscripten.org/```
 
 #### 読み込みタイミング
 
@@ -119,7 +122,7 @@ OpenCV.jsには、トップレベルに`Module`というオブジェクトが用
 
 しかし、この手はOpenCV.jsでは使えません。`load`イベントは`opencv.js`がダウンロードされたことしか意味しておらず、機能が利用可能な状態になったことまでは保証していないからです。
 
-試してみます。次のコードは、通常の`load`イベントが完了したら、OpenCV（`cv`オブジェクト）に定義されている`cv.CV_8UC1`という定数（値は数値の1）を表示します。
+次のコード`opencv-load1.html`は、通常の`load`イベントが完了したら、OpenCV（`cv`オブジェクト）に定義されている`cv.CV_8UC1`という定数（値は数値の1）を表示します。
 
 ```html
 [File] opencv-load1.html
@@ -201,11 +204,11 @@ onRuntimeInitialized: 1696552802746 Δ1158
 
 `opencv.js`がロード完了するのは開始から401ミリ秒後、利用可能になるのは1158ミリ秒後、つまりロードからずいぶんと遅れてからなことがこれでわかります。つまり、ブラウザ環境の性能にもよりますが、実際に画像処理に取りかかれるのに1秒ほど待たなければなりません。
 
-### 2.2 OpenCV.jsの定数と関数
+### 3.2 OpenCV.jsの定数と関数
 
 #### OpenCVの定数
 
-OpenCVプログラミングでは、あらかじめ定義されたいろいろな定数を利用します。たとえば、8ビット符号なし整数・1チャネルの画像データ型を指定するときは、普通は定義された直値では書かず、その値を収容した定数名`cv.CV_8UC1`を指定します。
+OpenCVプログラミングでは、あらかじめ定義されたいろいろな定数を利用します。たとえば、1チャネル8ビット符号なし整数の画像データ型を指定するときは、普通は定義された直値では書かず、その値を収容した定数名`cv.CV_8UC1`を指定します。
 
 どの定数もトップレベルオブジェクトの`cv`のプロパティとして用意されているので、`cv.XXXX`の形でアクセスできます。
 
@@ -232,43 +235,44 @@ OpenCVプログラミングでは、あらかじめ定義されたいろいろ�
  15      <option value="^CV_\d{1,2}[SUF]">データ型定数</option>
  16      <option value="^COLOR_">色空間変換定数</option>
  17      <option value="^THRESH_">閾値定数</option>
- 18    </select>
- 19  </div>
- 20  <div>
- 21    <pre id="preTag">定数表</pre>
- 22  </div>
- 23
- 24  <script>
- 25    let selectElem = document.getElementById('selectTag');
- 26    let preElem = document.getElementById('preTag');
- 27
- 28    var Module = {
- 29      onRuntimeInitialized: opencvReady
- 30    }
- 31
- 32    function showConst(evt) {
- 33      let re = new RegExp(evt.currentTarget.value);
- 34      let keys = Object.keys(cv);
- 35
- 36      let selected = keys.filter(function(elem) {
- 37        return re.test(elem);
- 38      }).sort();
- 39
- 40      preElem.innerHTML = selected.map(function(elem) {
- 41        return `${elem} ${cv[elem]}`;
- 42      }).join('\n');
- 43
- 44      console.log(`RegExp ${re} extracted ${selected.length} keys.`);
- 45    }
- 46
- 47    function opencvReady() {
- 48      console.log('OpenCV ready.');
- 49      selectElem.addEventListener('change', showConst);
- 50    }
- 51  </script>
- 52
- 53  </body>
- 54  </html>
+ 18      <option value="^INTER_">補間方式定数</option>
+ 19    </select>
+ 20  </div>
+ 21  <div>
+ 22    <pre id="preTag">定数表</pre>
+ 23  </div>
+ 24
+ 25  <script>
+ 26    let selectElem = document.getElementById('selectTag');
+ 27    let preElem = document.getElementById('preTag');
+ 28
+ 29    var Module = {
+ 30      onRuntimeInitialized: opencvReady
+ 31    }
+ 32
+ 33    function showConst(evt) {
+ 34      let re = new RegExp(evt.currentTarget.value);
+ 35      let keys = Object.keys(cv);
+ 36
+ 37      let selected = keys.filter(function(elem) {
+ 38        return re.test(elem);
+ 39      }).sort();
+ 40
+ 41      preElem.innerHTML = selected.map(function(elem) {
+ 42        return `${elem} ${cv[elem]}`;
+ 43      }).join('\n');
+ 44
+ 45      console.log(`RegExp ${re} extracted ${selected.length} keys.`);
+ 46    }
+ 47
+ 48    function opencvReady() {
+ 49      console.log('OpenCV ready.');
+ 50      selectElem.addEventListener('change', showConst);
+ 51    }
+ 52  </script>
+ 53
+ 54  </body>
+ 55  </html>
 ```
 
 スクリプティング上、気を付けなければならないのはタイミングです。OpenCVが利用可能になると（28～30行目）、`opencvReady`メソッド（47～50行目）が起動します。このタイミングで、`<select>`（13～18行目）で値が選択された（`change`イベント）ときに起動するメソッド`showConst()`（32～45行目）を登録します。つまり、OpenCVが用意できていない間は（開始から1秒ほど）、プルダウンメニューは利用できません。これで、`cv`を参照するメソッドを準備前に呼び出すことで発生する参照エラーを抑制できます。
@@ -279,7 +283,7 @@ OpenCVプログラミングでは、あらかじめ定義されたいろいろ�
 
 実行結果を次の画面に示します。プルダウンメニューから［データ型定数］（`CV_`で始まる文字列）を選択したときのものです。
 
-<img src="Images/Ch02/opencv-consts.png">
+<img src="Images/Ch03/opencv-consts.png">
 
 コンソールには次のように用いられた正規表現と抽出した定数名の数が示されます。
 
@@ -292,11 +296,11 @@ RegExp /^CV_\d{1,2}[SUF]/ extracted 35 keys.
 
 続いては、先と同じ要領でOpenCVのコンストラクタおよびメソッド（つまり`Function`型）をリストします。
 
-これこそオンラインドキュメントで調べるべきものですが、C/C++版にあってOpenCV.jsにはない関数がかなりあります。そのため、ドキュメントにあるC/C++コードを不用意にそのまま移植すると、そんなメソッドはないというエラーが頻出することになります。
+これこそオンラインドキュメントで調べるべきものですが、C/C++版にあってOpenCV.jsにはない関数がかなりあります。そのため、ドキュメントに掲載されたC/C++コードを不用意にそのまま移植すると、そんなメソッドはないというエラーが頻出することになります。
 
-OpenCV.jsにないものの代表はユーザインタフェース関連です（オンラインマニュアルの分類ではHigh-level GUI）。ボタンクリックやマウス操作といったユーザイベント処理、ウィンドウ操作は、HTMLの機能を使う前提なため、提供されていません。また、contribと呼ばれる最新アルゴリズムのライブラリも、まだ正式版には編入されていないということで、含まれていません。他にも、できそうでもできないメソッドにはしばしばお目にかかります。
+OpenCV.jsにないものの代表は、[第1章](./01-html5.md "INTERNAL")で説明した入出力関係、また[第2章](./02-ui.md "INTERNAL")で述べたユーザインタフェース関連です。また、contribと呼ばれる最新アルゴリズムのライブラリも、まだ正式版には編入されていないということで、含まれていません。他にも、できそうでもできないメソッドにはしばしばお目にかかります。
 
-コードは簡単で、先の定数名検索のフィルタリングを`typeof object === 'function`に変更するくらいです。コードを次に示します。
+コードは簡単で、先の定数名検索のフィルタリングを`typeof object === 'function`に変更するくらいです。コード`opencv-functions.html`を次に示します。
 
 ```html
 [File] opencv-functions.html
@@ -348,7 +352,7 @@ OpenCV.jsにないものの代表はユーザインタフェース関連です�
 
 実行例を次に示します。
 
-<img src="Images/Ch02/opencv-functions.png">
+<img src="Images/Ch03/opencv-functions.png">
 
 コンソールには、`cv`に定義されているプロパティのがぜんぶで1564個あり、そのうち関数（コンストラクタも含む）が579個あることがわかります。ちなみに、OpenCVに実装されている関数の数はわかりませんが、画像処理アルゴリズムなら2000ほど実装されているそうです。
 
@@ -359,13 +363,13 @@ OpenCV ready
 ```
 
 
-### 2.3 Cross-Orgignの問題
+### 3.3 Cross-Orgignの問題
 
 #### 画像のOpenCVへのコピーが失敗する
 
-OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込んだ画像をコピーし、処理し、結果を貼り付けて示します（[1.1節](./01-html5.md#11-画像をキャンバスに表示する "INTERNAL")）。しかし、この作業は、ローカルファイルシステムから読み込んだHTMLファイル（たとえば、`file:///C:/opencv-cors.html`）で実行するとエラーを上げます。
+OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込んだ画像をコピーし、処理し、結果を貼り付けて示します（[1.1節](./01-html5.md#11-画像処理の流れ "INTERNAL")）。しかし、この作業は、ローカルファイルシステムから読み込んだHTMLファイル（たとえば、`file:///C:/opencv-cors.html`）で実行するとエラーを上げます。
 
-次のコードを考えます。
+次のコード`opencv-cors.html`を考えます。
 
 ```html
 [File] opencv-cors.html
@@ -403,9 +407,9 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
  32  </html>
 ```
 
-25行目の`cv.imread()`は`<img>`要素から画像データを読み込む、26行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCV.jsのメソッドです。意図していることは、[1.1節](./01-html5.md#11-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバス（CSSで枠線の描かれた領域）に画像が貼り付けられません。
+25行目の`cv.imread()`は`HTMLImageElement`から画像データを読み込む、26行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCV.jsのメソッドです。意図していることは、[1.2節](./01-html5.md#12-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバスに画像が貼り付けられません。
 
-<img src="Images/Ch02/opencv-cors.png">
+<img src="Images/Ch03/opencv-cors.png">
 
 コンソールに示されるエラーメッセージを次に示します（紙面で読みやすくなるよう、行番号を加えるなど一部を編集しています）。
 
@@ -427,23 +431,23 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
 
 #### CORS制約の問題
 
-cross-originは、データ（ここでは画像）とHTMLとでオリジン（端的にはドメインとポート番号の組）が異なることを指します。たとえば、HTMLは`https://www.example.com/`から、画像は`https://www.example.net`から読み込まれているような状態です。それは、ページに他所の怪しいサイトから怪しいデータが入り込んでいる可能性を示すもので、セキュリティ上の問題があります。そのため、ブラウザが他所の画像を、ページに貼り付けるのを拒絶したのです。
+cross-originは、データ（ここでは画像）とHTMLとでオリジン（端的にはドメインとポート番号の組）が異なることを指します。たとえば、HTMLは`https://www.example.com/`から、画像は`https://www.example.net/`から読み込まれているような状態です。それは、ページに他所の怪しいサイトから怪しいデータが入り込んでいる可能性を示すもので、セキュリティ上の問題があります。そのため、ブラウザが他所の画像を、ページに貼り付けるのを拒絶したのです。
 
-異なるオリジン間でのデータ共有のメカニズムをCORS（Cross-Origin Resource Sharing）と言います。ブラウザにはどのようなCORS操作なら認められているかをデフォルトで定めており、昨今のセキュリティ問題を反映して、かなり厳しいものになっています。たとえば、`file:///`へのアクセスは、同じディレクトリにあっても拒否されます。
+異なるオリジン間でのデータ共有のメカニズムをCORS（Cross-Origin Resource Sharing）と言います。ブラウザはどのようなCORS操作なら認めるかをデフォルトで定めており、昨今のセキュリティ問題を反映して、かなり厳しい制約が課せられています。たとえば、`file:///`へのアクセスは、同じディレクトリにあっても拒否されます。
 
 この問題を解消するには3つの方法があります。
 
 1. ローカルでWebサーバを運用する。これなら、画像もHTMLファイルも同じ`http://localhost/`というオリジンを共有することになるので、CORSエラーは発生しません。本書ではこの方法を使っています。
-2. インターネット上のWebホスティングサービスにアップロードする。対処療法は上記と同じです。問題はタダではないことと、フリーなものだと不安なところです。試験用あるいは勉強用に使うぶんにはフリーなものもよいでしょう。
+2. インターネット上のWebホスティングサービスにアップロードする。療法は上記と同じです。問題はタダではないことと、フリーなものだと不安なところです。試験用あるいは勉強用に使うぶんにはフリーなものもよいでしょう。
 3. CORS設定を一時的に無視するようにブラウザを設定する。この方法は比較的簡単ですが、ブラウザが脆弱になるという問題があります。設定を変更したら、**必ず**もとに戻さなければなりません。
 
 本節では1と3の方法を説明します。
 
-3についてはFirefox、Chrome、Edgeのものを紹介します。ここで示す方法は執筆時点の最新バージョンで試していますが、同じ方法が古い、あるいは将来のバージョンでも通用する保証はない点、注意してください。
+3についてはChrome、Edge、Firefoxのものを紹介します。ここで示す方法は執筆時点の最新バージョンで試していますが、同じ方法が古い、あるいは将来のバージョンでも通用する保証はない点、注意してください。
 
 #### ローカルWebサーバを用意する
 
-apacheあたりを自機にインストールするのが王道ですが、設定が面倒なのが問題です。簡単に済ませるなら、Pythonのワンライナーでしょう。コマンドプロンプト（やコンソール）から自分のHTMLや画像のあるディレクトリに移動し、次のコマンドを実行するだけです。
+apacheあたりを自機にインストールするのが王道ですが、個人用のテストにはやりすぎかもしれません。簡単に済ませるなら、Pythonのワンライナーでしょう。コマンドプロンプト（やコンソール）から自分のHTMLや画像のあるディレクトリに移動し、次のコマンドを実行するだけです。
 
 ```
 python -m http.server --bind 127.0.0.1
@@ -455,50 +459,24 @@ python -m http.server --bind 127.0.0.1
 
 ブラウザに`http://localhost:8000/`（`http.server`のデフォルトポートは8000番です）と入力すれば、そのディレクトリにあるファイルが一覧できます。次に、筆者の執筆環境のディレクトリから起動したサーバにアクセスしたときの画面を示します。
 
-<img src="Images/Ch02/opencv-cors-python.png">
+<img src="Images/Ch03/opencv-cors-python.png">
 
 あとは、好みのファイルをクリックするだけです。
 
-Pythonをインストールしなければならないのが難点ですが、それ自体は難しくはありません（JavaScript本で言うのもなんですが、あると人生が豊かになります）。インストーラは次に示すURLからダウンロードできます。
+Pythonをインストールしなければならないのが難点ですが、それ自体は難しくはありません（JavaScript本で宣伝するのもなんですが、あると人生が豊かになります）。インストーラは次に示すURLからダウンロードできます。
 
 ```https://www.python.org/downloads/```
 
-他にも、1行だけでサーバを実行できるユーティリティや言語もあります。検索してください。
+他にも、1行だけでサーバを実行できるユーティリティや言語はたくさんあります。検索してください。
 
 JavaScriptユーザならNode.jsのほうがよいかもしれません。コードがやや長くなるのがたまに傷ですが、npm（node package manager）に超簡便なWebサーバもあります（検索しましょう）。
 
-> どんなWebサーバであれ、httpsにはself-signed証明書が必要なので、設定はかなりややこしいです。
-
-#### ブラウザのCORS緩和設定（Firefox）
-<!-- See https://stackoverflow.com/questions/72811082/security-error-loading-subtitles-on-html-video -->
-
-> 注意：本節の設定により、ブラウザのセキュリティレベルは著しく低下します。利用はOpenCVファイルのテスト中のみ、アクセス先は`localhost`にかぎります。
-
-FirefoxでのCORS制限の緩和方法を紹介します。
-
-URLフィールドに`about:config`と入力することで、「高度な設定」画面に進みます。最初に「注意して進んでください！」と警告されるので、注意しながら［危険性を承知のうえで使用する］をクリックします。
-
-<img src="Images/Ch02/opencv-cors-firefox1.png">
-
-<!-- content.cors.disable を true に変更するという話も出ているが、これは利かない模様 -->
-［設定名を検索］するフィールドを上端に示したページが次の画面のように表示されます。`security.fileuri.strict_origin_policy`を入力し、デフォルト値のfalseを、右にある「切り替え」アイコン（⇄）をクリックすることでtrueに変更します。
-
-<!-- 枠なし版あり -->
-<img src="Images/Ch02/opencv-cors-firefox2.png">
-
-これでローカルファイルにCORSエラーなしでアクセスできるようになります。
-
-利用が終わったらもとのfalseに戻します。
-
-セキュリティの穴が気になるなら、Firefoxのすべての設定を工場出荷時に戻すリフレッシュを行います。ウィンドウ右上にある設定（≡）ボタンから［ヘルプ］>［他のトラブルシューティング情報］で、右にある［Firefoxをリフレッシュ］です。ボタンをクリックすると次の画面のように警告画面が現れるので、リフレッシュします。
-
-<!-- 枠なし版あり -->
-<img src="Images/Ch02/opencv-cors-firefox3.png">
+> どんなWebサーバであれ、httpsにはself-signed証明書が必要なので、設定はややこしいです。ローカルオンリー運用なら、httpsにする必要はありません。
 
 #### ブラウザのCORS緩和設定（ChromeおよびEdge）
 <!-- See https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md -->
 
-> 注意：本節の設定により、ブラウザのセキュリティレベルは著しく低下します。利用はOpenCVファイルのテスト中のみ、アクセス先は`localhost`にかぎります。
+> 注意：本節の設定により、ブラウザのセキュリティレベルは著しく低下します。利用はテスト中のみ、アクセス先は`localhost`にかぎります。
 
 ChromeおよびEdgeでは、プログラム実行時のオプションからCORS制限を緩和します。コマンドプロンプト（やコンソール）から次のように実行します。
 
@@ -510,8 +488,34 @@ ChromeおよびEdgeでは、プログラム実行時のオプションからCORS
 
 オプション指定なので、普段使いしているChrome/Edgeには影響しません。
 
+#### ブラウザのCORS緩和設定（Firefox）
+<!-- See https://stackoverflow.com/questions/72811082/security-error-loading-subtitles-on-html-video -->
 
-### 2.4 OpenCVドキュメンテーション
+> 注意：本節の設定により、ブラウザのセキュリティレベルは著しく低下します。利用はテスト中のみ、アクセス先は`localhost`にかぎります。
+
+FirefoxでのCORS制限の緩和方法を紹介します。
+
+URLフィールドに`about:config`と入力することで、「高度な設定」画面に進みます。最初に「注意して進んでください！」と警告されるので、注意しながら［危険性を承知のうえで使用する］をクリックします。
+
+<img src="Images/Ch03/opencv-cors-firefox1.png">
+
+<!-- content.cors.disable を true に変更するという話も出ているが、これは利かない模様 -->
+［設定名を検索］するフィールドを上端に示したページが次の画面のように表示されます。`security.fileuri.strict_origin_policy`を入力し、デフォルト値のfalseを、右にある「切り替え」アイコン（⇄）をクリックすることでtrueに変更します。
+
+<!-- 枠なし版あり -->
+<img src="Images/Ch03/opencv-cors-firefox2.png">
+
+これでローカルファイルにCORSエラーなしでアクセスできるようになります。
+
+利用が終わったらもとのfalseに戻します。
+
+セキュリティの穴が気になるなら、Firefoxのすべての設定を工場出荷時に戻すリフレッシュを行います。ウィンドウ右上にある設定（≡）ボタンから［ヘルプ］>［他のトラブルシューティング情報］で、右にある［Firefoxをリフレッシュ］です。ボタンをクリックすると次の画面のように警告画面が現れるので、リフレッシュします。
+
+<!-- 枠なし版あり -->
+<img src="Images/Ch03/opencv-cors-firefox3.png">
+
+
+### 3.4 OpenCVドキュメンテーション
 
 #### OpenCV公式リファレンス
 
@@ -519,14 +523,14 @@ OpenCVの関数や定数は次に示すOpenCV公式リファレンスから参�
 
 ```https://docs.opencv.org/```
 
-トップページには[2.1節](#21-OpenCV.jsの準備 "INTERNAL")で示したように各バージョンへのリンクが列挙されているので、利用しているバージョンあるいは最新のものクリックします（本書では4.8.0）。ドキュメントページを次の画面に示します。
+トップページには[3.1節](#31-OpenCVjsの準備 "INTERNAL")で示したように各バージョンへのリンクが列挙されているので、利用しているバージョンあるいは最新のものクリックします（本書では4.8.0）。ドキュメントページを次の画面に示します。
 
 <!-- 枠なし版あり -->
-<img src="Images/Ch02/opencv-docs-modules.png">
+<img src="Images/Ch03/opencv-docs-modules.png">
 
 coreやimgprocなどモジュール別に分けられているので、目的の関数や定数をピンポイントに見つけるのはむずかしくなっています。その代わり、右上のサーチフィールドの予測入力が賢いので、入力するにつれ候補を示してくれます。次の画面では`cv.cvtColor()`メソッドの書式を調べるために、「cvtc」まで打ったところを示しています（先頭の`cv`は不要です）。
 
-<img src="Images/Ch02/opencv-docs-search.png">
+<img src="Images/Ch03/opencv-docs-search.png">
 
 このキーワードを含む関数および定数がドロップダウンリストとして表示されるので、目的のものをクリックします。項目によってはさらに細分化されますが、目的の名称と最も近い細目を選びます（たとえば、`cv::cuda::cvtColor()`とあるのはGPUのCUDA用なので目的のものではありません）。
 
@@ -534,7 +538,7 @@ coreやimgprocなどモジュール別に分けられているので、目的の
 
 公式リファレンスの関数定義には、次に示すようにC/C++とPythonのものしか記載されていません。OpenCV.jsは基本的にC/C++のシグニチャを踏襲しているので、そちらを見ます。次に、`cv.Canny()`メソッドの関数定義を示します。
 
-<img src="Images/Ch02/opencv-docs-function.png">
+<img src="Images/Ch03/opencv-docs-function.png">
 
 表題に「Canny() [1/2]」とあるのは、同名であっても引数の恰好の異なるパターン（シグニチャ）があることを示しています。C++ではこれをオーバーロードと呼びますが、JavaScriptでは使われない技法です（TypeScriptなら見かけ上できますが）。残念ながら、OpenCV.jsでどちらの形式を使っているかは見ただけでは判別できません。
 
@@ -557,7 +561,7 @@ C/C++のデータ型 | OpenCV.jsのデータ型 | 注意
 
 `cv.`で始まるデータ型については次章で説明します。
 
-C++の`vector`は配列（`Array`）のようなもので、同じデータ型を複数個収容します。C++では`vector<InputArray>`のように`<>`の中にデータ型を記述しますが、OpenCV.jsではそれ専用のオブジェクトが用意されます。たとえば、`cv.Point`の配列（ベクター）なら`cv.PointVector`です。これらについては、サンプルコードで使用するときに説明します。
+C++の`vector`は型付きの配列（`TypedArray`）のようなもので、同じデータ型を複数個収容します。C++では`vector<InputArray>`のように`<>`の中にデータ型を記述しますが、OpenCV.jsではそれ専用のオブジェクトが用意されます。たとえば、`cv.Point`の配列（ベクター）なら`cv.PointVector`です。これらについては、サンプルコードで使用するときに説明します。
 
 
 定義がコンストラクタであるときは、JavaScriptの作法にのっとって`new`を加えます。たとえば、C/C++の`Mat()`は、`new cv.Mat()`と読み替えます。

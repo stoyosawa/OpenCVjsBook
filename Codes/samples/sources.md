@@ -12,8 +12,8 @@
 <img src="san-gimignano.jpg" width="100" title="san-gimignano.jpg: San Gimignano"/> | 2.4 | 1280x960 | Ben_Kerckx | `https://pixabay.com/photos/san-gimignano-buildings-architecture-228455/`
 <img src="bodega-bay.jpg" width="100" title="bodega-bay.jpg: Bodega Bay"/> | 2.5, 2.6 | 1280x853 |  glynn424 | `https://pixabay.com/videos/new-york-city-manhattan-people-cars-1044/`
 <img src="avon-river.jpg" width="100" title="avon-river.jpg: Avon River, Christchurch"/> | 2.7 | 1280x960 |  csharker | `https://pixabay.com/photos/christchurch-new-zealand-bridge-fall-170557/`
+<img src="miyajima.jpg" width="100"/ title="miyajima.jpg: 宮島"/> | 3.3 |  1280x853 | IT-STUDIO | `https://pixabay.com/photos/shrine-torii-sunset-evening-sea-1030442/`
 
-<img src="miyajima.jpg" width="100"/ title="miyajima.jpg: 宮島"/> | 2.3 |  1280x853 | IT-STUDIO | `https://pixabay.com/photos/shrine-torii-sunset-evening-sea-1030442/`
 <img src="redwood.jpg" width="100" title="redwood.jpg: Redwood, CA"/> | 4.1 モノクロ | 1280x847 | USA-Reiseblogger | `https://pixabay.com/photos/usa-america-california-sequoias-1669714/`
 <img src="easter-eggs.jpg" width="100" title="easter-gggs.jpg: 多色な卵"/> | 4.2 色分解 | 1280x960 | Hans | `https://pixabay.com/photos/eggs-multicoloured-easter-eggs-100165/`
 <img src="wiener-rathaus.jpg" width="100" title="wiener-rathaus.jpg: ウィーン市庁舎"/> | 4.3 セピア化 | 1280x960 | Prow | `https://pixabay.com/photos/austria-vienna-vienna-city-hall-764989/`
