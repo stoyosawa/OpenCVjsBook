@@ -26,10 +26,6 @@
   let selectElem = document.getElementById('selectTag');
   let preElem = document.getElementById('preTag');
 
-  var Module = {
-    onRuntimeInitialized: opencvReady
-  }
- 
   function showConst(evt) {
     let re = new RegExp(evt.currentTarget.value);
     let keys = Object.keys(cv);
@@ -48,6 +44,10 @@
   function opencvReady() {
     console.log('OpenCV ready.');
     selectElem.addEventListener('change', showConst);
+  }
+
+  var Module = {
+    onRuntimeInitialized: opencvReady
   }
 </script>
 

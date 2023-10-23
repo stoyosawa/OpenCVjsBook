@@ -96,7 +96,7 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
 
 `src`以外の属性は仕様上オプションです。ここでは`width`属性に320ピクセルを指定していますが、動作確認時に邪魔にならない程度に縮小表示したいからです。`height`は未指定ですが、高さは元画像のアスペクト比に準じて自動的に調整されます。ここでの用例では、元画像のサイズが1280×885なので、高さは1/4の221ピクセルに縮小されます。
 
-スクリプティングで必須なのは、`<img>`要素を特定する`id`属性です。対応するDOMオブジェクトは、この`id`属性を介して`document.getElementById()`メソッドから取得できます。
+スクリプティングで必須なのは、`<img>`要素を特定する`id`属性です。対応するDOMオブジェクトは、この`id`属性を介して`document.getElementById()`関数から取得できます。
 
 #### HTMLImageElementのイベント
 
@@ -108,7 +108,7 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
  30    imgElem.addEventListener('load', showImage);
 ```
 
-`load`イベントが`HTMLImageElement`（変数は17行目で定義した`imgElem`）で発生したら、`showImage()`メソッドを実行するよう登録しています。
+`load`イベントが`HTMLImageElement`（変数は17行目で定義した`imgElem`）で発生したら、`showImage()`関数を実行するよう登録しています。
 
 #### canvas要素
 
@@ -129,7 +129,7 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
 
 キャンバスに対する操作は、キャンバスの描画コンテクストを介して行います。「コンテクスト」（文脈）ではやや意味不明瞭ですが、仮想的なキャンバスと考えてください。この仮想的なキャンバスに対して画像貼り付けやグラフィック描画を行うと、`<canvas>`というビューファインダーからそれらが見えるようになるという塩梅です。
 
-描画コンテクストは、`HTMLCanvasElement`の`getContext()`メソッドから取得します（19行目）。
+描画コンテクストは、`HTMLCanvasElement`の`getContext()`関数から取得します（19行目）。
 
 ```javascript
  19      let ctx = canvas.getContext('2d');
@@ -139,8 +139,8 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
 
 #### 画像のコピー
 
-画像の読み込み完了とともに起動する`showImage()`メソッド（21～28行目）は、`HTMLImageElement`（`<img>`）の画像を
-描画コンテクストにコピーします。コピーするメソッドは`CanvasRenderingContext2D`の`drawImage()`メソッドです（27行目）。
+画像の読み込み完了とともに起動する`showImage()`（21～28行目）は、`HTMLImageElement`（`<img>`）の画像を
+描画コンテクストにコピーします。コピーするのは`CanvasRenderingContext2D`の`drawImage()`関数です（27行目）。
 
 ```javascript
  27      ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height);
@@ -267,14 +267,14 @@ img.naturalHeight: 885, canvas.naturalHeight: undefined
 
 #### 部分領域の切り出し
 
-前節では、`CanvasRenderingContext2D.drawImage()`メソッドに引数を5つ指定しました。最初のものはコピー元の`HTMLImageElement`オブジェクトで、続く4つは貼り付け先のキャンバス上の位置とサイズでした。
+前節では、`CanvasRenderingContext2D.drawImage()`関数に引数を5つ指定しました。最初のものはコピー元の`HTMLImageElement`オブジェクトで、続く4つは貼り付け先のキャンバス上の位置とサイズでした。
 
 ```javascript
  // html-image.html より         コピー先のキャンバスの位置とサイズ
  27      ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height);
 ```
 
-メソッドにコピー元から部分領域を切り出すによう指示するには、オブジェクトとコピー先の情報の間に、切り出す領域を指示する4つの引数を加えます。次にこの9つ引数版の書式を示します。
+関数にコピー元から部分領域を切り出すによう指示するには、オブジェクトとコピー先の情報の間に、切り出す領域を指示する4つの引数を加えます。次にこの9つ引数版の書式を示します。
 
 ```
 drawImage(
@@ -440,7 +440,7 @@ drawImage(
 
 #### HTMLVideoElementのプロパティ
 
-コードの21～32行目に定義した`showMetadata()`メソッドは、ビデオのメタデータをコンソールに表示します。このメソッドは、45行目から後述する`loadedmetadata`イベントを契機に起動するよう登録してあります。
+コードの21～32行目に定義した`showMetadata()`関数は、ビデオのメタデータをコンソールに表示します。この関数は、45行目から後述する`loadedmetadata`イベントを契機に起動するよう登録してあります。
 
 ```javascript
  21    function showMetadata(evt) {
@@ -630,15 +630,15 @@ Video properties:
 
 別のやり方があることを示すためにやっているだけで、属性から設定してもかまいません。
 
-ただし、`autoplay`には注意が必要です。この属性／プロパティは自動的に再生を開始するか否かを示すだけであって、実際に再生をするわけではありません。そのため、あとからスクリプトで`true`をセットしても再生はスタートとしません。スクリプト側から再生開始をさせるには、`HTMLVideoElement.play()`メソッドを用います（23行目）。
+ただし、`autoplay`には注意が必要です。この属性／プロパティは自動的に再生を開始するか否かを示すだけであって、実際に再生をするわけではありません。そのため、あとからスクリプトで`true`をセットしても再生はスタートとしません。スクリプト側から再生開始をさせるには、`HTMLVideoElement.play()`関数を用います（23行目）。
 
-`HTMLVideoElement`にはこの他にも、一時停止などビデオ操作のメソッドがいろいろ用意されています。詳細は、次にURLを示すMDNの`HTMLMediaElement`のAPIドキュメントを参照してください（`HTMLVideoElement`のほとんどのプロパティやメソッドは、この親クラスから継承しています）。
+`HTMLVideoElement`にはこの他にも、一時停止などビデオ操作の関数がいろいろ用意されています。詳細は、次にURLを示すMDNの`HTMLMediaElement`のAPIドキュメントを参照してください（`HTMLVideoElement`のほとんどのプロパティや関数は、この親クラスから継承しています）。
 
 ```https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement```
 
 #### ランダム再生と停止
 
-シャッフリングは、`setInterval()`メソッドで2.5秒（2500ミリ秒）おきに発生するように設定しています（24行目）。
+シャッフリングは、`setInterval()`関数で2.5秒（2500ミリ秒）おきに発生するように設定しています（24行目）。
 
 ```javascript
  16    let interval = undefined;
@@ -652,7 +652,7 @@ Video properties:
 
 飛び先は先頭から末尾（`duration`プロパティ）までの間のランダムな位置です。この値を`currentTime`プロパティに代入すればそのままジャンプします。
 
-ほっておくとシャッフリングは永遠に繰り返されます。そこで、操作パネルからて一時停止をすれば、シャッフリングを停止するようにします。これには、`HTMLVideoElement`に上がってくる`pause`イベントを契機に（37行目）、`clearInterval()`メソッドでタイマをクリアします（32行目）。
+ほっておくとシャッフリングは永遠に繰り返されます。そこで、操作パネルからて一時停止をすれば、シャッフリングを停止するようにします。これには、`HTMLVideoElement`に上がってくる`pause`イベントを契機に（37行目）、`clearInterval()`関数でタイマをクリアします（32行目）。
 
 ```javascript
  31    function stopInterval() {
@@ -751,9 +751,9 @@ Video properties:
 
 #### サムネール台紙の設計
 
-27～39行目の`prepare()`メソッドは初期設定のためのものです。ここで、サムネールを貼り付ける台紙（キャンバス）のサイズや縮小画像の貼り付け位置を設計します。また、どのタイミングでフレームをゲットするのかも決めます。
+27～39行目の`prepare()`関数は初期設定のためのものです。ここで、サムネールを貼り付ける台紙（キャンバス）のサイズや縮小画像の貼り付け位置を設計します。また、どのタイミングでフレームをゲットするのかも決めます。
 
-メソッドは、ビデオの最初のフレームが用意できたとき（`loadeddata`イベント）に呼び出します(55行目）。
+関数は、ビデオの最初のフレームが用意できたとき（`loadeddata`イベント）に呼び出します(55行目）。
 
 ```javascript
  27    function prepare() {
@@ -763,7 +763,7 @@ Video properties:
  55    videoElem.addEventListener('loadeddata', prepare);
 ```
 
-メソッドでは、まずサムネールの枚数とサイズを決めます（17～18行目）。キャンバスに格子状に配置するので、枚数は縦横の格子の数で記述します。ここでは4×3の合計12枚です。
+関数では、まずサムネールの枚数とサイズを決めます（17～18行目）。キャンバスに格子状に配置するので、枚数は縦横の格子の数で記述します。ここでは4×3の合計12枚です。
 
 ```javascript
  17    let sheetSize = {width: 4, height: 3};
@@ -809,9 +809,9 @@ Video properties:
  35      timeSeries = [...Array(number).keys()].map(i => i * interval);
 ```
 
-1行にまとめているので、ぱっと見にはわかりにくいかもしれません。まず、`Array()`メソッドで12個の要素の配列を作成します（`Array(number)`）。今度はそのインデックス番号からなる配列を生成します（`.keys()`）。これで[0, 1, ..., 11]が得られます。あとは、`map()`を使ってそれぞれに0.77を掛けます（`map(i => i * interval)`）。
+1行にまとめているので、ぱっと見にはわかりにくいかもしれません。まず、`Array()`関数で12個の要素の配列を作成します（`Array(number)`）。今度はそのインデックス番号からなる配列を生成します（`.keys()`）。これで[0, 1, ..., 11]が得られます。あとは、`map()`を使ってそれぞれに0.77を掛けます（`map(i => i * interval)`）。
 
-`prepare()`メソッドは最後に、ビデオオーディオをミュートにし（37行目）、再生を開始させています（38行目）。
+`prepare()`関数は最後に、ビデオオーディオをミュートにし（37行目）、再生を開始させています（38行目）。
 
 ```javascript
  37      videoElem.muted = true;
@@ -830,7 +830,7 @@ Video properties:
 
 ここでは0.77秒に1回サムネール取り込みますが、その間に発火するのは3回程度です。このくらいならそれほど無駄ではありません。
 
-`timeupdate`イベント発火で呼び出される`timeUpdated()`メソッドは47～53行目で定義しています。
+`timeupdate`イベント発火で呼び出される`timeUpdated()`関数は47～53行目で定義しています。
 
 ```javascript
  20    let count = 0;
@@ -848,7 +848,7 @@ Video properties:
 
 #### 貼り付け
 
-50行目で呼び出している`pasteFrame()`メソッド（41～45行目）がキャンバスにフレームを貼り付けます。
+50行目で呼び出している`pasteFrame()`関数（41～45行目）がキャンバスにフレームを貼り付けます。
 
 ```javascript
  41    function pasteFrame() {
@@ -990,7 +990,7 @@ Video properties:
 <!-- 847x275 -->
 <img src="Images/Ch01/html-caption-objects.png" width="500">
 
-字幕情報は、`HTMLTrackElement`の`track`プロパティに収容されています。20行目の変数を使えば`trackElem.track`です。ここでは、イベントリスナーの`showCue()`メソッドで字幕情報処理をしており、その引数にはイベントオブジェクトが引き渡されるので（22行目の`evt`）、`evt.target.track`と書いています（23行目）。
+字幕情報は、`HTMLTrackElement`の`track`プロパティに収容されています。20行目の変数を使えば`trackElem.track`です。ここでは、イベントリスナーの`showCue()`関数で字幕情報処理をしており、その引数にはイベントオブジェクトが引き渡されるので（22行目の`evt`）、`evt.target.track`と書いています（23行目）。
 
 ```javascript
  22    function showCue(evt) {
@@ -1014,7 +1014,7 @@ Video properties:
 
 `HTMLTrackElement`オブジェクトには`cuechange`というイベントが用意されています。その名の通り、字幕に変更があったときに上がってくるものです。変更なので、字幕が表示されたときだけでなく、消えたときにも発生します。
 
-本コードでは、上記で節召し下処理メソッド`showCue()`（22～28行目）を登録しています（30行目）。
+本コードでは、上記で節召し下処理関数`showCue()`（22～28行目）を登録しています（30行目）。
 
 ```javascript
 30    trackElem.addEventListener('cuechange', showCue);
@@ -1117,7 +1117,7 @@ Video properties:
 
 カメラ映像は、カメラデバイスを取得し、そこから得られるビデオストリームを`<video>`に割り当てることで表示されます。
 
-カメラなどのハードウェア機器からのメディアストリームには、`MediaStream`オブジェクトからアクセスします。このオブジェクトの取得と再生開始を行っているのが、27～33行目で定義した`cameraStart()`メソッドです。このメソッドはスクリプト末尾の51行目で実行しています。
+カメラなどのハードウェア機器からのメディアストリームには、`MediaStream`オブジェクトからアクセスします。このオブジェクトの取得と再生開始を行っているのが、27～33行目で定義した`cameraStart()`関数です。この関数はスクリプト末尾の51行目で実行しています。
 
 ```javascript
  16    let videoElem = document.getElementById('videoTag');
@@ -1133,17 +1133,17 @@ Video properties:
  52    cameraStart(); 
 ```
 
-`MediaStream`オブジェクトは、ブラウザそのものを表現する`navigator`のプロパティである`mediaDevices`の、`getUserMedia()`メソッドから取得します（28行目）。ただ、このメソッドは`Promise`を返す非同期的なものです。この`Promise`が解決されると（29行目の`then`）、`MediaStream`オブジェクトが得られます（29行目の無名関数`function()`の引数の`mediaStream`）。`Promise`の用法に不慣れなら、次の「プロミスの使用」と題されたMDNのJavaScriptガイドを参照してください。
+`MediaStream`オブジェクトは、ブラウザそのものを表現する`navigator`のプロパティである`mediaDevices`の、`getUserMedia()`関数から取得します（28行目）。ただ、この関数は`Promise`を返す非同期的なものです。この`Promise`が解決されると（29行目の`then`）、`MediaStream`オブジェクトが得られます（29行目の無名関数`function()`の引数の`mediaStream`）。`Promise`の用法に不慣れなら、次の「プロミスの使用」と題されたMDNのJavaScriptガイドを参照してください。
 
 ```https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises```
 
-あとは、得られたストリームを`<video>`の`srcObject`プロパティに結び付けるだけです（30行目）。以降、普通のビデオファイル同様に操作ができます。ここでは、`HTMLVideoElement.play()`メソッドで再生を開始しています（31行目）。
+あとは、得られたストリームを`<video>`の`srcObject`プロパティに結び付けるだけです（30行目）。以降、普通のビデオファイル同様に操作ができます。ここでは、`HTMLVideoElement.play()`関数で再生を開始しています（31行目）。
 
 > 古いブラウザには`srcObject`をサポートしていないものもあります。その場合は、`src`プロパティに`URL.createObjectURL(mediaStream)`の戻り値を代入せよ、とMDNにはありますが、今度は、新しいバージョンで動作しなくなります。
 
 #### カメラ設定
 
-`navigator.mediaDevices.getUserMedia()`メソッドの引数には、カメラ設定を指示するオブジェクト（辞書）を引き渡します（仕様では`MediaTrackConstraints`と呼ばれています）。本コードでは、18～25行目でこれを定義しています。
+`navigator.mediaDevices.getUserMedia()`関数の引数には、カメラ設定を指示するオブジェクト（辞書）を引き渡します（仕様では`MediaTrackConstraints`と呼ばれています）。本コードでは、18～25行目でこれを定義しています。
 
 ```javascript
  18    let cameraSettings = {
@@ -1224,7 +1224,7 @@ Camera sizes:
 
 #### カメラの解放
 
-利用が終わったらカメラは解放します。ここでは、操作パネルの停止ボタン（`pause`イベント）を契機に解放するようにしています（53行目で登録）。解放操作は`cameraStop()`メソッド（35～42行目）に記述してあります。
+利用が終わったらカメラは解放します。ここでは、操作パネルの停止ボタン（`pause`イベント）を契機に解放するようにしています（53行目で登録）。解放操作は`cameraStop()`関数（35～42行目）に記述してあります。
 
 ```javascript
  35    function cameraStop() {
@@ -1241,9 +1241,9 @@ Camera sizes:
 
 解放操作はいくつかのステップからなっています。
 
-まず、`HTMLVideoElement`の側、`pause()`メソッドで映像再生を停止します（36行目）。操作ボタンで止まっているはずですが、念のためです。
+まず、`HTMLVideoElement`の側、`pause()`関数で映像再生を停止します（36行目）。操作ボタンで止まっているはずですが、念のためです。
 
-続いて、映像を構成するトラックを`MediaStream`オブジェクト側から停止します。これが37～40行目です。まず、`MediaStream`の`getVideoTracks()`からトラックオブジェクトの`MediaStreamTrack`配列を取得します（37行目）。映像メディアは複数のトラックを持つこともあるため、戻り値が配列なところが注意点です。次いで、個々の`MediaStreamTrack`を、そのメソッドである`stop()`からトラックを停止します（39行目）。
+続いて、映像を構成するトラックを`MediaStream`オブジェクト側から停止します。これが37～40行目です。まず、`MediaStream`の`getVideoTracks()`からトラックオブジェクトの`MediaStreamTrack`配列を取得します（37行目）。映像メディアは複数のトラックを持つこともあるため、戻り値が配列なところが注意点です。次いで、個々の`MediaStreamTrack`を、その関数である`stop()`からトラックを停止します（39行目）。
 
 トラックは通常ひとつだけなので、37～40行目は`videoElem.srcObject.getVideoTracks()[0].stop()`と1行で書いてもたいていは問題ありません。
 
@@ -1260,9 +1260,9 @@ Camera sizes:
 
 ただ、HTML5のフレーム処理の標準仕様はまだ固まったとはいえないため、ブラウザによって異なるメカニズムが採用されています。本節では次の3つの方法を示します。
 
-①`HTMLVideoElement.requestVideoFrameCallback()` ... フレームが用意できると、指定のコールバック関数を呼び出すメソッドです。Firefox以外のブラウザならたいていは利用できるようです。筆者はChromeとEdgeで動作確認をしました（どちらも本書執筆時点では最新版）。このメソッドはまだ標準化されていないので、用法は将来変わる可能性があります。
+①`HTMLVideoElement.requestVideoFrameCallback()` ... フレームが用意できると、指定のコールバック関数を呼び出す関数です。Firefox以外のブラウザならたいていは利用できるようです。筆者はChromeとEdgeで動作確認をしました（どちらも本書執筆時点では最新版）。この関数はまだ標準化されていないので、用法は将来変わる可能性があります。
 
-②`HTMLVideoElement.seekToNextFrame()` ... ビデオ本来の再生を無視して、スクリプトが能動的にフレーム送りを指示するメソッドです。`play()`と`pause()`を連続的に繰り返すようなイメージです。Firefoxで採用されていますが、MDNは非推奨扱いにしています。
+②`HTMLVideoElement.seekToNextFrame()` ... ビデオ本来の再生を無視して、スクリプトが能動的にフレーム送りを指示する関数です。`play()`と`pause()`を連続的に繰り返すようなイメージです。Firefoxで採用されていますが、MDNは非推奨扱いにしています。
 
 ③`setInterval()` ... 一般的なビデオが毎秒30フレーム（1コマの提示時間にして33ミリ秒）であることを踏まえ、33.3ミリ秒単位でフレームを取得する方法。必ずしもフレーム送りとインターバルタイマーのタイミングが一致するとはかぎりませんが、標準仕様だけで実装できるというメリットがあります。
 
@@ -1276,7 +1276,7 @@ Camera sizes:
 
 #### コード①
 
-Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVideoFrameCallback()`メソッド使います。コード`html-frame-chrome.html`を次に示します。
+Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVideoFrameCallback()`関数使います。コード`html-frame-chrome.html`を次に示します。
 
 ```html
 [File] html-frame-chrome.html
@@ -1322,11 +1322,11 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
  40  </html>
 ```
 
-キャンバスへの文字列の描画は描画コンテクストの`fillText()`メソッドから行っています（31～32行目）。
+キャンバスへの文字列の描画は描画コンテクストの`fillText()`関数から行っています（31～32行目）。
 
 #### requestVideoFrameCallbackは利用可能か？
 
-メソッドが`HTMLVideoElement.prototype`プロパティに含まれていれ利用可能です。そうでなければこのコードではフレーム単位の処理ができないので、`Error`を上げてスクリプトを強制終了します（16～21行目）。
+関数が`HTMLVideoElement.prototype`プロパティに含まれていれ利用可能です。そうでなければこのコードではフレーム単位の処理ができないので、`Error`を上げてスクリプトを強制終了します（16～21行目）。
 
 ```javascript
  16    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
@@ -1337,21 +1337,21 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
  21    }
 ```
 
-このメソッドを持たないFirefoxで実行したときの画面を次に示します。20行目のエラーメッセージがコンソールに出力されているのがわかります。
+この関数を持たないFirefoxで実行したときの画面を次に示します。20行目のエラーメッセージがコンソールに出力されているのがわかります。
 
 <img src="Images/Ch01/html-frame-2.png">
 
 動作を停止したのはスクリプトだけです。HTMLそのものは生きているので、キャンバスは空のままでも、再生ボタン▶をクリックすればビデオはスタートします。
 
-#### requestVideoFrameCallbackメソッド
+#### requestVideoFrameCallback関数
 
-このメソッドから`HTMLVideoElement`にイベントコールバック関数を登録すると、フレームを表示するたびにそれが呼び出されます。ここでは、フレーム表示が発生したら`perFrame()`メソッド（27～34行目）を呼び出すよう登録しています（36行目）。
+この関数から`HTMLVideoElement`にイベントコールバック関数を登録すると、フレームを表示するたびにそれが呼び出されます。ここでは、フレーム表示が発生したら`perFrame()`関数（27～34行目）を呼び出すよう登録しています（36行目）。
 
 ```javascript
  36    videoElem.requestVideoFrameCallback(perFrame);
 ```
 
-このメソッドはコールバック関数は1回しか呼び出しません。36行目だけだと、最初のフレームのときはコールバックが実行されても、以降は何事も起きません。そこで、`perFrame()`の中で、次のフレームのためのコールバック関数を再度登録します。
+この関数はコールバック関数は1回しか呼び出しません。36行目だけだと、最初のフレームのときはコールバックが実行されても、以降は何事も起きません。そこで、`perFrame()`の中で、次のフレームのためのコールバック関数を再度登録します。
 
 ```javascript
  33      videoElem.requestVideoFrameCallback(perFrame);
@@ -1371,7 +1371,7 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
 
 #### コード②
 
-Firefoxでは`seekNextFrame()`メソッドを使います。コード`html-frame-firefox.html`は次の通りです。
+Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firefox.html`は次の通りです。
 
 ```html
 [File] html-frame-firefox.html
@@ -1423,12 +1423,12 @@ Firefoxでは`seekNextFrame()`メソッドを使います。コード`html-frame
  46  </html>
 ```
 
-17～22行目でメソッドが`HTMLVideoElement`に備わっているかを確認するところは、コード①と同じです。
+17～22行目で関数が`HTMLVideoElement`に備わっているかを確認するところは、コード①と同じです。
 
-#### seekToNextFrameメソッド
+#### seekToNextFrame関数
 <!-- Firefox のフレーム処理機構の seekToNextFrame は使い方はよくわからないが、これがよい。 https://itecnote.com/tecnote/javascript-extract-video-frames-reliably/ -->
 
-このメソッドは`Promise`を返す非同期処理です。呼び出されるとフレームを1つ進め、その操作が完了れすれば、フレームを処理できます。処理が終われば、呼び出して次のフレームへと進みます。この操作をしているのが33～38行目です。
+この関数は`Promise`を返す非同期処理です。呼び出されるとフレームを1つ進め、その操作が完了れすれば、フレームを処理できます。処理が終われば、呼び出して次のフレームへと進みます。この操作をしているのが33～38行目です。
 
 ```javascript
  33        videoElem.seekToNextFrame()
@@ -1439,9 +1439,9 @@ Firefoxでは`seekNextFrame()`メソッドを使います。コード`html-frame
  38        });
 ```
 
-`Promise`オブジェクトが`resolved`状態になったときに渡される引数（34行目）は、調べた範囲ではないようです。このメソッドはフレーム送りをしたら`seeked`イベントを発生するので、そちらでのイベントハンドラーで処理をする手もあります。
+`Promise`オブジェクトが`resolved`状態になったときに渡される引数（34行目）は、調べた範囲ではないようです。この関数はフレーム送りをしたら`seeked`イベントを発生するので、そちらでのイベントハンドラーで処理をする手もあります。
 
-このメソッドを繰り返し呼び出すせば、スクリプト側で逐次フレーム送りができます。しかし、そのタイミングももとの再生速度とは無関係です。つまり、たいていは高速再生になってしまいます。そこで、33～38行目が`setInterval()`の中にくくられているのは、時間調整をするためです。
+この関数を繰り返し呼び出すせば、スクリプト側で逐次フレーム送りができます。しかし、そのタイミングももとの再生速度とは無関係です。つまり、たいていは高速再生になってしまいます。そこで、33～38行目が`setInterval()`の中にくくられているのは、時間調整をするためです。
 
 ```javascript
  32      setInterval(function() {
@@ -1451,7 +1451,7 @@ Firefoxでは`seekNextFrame()`メソッドを使います。コード`html-frame
 
 33.33ミリ秒なのは、一般的なビデオのフレームレートが30 fps（frame per second）だからです。ビデオ本来のフレームレートがこれよりも早ければ、コードが提示する映像はスローモーションになります。残念ながら、HTML5にはメディアのメタデータに含まれているフレームレート情報を取得する機能は（現時点では）ありません。OpenCVにはありますが、その機能はOpenCV.jsからは利用できません。
 
-コード②の方法には、もとのビデオの再生タイミングを無効にするという副作用があります。たとえば`<video controls>`の操作パネルで一時停止ボタンを押しても、メソッドが勝手に次のフレームに動かしてしまいます。
+コード②の方法には、もとのビデオの再生タイミングを無効にするという副作用があります。たとえば`<video controls>`の操作パネルで一時停止ボタンを押しても、関数が勝手に次のフレームに動かしてしまいます。
 
 #### コード③
 

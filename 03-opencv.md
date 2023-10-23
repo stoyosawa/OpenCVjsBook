@@ -4,7 +4,7 @@
 
 
 
-### 3.1 OpenCV.jsの準備
+### 3.1 OpenCV.jsを準備
 
 #### opencv.jsファイル
 
@@ -68,7 +68,7 @@ URLの間にあるディレクトリ名はバージョンで、上記では4.8.0
 
 `opencv.js`を適切な場所に置いたら、動作試験をします。
 
-ここでは、OpenCVメソッドの`cv.getBuildInformation()`からOpenCVバージョンなどのビルド情報を表示します。コード`opencv-test.html`を次に示します。
+ここでは、OpenCV関数の`cv.getBuildInformation()`からOpenCVバージョンなどのビルド情報を表示します。コード`opencv-test.html`を次に示します。
 
 ```html
 [File] opencv-test.html
@@ -118,7 +118,7 @@ OpenCV.jsには、トップレベルに`Module`というオブジェクトが用
 
 #### 読み込みタイミング
 
-画像など非同期的に読み込まれるリソースを読み込み完了後に処理するには、`onclick="..."`のようにイベントリスナーをHTML要素に書き込む、あるいは`addEventListener()`から発生イベントに処理メソッドを対応付けるのが通例です。
+画像など非同期的に読み込まれるリソースを読み込み完了後に処理するには、`onclick="..."`のようにイベントリスナーをHTML要素に書き込む、あるいは`addEventListener()`から発生イベントに処理関数を対応付けるのが通例です。
 
 しかし、この手はOpenCV.jsでは使えません。`load`イベントは`opencv.js`がダウンロードされたことしか意味しておらず、機能が利用可能な状態になったことまでは保証していないからです。
 
@@ -195,7 +195,7 @@ OpenCV ready? cv.CV_8UC1 = undefined
  34  </html>
 ```
 
-`showTime()`メソッド（16～19行目）は現在の時刻とスクリプト開始からの時間（Δ）を示すものです。ローカルサーバ（`http://localhost/`）での実行結果を示します。
+`showTime()`関数（16～19行目）は現在の時刻とスクリプト開始からの時間（Δ）を示すものです。ローカルサーバ（`http://localhost/`）での実行結果を示します。
 
 ```
 onload: 1696552801989 Δ401
@@ -246,28 +246,28 @@ OpenCVプログラミングでは、あらかじめ定義されたいろいろ�
  26    let selectElem = document.getElementById('selectTag');
  27    let preElem = document.getElementById('preTag');
  28
- 29    var Module = {
- 30      onRuntimeInitialized: opencvReady
- 31    }
+ 29    function showConst(evt) {
+ 30      let re = new RegExp(evt.currentTarget.value);
+ 31      let keys = Object.keys(cv);
  32
- 33    function showConst(evt) {
- 34      let re = new RegExp(evt.currentTarget.value);
- 35      let keys = Object.keys(cv);
+ 33      let selected = keys.filter(function(elem) {
+ 34        return re.test(elem);
+ 35      }).sort();
  36
- 37      let selected = keys.filter(function(elem) {
- 38        return re.test(elem);
- 39      }).sort();
+ 37      preElem.innerHTML = selected.map(function(elem) {
+ 38        return `${elem} ${cv[elem]}`;
+ 39      }).join('\n');
  40
- 41      preElem.innerHTML = selected.map(function(elem) {
- 42        return `${elem} ${cv[elem]}`;
- 43      }).join('\n');
- 44
- 45      console.log(`RegExp ${re} extracted ${selected.length} keys.`);
- 46    }
- 47
- 48    function opencvReady() {
- 49      console.log('OpenCV ready.');
- 50      selectElem.addEventListener('change', showConst);
+ 41      console.log(`RegExp ${re} extracted ${selected.length} keys.`);
+ 42    }
+ 43
+ 44    function opencvReady() {
+ 45      console.log('OpenCV ready.');
+ 46      selectElem.addEventListener('change', showConst);
+ 47    }
+ 48
+ 49    var Module = {
+ 50      onRuntimeInitialized: opencvReady
  51    }
  52  </script>
  53
@@ -275,9 +275,9 @@ OpenCVプログラミングでは、あらかじめ定義されたいろいろ�
  55  </html>
 ```
 
-スクリプティング上、気を付けなければならないのはタイミングです。OpenCVが利用可能になると（28～30行目）、`opencvReady`メソッド（47～50行目）が起動します。このタイミングで、`<select>`（13～18行目）で値が選択された（`change`イベント）ときに起動するメソッド`showConst()`（32～45行目）を登録します。つまり、OpenCVが用意できていない間は（開始から1秒ほど）、プルダウンメニューは利用できません。これで、`cv`を参照するメソッドを準備前に呼び出すことで発生する参照エラーを抑制できます。
+スクリプティング上、気を付けなければならないのはタイミングです。OpenCVが利用可能になると（49～51行目）、`opencvReady`関数（44～47行目）が起動します。このタイミングで、`<select>`（13～19行目）で値が選択された（`change`イベント）ときに起動する関数`showConst()`（29～42行目）を登録します。つまり、OpenCVが用意できていない間は（開始から1秒ほど）、プルダウンメニューは利用できません。これで、`cv`を参照する関数を準備前に呼び出すことで発生する参照エラーを抑制できます。
 
-`showConst()`メソッドは、`cv`オブジェクトのキーを`Object.keys()`から取ってきて（34行目）、`<options>`の`value`に仕込んだ定数名のパターンを記述する正規表現でフィルタリング（36行目）している単純なものです。他に知りたい定数があれば、適宜`<option>`にその正規表現を加えてください。
+`showConst()`関数は、`cv`オブジェクトのキーを`Object.keys()`から取ってきて（31行目）、`<options>`の`value`に仕込んだ定数名のパターンを記述する正規表現でフィルタリング（33行目）している単純なものです。他に知りたい定数があれば、適宜`<option>`にその正規表現を加えてください。
 
 定数名とその値くらいオンラインドキュメントで検索すればよいように思えますが、同じカテゴリーのものをまとめて調べるのが意外と難しいこともあります。
 
@@ -292,13 +292,13 @@ OpenCV ready.
 RegExp /^CV_\d{1,2}[SUF]/ extracted 35 keys.
 ```
 
-#### OpenCVのコンストラクタとメソッド
+#### OpenCVのコンストラクタと関数
 
-続いては、先と同じ要領でOpenCVのコンストラクタおよびメソッド（つまり`Function`型）をリストします。
+続いては、先と同じ要領でOpenCVのコンストラクタおよび関数（つまり`Function`型）をリストします。
 
-これこそオンラインドキュメントで調べるべきものですが、C/C++版にあってOpenCV.jsにはない関数がかなりあります。そのため、ドキュメントに掲載されたC/C++コードを不用意にそのまま移植すると、そんなメソッドはないというエラーが頻出することになります。
+これこそオンラインドキュメントで調べるべきものですが、C/C++版にあってOpenCV.jsにはない関数がかなりあります。そのため、ドキュメントに掲載されたC/C++コードを不用意にそのまま移植すると、そんな関数はないというエラーが頻出することになります。
 
-OpenCV.jsにないものの代表は、[第1章](./01-html5.md "INTERNAL")で説明した入出力関係、また[第2章](./02-ui.md "INTERNAL")で述べたユーザインタフェース関連です。また、contribと呼ばれる最新アルゴリズムのライブラリも、まだ正式版には編入されていないということで、含まれていません。他にも、できそうでもできないメソッドにはしばしばお目にかかります。
+OpenCV.jsにないものの代表は、[第1章](./01-html5.md "INTERNAL")で説明した入出力関係、また[第2章](./02-ui.md "INTERNAL")で述べたユーザインタフェース関連です。また、contribと呼ばれる最新アルゴリズムのライブラリも、まだ正式版には編入されていないということで、含まれていません。他にも、できそうでもできない関数にはしばしばお目にかかります。
 
 コードは簡単で、先の定数名検索のフィルタリングを`typeof object === 'function`に変更するくらいです。コード`opencv-functions.html`を次に示します。
 
@@ -313,7 +313,7 @@ OpenCV.jsにないものの代表は、[第1章](./01-html5.md "INTERNAL")で説
   7  </head>
   8  <body>
   9
- 10  <h1>OpenCV.jsで利用可能なコンストラクタ、メソッド</h1>
+ 10  <h1>OpenCV.jsで利用可能なコンストラクタ、関数</h1>
  11
  12  <div>
  13    <pre id="preTag"></pre>
@@ -407,7 +407,7 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
  32  </html>
 ```
 
-25行目の`cv.imread()`は`HTMLImageElement`から画像データを読み込む、26行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCV.jsのメソッドです。意図していることは、[1.2節](./01-html5.md#12-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバスに画像が貼り付けられません。
+25行目の`cv.imread()`は`HTMLImageElement`から画像データを読み込む、26行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCV.jsの関数です。意図していることは、[1.2節](./01-html5.md#12-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバスに画像が貼り付けられません。
 
 <img src="Images/Ch03/opencv-cors.png">
 
@@ -528,7 +528,7 @@ OpenCVの関数や定数は次に示すOpenCV公式リファレンスから参�
 <!-- 枠なし版あり -->
 <img src="Images/Ch03/opencv-docs-modules.png">
 
-coreやimgprocなどモジュール別に分けられているので、目的の関数や定数をピンポイントに見つけるのはむずかしくなっています。その代わり、右上のサーチフィールドの予測入力が賢いので、入力するにつれ候補を示してくれます。次の画面では`cv.cvtColor()`メソッドの書式を調べるために、「cvtc」まで打ったところを示しています（先頭の`cv`は不要です）。
+coreやimgprocなどモジュール別に分けられているので、目的の関数や定数をピンポイントに見つけるのはむずかしくなっています。その代わり、右上のサーチフィールドの予測入力が賢いので、入力するにつれ候補を示してくれます。次の画面では`cv.cvtColor()`関数の書式を調べるために、「cvtc」まで打ったところを示しています（先頭の`cv`は不要です）。
 
 <img src="Images/Ch03/opencv-docs-search.png">
 
@@ -536,13 +536,13 @@ coreやimgprocなどモジュール別に分けられているので、目的の
 
 #### 関数定義
 
-公式リファレンスの関数定義には、次に示すようにC/C++とPythonのものしか記載されていません。OpenCV.jsは基本的にC/C++のシグニチャを踏襲しているので、そちらを見ます。次に、`cv.Canny()`メソッドの関数定義を示します。
+公式リファレンスの関数定義には、次に示すようにC/C++とPythonのものしか記載されていません。OpenCV.jsは基本的にC/C++のシグニチャを踏襲しているので、そちらを見ます。次に、`cv.Canny()`関数の関数定義を示します。
 
 <img src="Images/Ch03/opencv-docs-function.png">
 
 表題に「Canny() [1/2]」とあるのは、同名であっても引数の恰好の異なるパターン（シグニチャ）があることを示しています。C++ではこれをオーバーロードと呼びますが、JavaScriptでは使われない技法です（TypeScriptなら見かけ上できますが）。残念ながら、OpenCV.jsでどちらの形式を使っているかは見ただけでは判別できません。
 
-関数名が`cv::Canny`のように`cv`とメソッド名の間が`::`となっているのはC++の記法なので、これは`.`と読み替えます。この場合は`cv.Canny()`です。
+関数名が`cv::Canny`のように`cv`と関数名の間が`::`となっているのはC++の記法なので、これは`.`と読み替えます。この場合は`cv.Canny()`です。
 
 データ型は、適宜JavaScriptのものに読み替えます。たとえば、`dobule`や`int`は`number`です。よく使われるものの対応関係を、細かいニュアンス（`&`や`*`や`<type>`のバリエーションとか）は無視して次に示します。
 
