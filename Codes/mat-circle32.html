@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>浮動小数点数で円を描く</h1>
+
+<div>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let canvasElem = document.getElementById('canvasTag');
+
+  function drawCircle(pix, mat, cx, cy, r) {
+    let f = new Float32Array([pix]);
+    let fBuffer = new Uint8Array(f.buffer);
+    console.log(`${f} = ${fBuffer}`);
+
+    for (let deg=0; deg<360; deg+=0.5) {
+      let radian = deg * Math.PI / 180;
+      let x = Math.floor(cx + r * Math.cos(radian));
+      let y = Math.floor(cy + r * Math.sin(radian));
+      let pos = (x + y * mat.cols) * 4;
+      for(let i=0; i<4; i++)
+        mat.data[pos+i] = fBuffer[i];
+    }
+  }
+
+  function imgProc() {
+    let width = 360;
+    let height = 240;
+    let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(128));
+    drawCircle(200, mat, width/2, height/2, height*0.4);
+
+    let mat8 = new cv.Mat();
+    mat.convertTo(mat8, cv.CV_8UC1);
+    cv.imshow('canvasTag', mat8);
+
+    mat.delete();
+    mat8.delete();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

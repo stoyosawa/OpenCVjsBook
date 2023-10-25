@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script> 
+</head>
+<body>
+
+<h1>お絵描きツールを作る</h1>
+
+<p><kbd>Ctlr</kbd>を押下しながキャンバス上に点が描かれます。<kbd>Alt</kbd>を押下して少し動かすとcv.Matが解放され、お絵描きが終了します。ペン色はプルダウンメニューの7色から選べます。</p>
+
+<div>
+  <canvas id="canvasTag" width="360" height="240" class="placeholder"></canvas>
+</div>
+<div>
+  <select id="selectTag"></select>
+</div>
+
+<script> 
+  let canvasElem = document.getElementById('canvasTag');
+  let selectElem = document.getElementById('selectTag');
+
+  let ctx = canvasElem.getContext('2d');
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+
+  let mat = undefined;
+  let colors = {
+    white: [255, 255, 255],
+    blue: [0, 0, 255],
+    red: [255, 0, 0],
+    purple: [255, 0, 255],
+    green: [0, 255, 0],
+    cyan: [0, 255, 255],
+    yellow: [255, 255, 0]
+  };
+  let selectedColor = 'white';
+
+  function colorOptions(parnent) {
+    Object.keys(colors).forEach(function(c) {
+      let elem = document.createElement('option');
+      elem.value = c;
+      elem.innerHTML = c;
+      selectElem.appendChild(elem);
+    });
+  }
+
+  function selectColor(evt) {
+    selectedColor = evt.target.value;
+    console.log(`Color: ${selectedColor}`);
+  }
+
+  function paint(evt) {
+    if (evt.altKey) {
+      mat.delete();
+      console.log('Mat released. Refresh to restart.');
+      canvasElem.removeEventListener('mousemove', paint);
+      return;
+    }
+    else if (! evt.ctrlKey)
+      return;
+
+    let [r, g, b] = colors[selectedColor];
+    let pos = (evt.offsetX + evt.offsetY * canvasElem.width) * mat.channels();
+    mat.data[pos] = r;
+    mat.data[pos+1] = g;
+    mat.data[pos+2] = b;
+    cv.imshow('canvasTag', mat);
+  }
+
+  function imgProc() {
+    selectElem.addEventListener('change', selectColor);
+    canvasElem.addEventListener('mousemove', paint);
+    colorOptions();
+    mat = new cv.Mat(canvasElem.height, canvasElem.width, cv.CV_8UC3);
+  }
+ 
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

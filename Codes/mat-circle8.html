@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>モノクロで円を描く</h1>
+
+<div>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let canvasElem = document.getElementById('canvasTag');
+
+  function drawCircle(mat, circle) {
+    for (let deg=0; deg<360; deg+=0.5) {
+      let radian = deg * Math.PI / 180;
+      let x = Math.floor(circle.center.x + circle.radius * Math.cos(radian));
+      let y = Math.floor(circle.center.y + circle.radius * Math.sin(radian));
+      let pos = x + y * mat.cols;
+      mat.data[pos] = 255;
+    }
+  }
+
+  function imgProc() {
+    let size = new cv.Size(360, 240);
+    let mat = new cv.Mat(size, cv.CV_8UC1);
+    console.log('Size: ', size);
+
+    let center = new cv.Point(
+      Math.floor(size.width / 2),
+      Math.floor(size.height / 2),
+    );
+    console.log('Center: ', center);
+
+    let radius = Math.floor(Math.min(center.x, center.y) * 0.8);
+    let circle = new cv.Circle(center, radius);
+    console.log('Circle: ', circle);
+
+    drawCircle(mat, circle);
+    // cv.circle(mat, center, circle.radius, new cv.Scalar(255), 1);
+    cv.imshow('canvasTag', mat);
+    mat.delete();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

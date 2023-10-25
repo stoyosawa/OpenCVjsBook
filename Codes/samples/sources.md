@@ -14,8 +14,11 @@
 <img src="avon-river.jpg" width="100" title="avon-river.jpg: Avon River, Christchurch"/> | 2.7 | 1280x960 |  csharker | `https://pixabay.com/photos/christchurch-new-zealand-bridge-fall-170557/`
 <img src="miyajima.jpg" width="100"/ title="miyajima.jpg: 宮島"/> | 3.3 |  1280x853 | IT-STUDIO | `https://pixabay.com/photos/shrine-torii-sunset-evening-sea-1030442/`
 <img src="pike-street.jpg" width="100" title="pike-street.jpg: Pike Street Market"/> | 4.1 | 1280x948 | 12019 | `https://pixabay.com/photos/seattle-washington-sunset-dusk-1619505/`
-<img src="pike-st-market.jpg" width="100" title="pike-st-market.jpg: Pike Street Market, Inside"/> | | 1280x853 | coryclayful | `https://pixabay.com/photos/apples-market-seattle-pike-place-3690021/`
+<img src="pike-st-market.jpg" width="100" title="pike-st-market.jpg: Pike Street Market, Inside"/> | 4.2 | 1280x853 | coryclayful | `https://pixabay.com/photos/apples-market-seattle-pike-place-3690021/`
+<img src="color-gradation.png" width="100" title="color-gradation.jpg: G to B gradation"/> | 4.3 | 256x256 | 自作 | --
+<img src="pike-st-fish.jpg" width="100" title="pike-st-fish.jpg: Pike Street Fish Shop"/> | 4.8 | 1280x853  | InfiniteThought | `https://pixabay.com/users/infinitethought-5496829/`
 
+<img src="seattle-downtown.jpg" width="100" title="seattle-downtown.jpg: Seattle Downtown"/> | 4.8 | 1135-1280 | 12019 | `https://pixabay.com/photos/seattle-washington-city-urban-2534690/`
 
 
 

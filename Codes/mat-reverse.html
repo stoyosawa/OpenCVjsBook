@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>画像をネガにする</h2>
+
+<div>
+  <img id="imageTag" width="320" src="samples/seattle-downtown.png"/>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+</div>
+
+<script> 
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem1 = document.getElementById('canvasTag1');
+  let canvasElem2 = document.getElementById('canvasTag2');
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+
+    let gReverse = new cv.Mat();
+    cv.cvtColor(src, gReverse, cv.COLOR_RGBA2GRAY);
+    cv.bitwise_not(gReverse, gReverse);
+    cv.imshow('canvasTag1', gReverse);
+
+    let cReverse = new cv.Mat();
+    cv.cvtColor(src, cReverse, cv.COLOR_RGBA2RGB);  // A があるとだめ
+    cv.bitwise_not(cReverse, cReverse);
+    cv.imshow('canvasTag2', cReverse);
+
+    [src, cReverse, gReverse].forEach(function(m) {
+      m.delete();
+    })
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/overlay.js"></script>
+  <script async src="libs/opencv.js"></script>
+  <script async src="https://chir.ag/projects/ntc/ntc.js"></script>
+</head>
+<body>
+
+<h1>ピクセルの色名を判定する</h1>
+
+<p>左マウスクリックでピクセルの色名が表示されます。<kbd>Alt</kbd>+左マウスでMatを解放します。</p>
+
+<div id="divTag">
+  <img id="imageTag" src="samples/color-gradation.png"/>
+  元 <canvas id="canvasTag1" width="100" height="100" class="placeholder"></canvas>
+  色名 <canvas id="canvasTag2" width="100" height="100" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem1 = document.getElementById('canvasTag1');
+  let ctx1 = canvasElem1.getContext('2d');
+  let canvasElem2 = document.getElementById('canvasTag2');
+  let ctx2 = canvasElem2.getContext('2d');
+
+  let mat = undefined;
+  let layer = undefined;
+
+  function getPixel(evt) {
+    if (! mat || ! layer)
+      return;
+
+    if (evt.altKey === true) {
+      mat.delete();
+      mat = undefined;
+      console.log('Mat released');
+      return;
+    }
+
+    let col = evt.offsetX;
+    let row = evt.offsetY;
+    let pixel = [... mat.ucharPtr(row, col)].slice(0, 3);
+    let hexValue = '#' + pixel.map(p => p.toString(16).padStart(2, 0)).join('');
+    let match = ntc.name(hexValue);
+    let matchName = match[1];
+    let matchHex = match[0];
+    console.log(`${pixel} ${matchName} ... (${hexValue} => ${matchHex})`);
+    layer.changeText(`(${col}, ${row}) ${matchName}`, fontSize=-1, x=col, y=row);
+
+    ctx1.fillStyle = `rgb(${pixel.join(',')})`;
+    ctx1.fillRect(0, 0, canvasElem1.width, canvasElem1.height);
+    ctx2.fillStyle = hexValue;
+    ctx2.fillRect(0, 0, canvasElem2.width, canvasElem2.height);
+  }
+
+  function resourceReady() {
+    layer = new Overlay('divTag', text='Select pixel', x=0, y=0, fontSize=12);
+    imgElem.addEventListener('mousedown', getPixel);
+  }
+
+  function opencvReady() {
+    mat = cv.imread(imgElem);
+  }
+
+  window.addEventListener('load', resourceReady);
+  var Module = {
+    onRuntimeInitialized: opencvReady
+  }
+</script>
+
+</body>
+</html>

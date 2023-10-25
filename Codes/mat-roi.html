@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>部分領域をコピーする</h2>
+
+<div>
+  <img id="imageTag" width="360" src="samples/pike-st-fish.jpg"/>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+</div>
+
+<script> 
+  let imgElem = document.getElementById('imageTag');
+  let canvasElem1 = document.getElementById('canvasTag1');
+  let canvasElem2 = document.getElementById('canvasTag2');
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+
+    let rect = new cv.Rect(90, 50, 80, 60);
+    let roi = src.roi(rect);
+    cv.imshow('canvasTag1', roi);
+
+    cv.blur(roi, roi, new cv.Size(11, 11));
+    cv.imshow('canvasTag2', src);
+
+    src.delete();
+    roi.delete();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>
