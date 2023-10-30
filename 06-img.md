@@ -564,11 +564,11 @@ OpenCVリファレンスはσの値に10未満の値を指定しても大して�
 
 参考までに、シグマを50、75（再掲）、150にしたときの結果を次に左から順に示します。
 
-<!-- いずれも 360x202 -->
-<img src="Images/Ch06/img-blur-5.png" width="300">
-<img src="Images/Ch06/img-blur-4.png" width="300"> <!-- 再掲 -->
-<img src="Images/Ch06/img-blur-6.png" width="300">
+<!-- いずれも 360x202。img-blur-4.png は再掲 -->
 
+σ=50 | σ=75 | σ=150 | 
+---|---|---
+<img src="Images/Ch06/img-blur-5.png" width="300"> | <img src="Images/Ch06/img-blur-4.png" width="300"> | <img src="Images/Ch06/img-blur-6.png" width="300">
 
 
 
