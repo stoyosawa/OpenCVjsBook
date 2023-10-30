@@ -1,6 +1,6 @@
 ### 付録A 参考文献
 
-本書で参照した関連するオンラインドキュメントをまとめて示します。ページタイトルのアルファベット順に並べてあります。
+本書で参照した関連するオンラインドキュメントをまとめて示します。
 
 🇯🇵は日本語、🇺🇸は英語のドキュメントです。オリジナルは英語でも、公式非公式を問わず和訳のあるものは、そちらのURLを記載しています。
 
@@ -17,6 +17,9 @@ Web技術を開発するWHATWG（Web Hypertext Application Technology Working Gr
 
 - [MDN Code values for keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values) 🇺🇸 `https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values`  
 `keydown`や`keyup`イベントで取得されるキーボードのキーコード（`code`プロパティ）の値のリストです。
+
+- [MDN <color\>](https://developer.mozilla.org/ja/docs/Web/CSS/color_value) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/CSS/color_value`  
+CSSがサポートしている色空間のリストです。
 
 - [MDN filter](https://developer.mozilla.org/ja/docs/Web/CSS/filter) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/CSS/filter`  
 CSSプロパティから基本的な画像処理を実行できる`filter`の説明です。関数は現在10個定義されています。  
@@ -49,7 +52,7 @@ OpenCV.jsの公式チュートリアル。ある程度はOpenCVおよびJavaScri
 - [Python Downloads](https://www.python.org/downloads/ "LINK") 🇺🇸 `https://www.python.org/downloads/`  
 Pythonインストーラのダウンロードページです。Windowsならexeファイルが取得できるので、ワンクリックでインストールできます。JavaScriptの書籍でPythonでは申し訳ないですが。
 
-- [RRFC 4648 The Base16, Base32, and Base64 Data Encodings, October 2006](https://www.rfc-editor.org/info/rfc4648 "LINK") 🇺🇸 `https://www.rfc-editor.org/info/rfc4648`  
+- [RFC 4648 ‟The Base16, Base32, and Base64 Data Encodings”, October 2006](https://www.rfc-editor.org/info/rfc4648 "LINK") 🇺🇸 `https://www.rfc-editor.org/info/rfc4648`  
 `HTMLCanvasElement.toDataURL()`から得られる画像データのフォーマット（エンコーディング方法）であるBase64の仕様。
 
 - [Tags for Identifying Languages](https://www.rfc-editor.org/rfc/rfc5646.html) 🇺🇸 `https://www.rfc-editor.org/rfc/rfc5646.html`  
@@ -66,6 +69,12 @@ W3Cのワーキンググループが開発中の、ビデオコーデックに�
 
 - [W3C WebVTT: The Web Video Text Tracks Format](https://www.w3.org/TR/webvtt1/ "LINK") 🇺🇸 `https://www.w3.org/TR/webvtt1/``  
 W3Cのワーキンググループが開発中のHTMLビデオ字幕の仕様です。ただし、まだ「勧告」には至っていない「Candidate Recommendation」（標準候補）段階です。
+
+- [Wikipedia HSV色空間](https://ja.wikipedia.org/wiki/HSV色空間) 🇯🇵 `https://ja.wikipedia.org/wiki/HSV色空間`  
+HSV（HueーSaturationーValue）色空間の説明。類似の色空間にHSLがあり、HTML4/CSSはこちらを使っています。OpenCVではHSVの
+
+- [Wikipedia IEEE 754](https://ja.wikipedia.org/wiki/IEEE_754 "LINK") 🇯🇵 `https://ja.wikipedia.org/wiki/IEEE_754`  
+浮動小数点数の内部表現方法。本書で使う`cv.CV_32F`は32ビット版で、JavaScriptの`number`は64ビット版です。
 
 - [Wikipedia 色差](https://ja.wikipedia.org/wiki/色差 "LINK") 🇯🇵 `https://ja.wikipedia.org/wiki/色差`  
 2つの色の距離（類似度）を測る方法。

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>色相図を描く</h1>
+
+<div>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+</div>
+
+<script>
+  let width = 360;
+  let height = 180;
+
+  function cssDraw() {
+    let canvasElem2 = document.getElementById('canvasTag2');
+    canvasElem2.width = width;
+    canvasElem2.height = height;
+    let ctx = canvasElem2.getContext('2d');
+    for(let deg=0; deg<height; deg++) {
+      ctx.strokeStyle = `hsl(${deg*2} 100% 50%)`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, deg);
+      ctx.lineTo(width-1, deg);
+      ctx.stroke();
+    }
+  }
+  cssDraw();
+
+  function imgProc() {
+    let arr = [];
+
+    for(let deg=0; deg<height; deg++) {
+      let color = [deg, 255, 255];
+      let line = new Array(width).fill(color);
+      arr.push(line);
+    }
+
+    let flat_arr = arr.flat(Infinity);
+    let mat = cv.matFromArray(height, width, cv.CV_8UC3, flat_arr);
+
+    cv.cvtColor(mat, mat, cv.COLOR_HSV2RGB);
+    cv.imshow('canvasTag1', mat);
+    mat.delete();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

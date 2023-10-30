@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/regionselect.js" type="text/javascript"></script>
   <script async src="libs/opencv.js" type="text/javascript"></script>
 </head>
 <body>
 
-<h1>部分領域をコピーする</h2>
+<h1>部分領域だけ処理する</h2>
 
 <div>
   <img id="imageTag" width="360" src="samples/pike-st-fish.jpg"/>
@@ -20,22 +21,48 @@
   let canvasElem1 = document.getElementById('canvasTag1');
   let canvasElem2 = document.getElementById('canvasTag2');
 
-  function imgProc() {
-    let src = cv.imread(imgElem);
+  let rs = undefined;
+  let src = undefined;
 
-    let rect = new cv.Rect(90, 50, 80, 60);
-    let roi = src.roi(rect);
+  setTimeout(function() {
+    if (src != undefined) {
+      src.delete();
+      src = undefined;
+      console.log('<img> cv.Mat deleted.');
+    }
+  }, 60000);
+
+  function resourceReady() {
+    rs = new RegionSelect('imageTag');
+    imgElem.addEventListener('regionselect', imgProc);
+  }
+
+  function opencvReady() {
+    src = cv.imread(imgElem);
+  }
+
+  function imgProc(evt) {
+    if (! src || ! rs)
+      return;
+
+    let mat = src.clone();
+
+    let [x, y, width, height] = evt.detail;
+    console.log(`ROI: ${evt.detail}`);
+    let rect = new cv.Rect(x, y, width, height);
+    let roi = mat.roi(rect);
     cv.imshow('canvasTag1', roi);
 
     cv.blur(roi, roi, new cv.Size(11, 11));
-    cv.imshow('canvasTag2', src);
+    cv.imshow('canvasTag2', mat);
 
-    src.delete();
+    mat.delete();
     roi.delete();
   }
 
+  window.addEventListener('load', resourceReady);
   var Module = {
-    onRuntimeInitialized: imgProc
+    onRuntimeInitialized: opencvReady
   }
 </script>
 

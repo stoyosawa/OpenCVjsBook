@@ -4,51 +4,60 @@
   <meta charset="UTF-8">
   <link rel=stylesheet type="text/css" href="style.css">
   <script async src="libs/opencv.js" type="text/javascript"></script>
+  <script async src="libs/regionselect.js" type="text/javascript"></script>
 </head>
 <body>
 
-<h1>リサイズ</h1>
+<h1>一部領域をモザイク化する</h1>
 
 <div>
-  <img id="imageTag" width="40" src="samples/pike-st-market.jpg"/>
-  <canvas id="canvasTag" class="placeholder"></canvas>
+  <img id="imageTag" width="360" src="samples/blackcat.jpg"/>
+  <canvas id="canvasTagRoi" width="100" class="placeholder"></canvas>
+  <canvas id="canvasTagMosaic" width="100" class="placeholder"></canvas>
+  <canvas id="canvasTag" width="360" class="placeholder"></canvas>
 </div>
 <div>
-  <select id="selectTag"></select>
-</div>  
+  縮小率（2～30） <input type="range" id="rangeTag" min="2" value="10" max="30"/>
+</div>
 
 <script>
   let imgElem = document.getElementById('imageTag');
-  let selectElem = document.getElementById('selectTag');
+  let rangeElem = document.getElementById('rangeTag');
+  let region = [167, 56, 117, 102];
 
-  function addOptions() {
-    let re = new RegExp('^INTER_');
-    let inter = Object.keys(cv).filter(prop => re.test(prop));
-    inter.forEach(function(e){
-      let elem = new Option(e, cv[e]);
-      selectElem.appendChild(elem);
-    });
-    selectElem.addEventListener('change', imgProc);
-  }
-
-  var Module = {
-    onRuntimeInitialized: function() {
-      addOptions();
-      imgProc();
-    }
-  }
   function imgProc(evt) {
-    let inter = cv.INTER_LINEAR;
-    if (evt) {
-      inter = parseInt(evt.target.value);
-      console.log(selectElem.options[selectElem.selectedIndex].text);
-    }
+    if (evt.type === 'regionselect')
+      region = evt.detail;
+
     let src = cv.imread(imgElem);
-    let dst = new cv.Mat();
-    cv.resize(src, dst, new cv.Size(), 10, 10, inter);
-    cv.imshow('canvasTag', dst);
-    src.delete();
-    dst.delete();
+    let rect = new cv.Rect(...region);
+    let roi = src.roi(rect);
+    cv.imshow('canvasTagRoi', roi);
+
+    let scale = Number(rangeElem.value);
+    let mat = new cv.Mat();
+    cv.resize(roi, mat, new cv.Size(), 1/scale, 1/scale);
+    cv.resize(mat, mat, new cv.Size(region[2], region[3]), 0, 0, cv.INTER_NEAREST);
+    mat.copyTo(roi);
+    cv.imshow('canvasTagMosaic', mat);
+    cv.imshow('canvasTag', src);
+
+    [src, roi].forEach(m => m.delete());
+  }
+
+  function resourceReady() {
+    let rs = new RegionSelect('imageTag');
+    imgElem.addEventListener('regionselect', imgProc);
+    rangeElem.addEventListener('input', imgProc);
+  }
+
+  function opencvReady() {
+    rangeElem.dispatchEvent(new InputEvent('input'));
+  }
+
+  window.addEventListener('load', resourceReady);
+  var Module = {
+    onRuntimeInitialized: opencvReady
   }
 </script>
 

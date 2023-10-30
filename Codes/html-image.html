@@ -17,13 +17,18 @@
   let imgElem = document.getElementById('imageTag');
   let canvasElem = document.getElementById('canvasTag');
   let ctx = canvasElem.getContext('2d');
+  imgElem.style.padding = '20px';
+  imgElem.style.border = '10px dashed purple';
 
   function showImage() {
-    ['width', 'height', 'naturalWidth', 'naturalHeight'].forEach(function(d) {
+    ['width', 'height',
+     'clientWidth', 'clientHeight',
+     'offsetWidth', 'offsetHeight',
+     'naturalWidth', , 'naturalHeight'].forEach(function(d) {
       console.log(`img.${d}: ${imgElem[d]}, canvas.${d}: ${canvasElem[d]}`);
     });
-    // canvasElem.width = imgElem.width;
-    // canvasElem.height = imgElem.height;
+    canvasElem.width = imgElem.width;
+    canvasElem.height = imgElem.height;
     ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height); 
   }
 

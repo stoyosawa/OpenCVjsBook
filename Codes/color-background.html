@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>背景を入れ替える（輝度調整付き）</h1>
+
+<div>
+  <img id="imageTag1" width="320" src="samples/palm-majorca.jpg"/>
+  <img id="imageTag2" width="320" src="samples/milky-way.jpg"/>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+<div>
+  <input type="range" id="rangeTag1" min="0" max="2" value="1" step="0.1"/>
+  <span id="spanTag1" class="currentValue">定数倍 1</span>
+  <input type="range" id="rangeTag2" min="-127" max="127" value="0"/>
+  <span id="spanTag2" class="currentValue">定数加算 0</span>
+</div>
+
+<script>
+  let imgElem1 = document.getElementById('imageTag1');
+  let imgElem2 = document.getElementById('imageTag2');
+  let rangeElem1 = document.getElementById('rangeTag1');
+  let rangeElem2 = document.getElementById('rangeTag2');
+  let spanElem1 = document.getElementById('spanTag1');
+  let spanElem2 = document.getElementById('spanTag2');
+
+  function imgProc(evt) {
+    let fg = cv.imread(imgElem1);
+    let bg = cv.imread(imgElem2);
+    let fgBinary = new cv.Mat();
+
+    cv.cvtColor(fg, fgBinary, cv.COLOR_RGBA2GRAY);
+    cv.threshold(fgBinary, fgBinary, 128,  255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+
+    let alpha = Number(rangeElem1.value);
+    let beta = Number(rangeElem2.value);
+    cv.convertScaleAbs(fg, fg, alpha, beta);
+    spanElem1.innerHTML = `定数倍 ${alpha}`;
+    spanElem2.innerHTML = `定数加算 ${beta}`;
+
+    fg.copyTo(bg, fgBinary);
+    cv.imshow('canvasTag', bg);
+
+    [fg, bg, fgBinary].forEach(function(mat) {
+      mat.delete();
+    });
+  }
+
+  var Module = {
+    onRuntimeInitialized: function() {
+      rangeElem1.addEventListener('input', imgProc);
+      rangeElem2.addEventListener('input', imgProc);
+      imgProc();
+    }
+  }
+</script>
+
+</body>
+</html>

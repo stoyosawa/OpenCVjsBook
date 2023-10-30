@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>RGB画像を色成分に分解する</h1>
+
+<div>
+  <img id="imageTag" width="240" src="/Codes/samples/easter-eggs.jpg"/>
+</div>
+<div>
+  <div class="inline">
+    <canvas id="canvasTag0" class="placeholder"></canvas>
+    <span id="spanTag0">R</span>
+  </div>
+  <div class="inline">
+    <canvas id="canvasTag1" class="placeholder"></canvas>
+    <span id="spanTag1">G</span>
+  </div>
+  <div class="inline">
+    <canvas id="canvasTag2" class="placeholder"></canvas>
+    <span id="spanTag2">B</span>
+  </div>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+
+    let dstMats = new cv.MatVector();
+    cv.split(src, dstMats);
+    for(let i=0; i<dstMats.size(); i++) {
+      cv.imshow(`canvasTag${i}`, dstMats.get(i));
+    }
+
+    console.log(cv.mean(src));
+
+    src.delete();
+    dstMats.delete();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }      
+</script>
+
+</body>
+</html>

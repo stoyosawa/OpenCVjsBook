@@ -1,25 +1,23 @@
 ## 第4章 画像の構造
 
-本章では、OpenCV.jsのピクセル配置とピクセルを記述する値のデータ型といった、画像の構造に関連したトピックと利用例を取り上げます。
+本章では、OpenCV.jsのピクセルの構成とそれらのデータ型といった、画像の構造に関連したトピックと利用例を取り上げます。
 
-OpenCV.jsのピクセルを収容するデータオブジェクトは`cv.Mat`です。描画コンテクストの`ImageData`オブジェクトと同じようなもので、サイズやデータ配列がプロパティとして収容されています。おおきな違いは行列（matrix）として表現されているため、横幅×高さではなく、行（高さ）×列（横幅）と順序が入れ変わって操作されるところです。また、ピクセル値を0～255の8ビット符号なし整数値以外でも表現できます。
+OpenCV.jsでピクセルを収容するデータオブジェクトは`cv.Mat`です。描画コンテクストの`ImageData`オブジェクトと同じようなもので、サイズやデータ配列がプロパティとして収容されています。おおきな違いは行列（matrix）として表現されているため、横幅×高さではなく、行（高さ）×列（横幅）と、順序が入れ変わっているところです。ピクセル値を0～255の8ビット符号なし整数値以外でも表現できるので、精度を必要とする画像処理にも対処できます。HSVやYCrCbなどRGBA以外の色空間も利用できます（これは次章で取り上げます）。
 
-<!-- cv の図形描画関数は本章では使わない。必要があれば、のちの章でそれぞれ個別に説明する。 -->
+<!-- cv の図形描画関数は本章では使わない。必要があれば、のちの章でそれぞれ個別に説明する。ここでは、cv.circle() を閑話に使った -->
 <!-- トピックは OpenCV.js Tutorials の Core Operations にある3節のものを、できるだけカバーした。説明していないのは、`mat.clone()`, `cv.MatVector`, `cv.UcharAt()`, `cv.Mat.zeros()`, `cv.Mat.ones()`, `cv.Mat.eyes()`, `mat.add()`, `mat.subtract()`, `cv.bitwise_and`。最初の2つは、それぞれの章で取り上げる。残りは、取り上げない。-->
 
 ### 4.1 画像の構造を調べる
 
 #### 目的
 
-`<img>`に取り込んだ画像をOpenCV.jsの画像収容オブジェクトの`cv.Mat`に読み込み、そのまま`<canvas>`に貼り付けます。つまり、[1.1節](./01-html5#11-画像処理の流れ "INTERNAL")で示した画像処理の手順を実装するわけです。図を次に再掲します。
+本節では、`<img>`に取り込んだ画像をOpenCV.jsの画像収容オブジェクトの`cv.Mat`に読み込み、そのまま`<canvas>`に貼り付けます。
+
+技術的には、`HTMLImageElement`から`cv.Mat`へコピーする`cv.imread()`関数と`cv.Mat`から`<canvas>`へコピーする`cv.inshow()`関数を示します。また、`cv.Mat`の画像構造を示すプロパティ、関数、そして`cv.Mat`で用いられる用語を説明します。単に画像メタデータをコンソールに表示するだけですが、この処理が次に再掲する[1.1節](./01-html5.md#11-画像処理の流れ "INTERNAL")の画像処理手順の②に相当します。
 
 <img src="Images/Ch01/html-image-processing.png" height="150">
 
-中央②の`<script>`が`cv.Mat`への読み込みと、そこからの書き出しになります。
-
-加えて、`cv.Mat`に収容されている画像の構造にかかわる情報（メタデータ）を出力することで 、画像がどのように収容されているかを確認します。
-
-実行例を先に次の画面に示します。
+実行例を次の画面に示します。
 
 <img src="Images/Ch04/mat-metadata-1.png">
 
@@ -108,7 +106,7 @@ OpenCV.jsで画像処理を行うには、`<img>`で読み込んだ画像を`cv.
 
 <!-- FunctionDefinition cv.imread() `HTMLImageElement`上の画像を`cv.Mat`に取り込む。 -->
 ```Javascript
-cv.Mat = cv.imread(          // cv.Matを出力
+cv.Mat = cv.imread(          // cv.Matを返す
     HTMLImageElement img     // 入力元のオブジェクト
 );
 ```
@@ -127,7 +125,7 @@ cv.Mat = cv.imread(          // cv.Matを出力
 
 <!-- FunctionDefinition cv.imshow() 第2引数の`cv.Mat`を第1引数の`<canvas>`に貼り付ける。 -->
 ```Javascript
-cv.imshow(                   // 出力なし
+cv.imshow(                   // 戻り値なし
     string id,               // <canvas>のid
     cv.Mat mat               // 画像を収容したcv.Matオブジェクト
 );
@@ -140,6 +138,7 @@ cv.imshow(                   // 出力なし
 `cv.Mat`には画像の情報を収容したプロパティと関数がいくつかあり、29～37行目ではその中でも代表的なものをコンソールに出力しています。次に実行例で示したものを表にまとめて示します。関数から取得するものは、名称末尾に`()`が付いています。どれも、引数はありません。
 
 <!-- mat.dims は実装されていない模様 -->
+
 プロパティ／関数 | 戻り値の型 | 実行画面での値 | 内容
 ---|---|---
 `rows` | `number` | 267 | 行数（水北方向のピクセル数）
@@ -225,7 +224,7 @@ cv.imshow(                   // 出力なし
 次の表に、よく見るデータ型定数名、その値、データを収容する配列のデータ型を示します。
 
 定数名 | 値 | 配列データ型 | 意味 
----|---|---
+---|---|---|---
 `cv.CV_8U` | 0 | `Uint8Array` | 8ビット符号なし整数
 `cv.CV_32F` | 5 | `Flaot32Array` | 32ビット浮動小数点数
 
@@ -272,7 +271,9 @@ cv.imshow(                   // 出力なし
 
 #### 目的
 
-今度は、`<canvas>`を`cv.Mat`にコピーします。描画コンテクスを介して文字列を書き込んだり、線や円などの幾何学模様を描いたり、簡単な画像処理を施したりした結果を対象に画像処理を行いたいときの手順です。
+本節では、`<canvas>`を`cv.Mat`にコピーします。つまり、前節の逆です。この方法は、描画コンテクストの側で画像に操作を施したのちに、その画像データを`cv.Mat`に渡したいときに必要になります（たとえば日本語をキャンバス上で描いてから`cv.Mat`に渡すなど）。ここでは、描画コンテクスを介して文字列を書き込みます。
+
+技術的には、キャンバスからデータを取得する描画コンテクストの関数`getImageData()`と、そこから`cv.Mat`を生成する`cv.matFromImageData()`を説明します。
 
 実行画面を次に示します。
 
@@ -382,7 +383,7 @@ OpenCV.jsが準備できたら（48～50行目）、キャンバスから画像�
 
 <!-- FunctionDefinition cv.matFromImageData() `ImageData`オブジェクトを`cv.Mat`に取り込む。 -->
 ```Javascript
-cv.Mat = cv.matFromImageData(  // cv.Matを出力
+cv.Mat = cv.matFromImageData(  // cv.Matを返す
     ImageData imgData          // 入力元のオブジェクト
 );
 ```
@@ -402,7 +403,9 @@ cv.Mat = cv.matFromImageData(  // cv.Matを出力
 
 #### 目的
 
-画像上の点をクリックすることで、そのピクセル値と最も近い色名を示します。
+本節では、画像上の点をクリックすることで、そのピクセル値と最も近い色名を画像上に示します。
+
+技術的には、`cv.Mat`のプロパティで、画像のバイナリデータを収容している`data`プロパティからピクセル値を読み取る方法を示します。具体的には`cv.Mat.ucharPtr()`関数です。この関数を操るには、`cv.Mat`がどのようにしてバイナリデータを管理しているかを知らなければならないので、それもここで説明します。R、G、Bの3つの数値からなるピクセル色には名前はありません。そこで、色名を解決するために外部ライブラリの`ntc.js`を利用します。画像上に色名を表示するのには、[2.4節](./02-ui.md#24-日本語文字を画像に重畳する "INTERNAL")で作成した`Overlay.js`ライブラリを使います。
 
 実行画面を次に示します。
 
@@ -618,7 +621,7 @@ OpenCV.jsの準備完了の検出にはいつもの`Module.onRuntimeInitialized`
 
 <!-- FunctionDefinition cv.Mat.ucharPtr() `cv.Mat.data`の指定の位置からのピクセル値を`Uint8Array`で返す。 -->
 ```Javascript
-Uint8Array = cv.Mat.ucharPtr(   // cv.Matを出力
+Uint8Array = cv.Mat.ucharPtr(   // cv.Matを返す
     number row,                 // ピクセルの行位置（y）
     number col                  // ピクセルの列位置（x）
 );
@@ -689,18 +692,14 @@ HTML5画像がRGBAなので、`cv.Mat`のデータ型は`cv.CV_8UC4`です。し
 
 #### 目的
 
-本節では反対に、`cv.Mat`にピクセル値を書き込むことで画像を作成します。`cv.Mat.data`からピクセル値を読み取んだ前節の反対です。描くのは操作がシンプルなモノクロの円で、データ型もこれまたシンプルな1チャネル8ビット符号なし整数です。
+本節では、背景黒のモノクロ画像に白い円を描きます。コンソールにはキャンバスのサイズ(width, height)、円の中心位置(x, y)、円の中心と半径(point, radius)を示します。
+
+<!-- `cv.RotatedRect`は無視。C/C++にもあるけど、使ったことないなぁ。-->
+技術的には、1チャネル8ビット符号なし整数（`cv.8UC1`）の`cv.Mat.data`に値を直接書き込めるよう、座標位置(x, y)からバイトデータ配列の要素位置を計算する方法を示します。これにあわせて、OpenCVでよく用いられるデータオブジェクトを説明します。これらは、矩形のサイズを示す`cv.Size`、点の位置を収容した`cv.Point`、円の半径と中心座標を記述する`cv.Circle`、ピクセル値の`cv.Scalar`です。このタイプのオブジェクトには他に`cv.Rect`がありますが、これは[4.7節](#47-部分領域だけ処理する "INTERNAL")で説明します。
 
 実行画面を次に示します。
 
 <img src="Images/Ch04/mat-circle8-1.png">
-
-コンソールにはキャンバスのサイズ(width, height)、円の中心位置(x, y)、円の中心と半径(point, radius)を示します。
-
-<!-- `cv.RotatedRect`は無視。C/C++にもあるけど、使ったことないなぁ。-->
-OpenCVにはこうした基本的な形状を収容するオブジェクトが定義されています。上記は順に`cv.Size`、`cv.Point`、`cv.Circle`で、OpenCVの関数でしばしば用いられます。他にも色の値を収容する`cv.Scalar`があり、ここでは直接は使用しませんが取り上げます。他に`cv.Rect`がありますが、これは[4.7節](#47-部分領域だけ処理する "INTERNAL")で説明します。
-
-コードでは`cv.CV_8UC1`の`cv.Mat`を生成し、その`data`プロパティを直接操作することで円を描きます。
 
 #### コード
 
@@ -772,16 +771,16 @@ OpenCVにはこうした基本的な形状を収容するオブジェクトが�
 
 <!-- FunctionDefinition cv.Mat() `cv.Mat`を生成するコンストラクタ。 -->
 ```Javascript
-cv.Mat = cv.Mat(             // cv.Matを出力
+cv.Mat = cv.Mat(             // cv.Matを返す
     cv.Size size,            // サイズ
     number rtype             // データ型
 );
-cv.Mat = cv.Mat(             // cv.Matを出力
+cv.Mat = cv.Mat(             // cv.Matを返す
     number rows,             // 行数（高さ）
     number cols,             // 列数（横幅）
     number rtype             // データ型
 );
-cv.Mat = cv.Mat(             // cv.Matを出力
+cv.Mat = cv.Mat(             // cv.Matを返す
     number rows,             // 行数（高さ）
     number cols,             // 列数（横幅）
     number rtype,            // データ型
@@ -807,7 +806,7 @@ cv.Mat = cv.Mat(             // cv.Matを出力
 
 <!-- FunctionDefinition cv.Size() 横と縦の大きさを収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Size = cv.Size(           // cv.Sizeを出力
+cv.Size = cv.Size(           // cv.Sizeを返す
     number width,            // 横幅
     number height            // 高さ
 );
@@ -848,7 +847,7 @@ JavaScript上は`number`なので浮動小数点数であっても問題はあ�
 
 <!-- FunctionDefinition cv.Point() 座標位置(x, y)を収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Point = cv.Point(         // cv.Pointを出力
+cv.Point = cv.Point(         // cv.Pointを返す
     number x,                // x位置（列位置）
     number y                 // y位置（行位置）
 );
@@ -871,7 +870,7 @@ cv.Point = cv.Point(         // cv.Pointを出力
 
 <!-- FunctionDefinition cv.Circle() 中心座標と半径を収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Circle = cv.Circle(       // cv.Cicleを出力
+cv.Circle = cv.Circle(       // cv.Cicleを返す
     cv.Point center          // 中心座標
     number radius            // 半径
 );
@@ -935,7 +934,7 @@ OpenCVには円を描く`cv.circle()`という関数があり、そちらはcが
 
 <!-- FunctionDefinition cv.Circle() 中心座標と半径を収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Scalar = cv.Scalar(       // cv.Scalarを出力
+cv.Scalar = cv.Scalar(       // cv.Scalarを返す
     number, ...              // 1～4個の数値
 );
 ```
@@ -957,13 +956,15 @@ cv.Scalar = cv.Scalar(       // cv.Scalarを出力
 
 #### 目的
 
-前節と同じく、`cv.Mat`に直接データを書き込むことで円を描きます。今度は、1チャネル32ビット浮動小数点数（`cv.CV_32FC1`）を用います。たったそれだけの違いですが、いろいろと面倒ごとがあります。
+本節では、前節と同じく円を描きます。やはりモノクロですが、背景は灰色、線色はやや暗くした白です。
 
-実行画面を次に示します。今度は灰色（128）の背景にやや薄い白（200）で描いています。
+技術的には、データ型に1チャネル32ビット浮動小数点数（`cv.CV_32FC1`）を用いるところがポイントです。計算精度が必要な画像処理には浮動小数点数が必要なので、扱い方はしっておかなければなりません。32ビット浮動小数点数は1ピクセルにつき4バイトを占有するので、`cv.Mat.data`の配列要素位置の計算が変わります。また、データの中身はストレートな数値ではなく、浮動小数点数の内部表現（IEE 754単精度浮動小数点数）なため、0.8を`3F 4C CC CD`のように、もとの数値から見当のつかないバイト列にする方法も示します。
+
+実行画面を次に示します。
 
 <img src="Images/Ch04/mat-circle32-1.png">
 
-コンソールに示したのは円の線色の200を32ビット（4バイト）の浮動小数点数で表現したときのバイト列です。詳細はあとから説明します。
+コンソールに示したのは円の線色0.8を32ビット（4バイト）の浮動小数点数で表現したときのバイト列です。詳細はあとから説明します。
 
 #### コード
 
@@ -1007,72 +1008,91 @@ cv.Scalar = cv.Scalar(       // cv.Scalarを出力
  34    function imgProc() {
  35      let width = 360;
  36      let height = 240;
- 37      let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(128));
- 38      drawCircle(200, mat, width/2, height/2, height*0.4);
- 39
- 40      let mat8 = new cv.Mat();
- 41      mat.convertTo(mat8, cv.CV_8UC1);
- 42      cv.imshow('canvasTag', mat8);
+ 37      let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(0.5));
+ 38      // mat.setTo(new cv.Scalar(0.7));
+ 39      drawCircle(0.8, mat, width/2, height/2, height*0.4);
+ 40      cv.imshow('canvasTag', mat);
+ 41      mat.delete();
+ 42    }
  43
- 44      mat.delete();
- 45      mat8.delete();
+ 44    var Module = {
+ 45      onRuntimeInitialized: imgProc
  46    }
- 47
- 48    var Module = {
- 49      onRuntimeInitialized: imgProc
- 50    }
- 51  </script>
- 52
- 53  </body>
- 54  </html>
+ 47  </script>
+ 48
+ 49  </body>
+ 50  </html>
 ```
 
-基本構造は、`cv.Point`などのオブジェクトを使っていないだけで前節と変わりません。1チャネル8ビット符号なし整数（`cv.CV_8UC1`、`Uint8Array`）の`cv.Mat`を1チャネル32ビット浮動小数点数（`cv.CV_32FC1`、`Float32Array`）と入れ替えただけです。
+基本構造は`cv.Point`などのオブジェクトを使っていないだけで前節と変わりませんが、`cv.Mat`に1チャネル32ビット浮動小数点数を用いることによる変更点がいくつかあります。
+
+まず、ピクセル値の範囲が0～255から0.0～1.0になります。もっとも、`cv.Mat`自体がその範囲外を受け付けないというわけではありません。32ビット浮動小数点数の精度内の値（±10<sup>38</sup>くらい）は表現可能であっても、画像として見ることのできるのは0以上1以下の範囲になるという意味です。
+
+浮動小数点数のピクセル値は`cv.imshow()`で表示されるとき、つまり`HTMLCanvasElement`に貼り付けられる段階で、自動的に8ビット符号な整数のRGBAに変換されます。0.0はもちろん0、1.0は255、間は均等割りです。37行目の背景色の0.5はちょうど中間なので、8ビット符号なし整数の128として描画されます。39行目の描画線色の0.8は、255×0.8＝204です。
+
+32ビット浮動小数点数のバイナリ（4バイトデータ）は、IEEE 754の32ビット版（binary32）で表現されます。興味のある方は次にURLを示すWikipediaの記事「IEEE 754」を参照してください。
+
+```https://ja.wikipedia.org/wiki/IEEE_754```
+
+`cv.Mat.data`の配列には`Float32Array`が用いられます（20行目）。
 
 #### cv.Matの生成
 
-`cv.Mat`は37行目で生成しています。コンストラクタは4引数のタイプを用いています。
+`cv.Mat`の生成には4引数タイプのコンストラクタを用いています（37行目）。
 
 ```line
- 37      let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(128));
+ 37      let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(0.5));
 ```
 
-第3引数のデータ型が`cv.CV_32FC1`なところが注目点です。第4引数は`cv.Mat`を埋める初期値の設定で、前節で説明したように`cv.Scalar()`を用います。128なのでちょうど中間の灰色です。
+これまで使ってこなかった第4引数には、`cv.Mat`を埋める初期値を指定します。0.5などの直値は受け入れてくれないので、値が1個だけであっても`cv.Scalar()`を介します。
 
-既存の`cv.Mat`を特定の色で埋めたいときは、`cv.Mat.setTo()`関数を使います。引数には上記同様、`cv.Scalar()`を指定します。詳細はOpenCVのリファレンスマニュアルを参照してください。
+補足ですが、既存の`cv.Mat`を特定の色で塗りつぶすには、`cv.Mat.setTo()`関数を使います。引数には上記同様、`cv.Scalar()`を指定します。上記の`mat`を0.7で塗りつぶし直すには、コメントアウトされている38行目を使います。
+
+```javascsript
+ 38      // mat.setTo(new cv.Scalar(0.7));
+```
 
 #### ピクセル値の書き込み
 
 `cv.Mat.data`への代入にはやや注意が必要です。
 
-まず、この配列は32ビット浮動小数点数を収容するので、`Float32Array`が用いられます。1ピクセルあたり4バイトを占有するので、0ピクセル目は`data`の先頭から、1ピクセル目は4バイト目から、2ピクセル目は8バイト目からのように4バイト飛びになります。配列要素位置を計算する28行目が、前節の計算の4倍になっているのはそのためです。
+まず、32ビットなので1ピクセルあたり4バイトを占有します。0ピクセル目は`data`の先頭から、1ピクセル目は4バイト目から、2ピクセル目は8バイト目からのように4バイト飛びになります。配列要素位置を計算する28行目が、前節の計算の4倍になっているのはそのためです。
 
 ```javascript
  28        let pos = (x + y * mat.cols) * 4;
 ```
 
-代入する値も`Float32Array`でなければなりません。そこで、まず単純に200を代入して作成します（20行目）。
+代入する値も`Float32Array`でなければなりません。そこで、まず単純に0.8を代入して作成します（20行目）。`Float32Array`コンストラクタ引数に初期値を用いるときは配列（イテラブル）を指定しなければならないので、数値がひとつであっても`[0.8]`のように`[]`でくくります。
 
 ```javascript
  20      let f = new Float32Array([pix]);
 ```
 
-`TypedArray`には`buffer`プロパティがあり、中身のバイト列がそのまま収容されています。これを使って`Uint8Array`を生成することで、1個の32ビット浮動小数点数を4個の生バイトの配列に変換します。これをやっているのが21行目です。
+`TypedArray`には`buffer`プロパティがあり、この数値のバイト列（IEEE 754 binary 32表現）がそのまま収容されています。ここから`Uint8Array`を生成すれば、4個の生バイトの配列が得られます（21行目）。
 
 ```javascript
  21      let fBuffer = new Uint8Array(f.buffer);
  22      console.log(`${f} = ${fBuffer}`);
 ```
 
-コンソール出力によれば、入力した200.0は、`[0, 0, 72, 67]`に変換されます。
-
-あとはこれを`cv.Mat.data`の所定の位置に順番に入れていきます（29～30行目）。
+コンソール出力によれば、0.8は`[205, 204, 76, 63]`になります（16進表記ならcdcc4c3f)。あとは、これらバイト値を`cv.Mat.data`の所定の位置に順番に入れていくだけです（29～30行目）。
 
 ```javascript
  29        for(let i=0; i<4; i++)
  30          mat.data[pos+i] = fBuffer[i];
 ```
 
+数値を浮動小数点数の内部表現に変換するツールはネットにいろいろあるので、固定値ならあらかじめ計算をし、直値を入れるのも手です。「IEEE 754 変換」で検索してください。なお、大半のPCが搭載しているIntelのCPUはリトルエンディアンなので16進数が逆順になります。
+
+浮動小数点数は扱いがなかなかにめんどうです。ただ、最初から浮動小数点数の画像データ（たとえばレイトレーシングなどのCG）を扱うようなケースもないわけではないので、やりかたは知っておいても悪くはないでしょう。
+
+最後に、使用済みのcv.Matを明示的に解放するのを忘れないように（41行目）。
+
+```javascript
+ 41      mat.delete();
+```
+
+<!--- やらなくてよい
 #### 浮動小数点数画像を整数画像に戻す
 
 浮動小数点数で描かれた`cv.Mat()`はそのままでは表示できないので、整数に変換します。用いているデータ型は`cv.CV_32FC1`なので、変換先は`cv.CV_8UC1`にします。変換は`cv.Mat`の関数、`convertTo()`です（41行目）。
@@ -1083,9 +1103,9 @@ cv.Scalar = cv.Scalar(       // cv.Scalarを出力
 
 `convertTo()`はインスタンスメソッドなので、操作対象に作用させます（`mat.convertTo()`）。関数の書式を次に示します。
 
-<!-- FunctionDefinition cv.imshow() 第2引数の`cv.Mat`を第1引数の`<canvas>`に貼り付ける。 -->
+FunctionDefinition cv.imshow() 第2引数の`cv.Mat`を第1引数の`<canvas>`に貼り付ける。
 ```Javascript
-cv.Mat.convertTo(            // 出力なし
+cv.Mat.convertTo(            // 戻り値なし
     cv.Mat mat,              // 出力先のcv.Mat
     number rtype,            // データ型
     number alpha=1,          // 倍率
@@ -1106,27 +1126,16 @@ cv.Mat.convertTo(            // 出力なし
 第3引数あるいは第4引数を指定すると、ピクセル値がデータ型の規定する最大値よりも大きく、または小さくなることもあります。その場合は強制的に最大値、または最小値に計算結果が抑えられます。これを飽和処理といいます。
 
 ちなみに、OpenCV.jsの`cv.Mat`には定数倍あるいは定数加算を計算する方法がありません。そのような演算が必要なときは、`rtype`に-1を指定して、これら引数を指定することで四則演算の代用にできます。
-
-浮動小数点数は扱いがなかなかにめんどうです。ただ、最初から浮動小数点数の画像データ（たとえばレイトレーシングなどのCG）を扱うようなケースもないわけではないので、やりかたは知っておいても悪くはないでしょう。
-
-最後に、使用済みのcv.Matを明示的に解放するのを忘れないように（44～45行目）。
-
-```javascript
- 44      mat.delete();
- 45      mat8.delete();
-```
-
+--->
 
 
 ### 4.6 お絵描きツールを作る
 
 #### 目的
 
-マウス操作でキャンバスに絵を描きます。
+マウス操作でキャンバスに絵を描く、お絵描きツールを作成します。<kbd>Ctrl</kbd>キーを押しながらキャンバス上でマウスを動かすと、その軌跡が点となって現れます。キャンバスの背景は黒です。お絵描きペンの色は7色（赤、青、緑、シアン、紫、黄色、白）から選べますが、ペン先の太さは固定で1ピクセル幅です。
 
-<kbd>Ctrl</kbd>キーを押しながらキャンバス上でマウスを動かすと、その軌跡が点となって現れます。<kbd>Alt</kbd>を押下して少し動かすと、`cv.Mat`が明示的に解放されます。以降、マウスイベントを受け付けなくなるので、再度絵を描くにはページをリフレッシュします。
-
-キャンバスの背景は黒です。お絵描きペンの色は7色（赤、青、緑、シアン、紫、黄色、白）から選べますが、ペン先の太さは固定で1ピクセル幅です。
+技術的には、カラーRGB（`cv.CV_8UC3`）を使っているということ以外、とくに注目すべきものはありません。ただ、`cv.Mat`の解放タイミングがこれまでと異なり、ユーザ操作で明示的に解放するようになっています。解放後は描画はできなくなるので、それを機にマウスイベントを受け付けなくなるようにします。
 
 実行画面を次に示します。
 
@@ -1283,21 +1292,21 @@ cv.Mat.convertTo(            // 出力なし
 
 ### 4.7 部分領域だけ処理する
 
-// データ型の説明は `cv.Rect`。
-// 処理は `cv.blur()` を使用。説明はまたあとで。
-//     // roi = src.roi(new cv.Rect(224, 0, 200, 400));       // ROI Overrun (C++でも)
-
 #### 目的
 
-指定の矩形領域だけをボケさせます。
+画像の指定の矩形領域だけをボケさせます。
+
+技術的には、画像処理の対象となるエリアを画像全体ではなく部分矩形領域だけにとどめる注目領域と呼ばれるコンセプトと、その設定方法を説明するのが目的です。注目領域は英語にするとRegion of Interestなので、たいていはROIと略称されます。加えて、座標空間上の矩形の形状を収容する`cv.Rect`というオブジェクトも説明します。
 
 実行画面を次に示します。
 
 <img src="Images/Ch04/mat-roi-1.png">
 
-画像上に設定された矩形領域のことを、画像処理では注目領域といいます。英語にするとRegion of Interestなので、たいていはROIと略称されます。ROIを使うと、処理関数がそこだけを対象に処理を適用させるので、それ以外の部分には影響を与えないところが便利です。また、コピー操作をしなくてもそれ単体を画像と同じように扱えます。
+実行例の左側が`<img>`上の原画で、オリジナルより縮小されて表示されるので320×240です。領域指定に[2.7節](./02-ui.md#27-マウス操作で部分領域を切り取る "INTERNAL")で作成した`RegionSelect`クラスを使っているので、そこで見た白い点線枠が画像上に出ています。選択が完了すれば、コンソールに矩形の情報が表示されます。ここでは左上頂点が(79, 58)でサイズが143×99です。
 
-実行例の左側が`<img>`上の原画で、オリジナルより縮小されて表示されるので320×240です。中央がそのROIをそのまま画像として表示したもので、元画像中の座標系で左上頂点が(90, 50)で、サイズが(80, 60)です。右側が元画像中のROIの部分だけをボケさせたものです。
+中央では選択領域（ROI）をそのまま画像として表示しています。右側が元画像中のROIの部分だけをボケさせたものです。
+
+稼働中は`cv.Mat`を利用し続けるアプリケーションでは、リソース解放のタイミングに悩みます。[4.3節](#43-ピクセルの色名を判定する "INTERNAL")ではユーザの明示的な操作で解放しました。ここではタイマー式を採用し、60秒経過したら自動的に解放します。
 
 #### コード
 
@@ -1310,59 +1319,107 @@ cv.Mat.convertTo(            // 出力なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
-  7  </head>
-  8  <body>
-  9
- 10  <h1>部分領域をコピーする</h2>
- 11
- 12  <div>
- 13    <img id="imageTag" width="360" src="samples/pike-st-fish.jpg"/>
- 14    <canvas id="canvasTag1" class="placeholder"></canvas>
- 15    <canvas id="canvasTag2" class="placeholder"></canvas>
- 16  </div>
- 17
- 18  <script>
- 19    let imgElem = document.getElementById('imageTag');
- 20    let canvasElem1 = document.getElementById('canvasTag1');
- 21    let canvasElem2 = document.getElementById('canvasTag2');
- 22
- 23    function imgProc() {
- 24      let src = cv.imread(imgElem);
- 25
- 26      let rect = new cv.Rect(90, 50, 80, 60);
- 27      let roi = src.roi(rect);
- 28      cv.imshow('canvasTag1', roi);
- 29
- 30      cv.blur(roi, roi, new cv.Size(11, 11));
- 31      cv.imshow('canvasTag2', src);
- 32
- 33      src.delete();
- 34      roi.delete();
- 35    }
- 36
- 37    var Module = {
- 38      onRuntimeInitialized: imgProc
- 39    }
- 40  </script>
- 41
- 42  </body>
- 43  </html>
+  6    <script async src="libs/regionselect.js" type="text/javascript"></script>
+  7    <script async src="libs/opencv.js" type="text/javascript"></script>
+  8  </head>
+  9  <body>
+ 10
+ 11  <h1>部分領域だけ処理する</h2>
+ 12
+ 13  <div>
+ 14    <img id="imageTag" width="360" src="samples/pike-st-fish.jpg"/>
+ 15    <canvas id="canvasTag1" class="placeholder"></canvas>
+ 16    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 17  </div>
+ 18
+ 19  <script>
+ 20    let imgElem = document.getElementById('imageTag');
+ 21    let canvasElem1 = document.getElementById('canvasTag1');
+ 22    let canvasElem2 = document.getElementById('canvasTag2');
+ 23
+ 24    let rs = undefined;
+ 25    let src = undefined;
+ 26
+ 27    setTimeout(function() {
+ 28      if (src != undefined) {
+ 29        src.delete();
+ 30        src = undefined;
+ 31        console.log('<img> cv.Mat deleted.');
+ 32      }
+ 33    }, 60000);
+ 34
+ 35    function resourceReady() {
+ 36      rs = new RegionSelect('imageTag');
+ 37      imgElem.addEventListener('regionselect', imgProc);
+ 38    }
+ 39
+ 40    function opencvReady() {
+ 41      src = cv.imread(imgElem);
+ 42    }
+ 43
+ 44    function imgProc(evt) {
+ 45      if (! src || ! rs)
+ 46        return;
+ 47
+ 48      let mat = src.clone();
+ 49
+ 50      let [x, y, width, height] = evt.detail;
+ 51      console.log(`ROI: ${evt.detail}`);
+ 52      let rect = new cv.Rect(x, y, width, height);
+ 53      let roi = mat.roi(rect);
+ 54      cv.imshow('canvasTag1', roi);
+ 55
+ 56      cv.blur(roi, roi, new cv.Size(11, 11));
+ 57      cv.imshow('canvasTag2', mat);
+ 58
+ 59      mat.delete();
+ 60      roi.delete();
+ 61    }
+ 62
+ 63    window.addEventListener('load', resourceReady);
+ 64    var Module = {
+ 65      onRuntimeInitialized: opencvReady
+ 66    }
+ 67  </script>
+ 68
+ 69  </body>
+ 70  </html>
+```
+
+#### cv.clone関数
+
+ぼかし効果を施す対象用に、読み込んだ画像（41行目の`src`）の作業用のコピーを作成します。2回以上矩形選択を繰り返すと、すでに他所をぼかした画像にさらにぼかし効果を加えることになってしまうからです。これをやっているのが、48行目です。
+
+```javascript
+ 48      let mat = src.clone();
+```
+
+`cv.Mat()`のメンバ関数である`clone`は、作用元とまったく同じ`cv.Mat`を生成します。関数定義を次に示します。もっとも、引数はないので、用法はストレートです。
+
+<!-- FunctionDefinition cv.Mat.clone() `cv.Mat`のコピーを生成する。 -->
+```Javascript
+cv.Mat = cv.Mat.clone();     // cv.Matを返す
 ```
 
 #### cv.Rectオブジェクト
 
-ROIは、左上頂点座標を起点とした横縦のサイズを持つ矩形領域です。OpenCVでは、こうした矩形領域を記述するのに`cv.Rect`オブジェクトを用います。[4.節](#44-モノクロで円を描く "INTERNAL")で取り上げた`cv.Point`や`cv.Size`と同じ、値を収容するオブジェクトです。26行目はこれを準備しています。
+ROIは、左上頂点座標を起点とした横縦のサイズを持つ矩形領域です。OpenCVでは、こうした矩形領域を記述するのに`cv.Rect`オブジェクトを用います。[4.4節](#44-モノクロで円を描く "INTERNAL")で取り上げた`cv.Point`や`cv.Size`と同じ、値を収容するオブジェクトです。`RegionSelect`の`regionselect`イベントから上がってくるイベントを契機にこれを設定しているのが、52行目です。
 
 ```javascript
- 26      let rect = new cv.Rect(90, 50, 80, 60);
+ 44    function imgProc(evt) {
+ ︙
+ 50      let [x, y, width, height] = evt.detail;
+ 51      console.log(`ROI: ${evt.detail}`);
+ 52      let rect = new cv.Rect(x, y, width, height);
 ```
+
+イベントオブジェクト`evt`の`detail`プロパティに矩形情報が収容されていることは、[2.7節](./02-ui.md#27-マウス操作で部分領域を切り取る "INTERNAL")で説明した通りです。
 
 コンストラクタの書式を次に示します。
 
 <!-- FunctionDefinition cv.Rect() 左上頂点座行、横幅、高さを収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Rect = cv.Rect(           // cv.Rectを出力
+cv.Rect = cv.Rect(           // cv.Rectを返す
     number x,                // 左上頂点x座標
     number y,                // 左上頂点y座標
     number width,            // 横幅
@@ -1376,32 +1433,64 @@ cv.Rect = cv.Rect(           // cv.Rectを出力
 
 #### cv.Mat.roi関数
 
-27行目は、`<img>`から取り込んだ`cv.Mat`画像にROIを設定しています。
+52行目は、先ほど作成した画像コピーにROIを設定しています。
 
 ```javascript
- 27      let roi = src.roi(rect);
+ 53      let roi = mat.roi(rect);
 ```
 
 `cv.Mat`の関数`roi()`の引数には、前述の`cv.Rect`を指定します。書式を次に示します。
 
 <!-- FunctionDefinition cv.Mat.roi() cv.MatにROIを設定する。 -->
 ```Javascript
-cv.Mat.roi(                  // 出力なし
+cv.Mat.roi(                  // 戻り値なし
     cv.Rect rect             // 矩形領域
 );
 ```
 
-得られたROIはあたかも別の`cv.Mat`であるかのように扱うことができます。そうした用法が31行目で、ROIを中央のキャンバスに直接に貼り付けています（28行目）。ROIのサイズはここでは80×60なので、キャンバスサイズもそれと同じです。
+ROIの設定は融通が利かないので、画像範囲外を指定しようとすると「ROI Overrun」というエラーが発生します。
+
+得られたROIはあたかも別の`cv.Mat`であるかのように扱うことができます。そうした用法が54行目で、ROIを中央のキャンバスに直接に貼り付けています。本節冒頭の実行例でROIのサイズが143×99だったので、キャンバスサイズもそれと同じです。
 
 ```javascript
- 28      cv.imshow('canvasTag1', roi);
+ 54      cv.imshow('canvasTag1', roi);
 ```
 
-30行目では、その領域だけにぼかし関数の`blur()`を適用しています。用法は[TBA](TBA "INTERNAL")で説明するので、ここではCSSスタイルのfilterの`blur()`と同じと考えてください（[2.5節](./02-ui.md#25-プルダウンメニューからフィルタを選択する "INTERNAL")。関数で、ぼかしの対象をROIとしているところがポイントです。しかし、それでも元画像（`src`）のその部分だけがぼけます（21行目）。
+56行目では、その領域だけにぼかし関数の`cv.blur()`を適用しています。用法は[6.2節](./06-img.md#62-画像をぼかす "INTERNAL")で説明するので、ここではCSSスタイルのfilterの`blur()`と同じと考えてください（[2.5節](./02-ui.md#25-プルダウンメニューからフィルタを選択する "INTERNAL")）。関数で、ぼかしの対象をROIとしているところがポイントです。しかし、それでもターゲットの画像（`mat`）のその部分だけがぼけます。
 
 ```javascript
  30      cv.blur(roi, roi, new cv.Size(11, 11));
- 31      cv.imshow('canvasTag2', src);
+ 31      cv.imshow('canvasTag2', mat);
 ```
 
 <!-- cv.Mat.locateROI()`、`cv.Mat.adjustROI()`は実装されていない。-->
+
+#### リソース解放のタイミング
+
+冒頭で述べたように、`cv.Mat`などのOpenCV固有のリソースを解放するタイミングを決めるのはなかなか難しいです。
+
+ここでは、コピー画像の`mat`とROIの`roi`は、その都度解放しています。
+
+```javascript
+ 44    function imgProc(evt) {
+ ︙
+ 59      mat.delete();
+ 60      roi.delete();
+ 61    }
+```
+
+ `<img>`から得た`src`については、今回はタイマー式です（27～33行目）。
+
+```javascript
+ 27    setTimeout(function() {
+ 28      if (src != undefined) {
+ 29        src.delete();
+ 30        src = undefined;
+ 31        console.log('<img> cv.Mat deleted.');
+ 32      }
+ 33    }, 60000);
+```
+
+要領は[4.3節](#43-ピクセルの色名を判定する "INTERNAL")と同じで、解放したら、そのリソースが使えないことを明示するために`undefined`を代入します（30行目）。これで、次の矩形選択があっても`cv.Mat`にアクセスしないので、エラーになりません。
+
+60秒（6万ミリ秒）は適当に決めています。実用的なアプリケーションなら、スクリプトが開始してからではなく、最後に領域選択されたときからカウントダウンするとよいでしょう。

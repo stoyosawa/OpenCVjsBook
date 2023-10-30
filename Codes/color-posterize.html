@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">  
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>ポスター化する</h1>
+
+<div>
+  <img id="imageTag" width="360" src="samples/raspberry.jpg"/>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+<div>
+  有効ビット数 <input type="range" id="rangeTag" value="8" min="1" max="8"/>
+  <span id="spanTag" class="currentValue">8</span>
+  HSV <input type="checkbox" id="checkboxTag"/>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let rangeElem = document.getElementById('rangeTag');
+  let spanElem = document.getElementById('spanTag');
+  let checkboxElem = document.getElementById('checkboxTag');
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+    if (checkboxElem.checked)
+      cv.cvtColor(src, src, cv.COLOR_RGB2HSV);
+
+    let nBits = Number(rangeElem.value);
+    let mask = 0xFF << (8 - nBits) & 0xFF;
+    console.log(`# of significant bits: ${nBits}, mask: ${mask.toString(2)}`);
+
+    let dst = new cv.Mat(src.rows, src.cols, src.type());
+
+    for(let pos=0; pos<dst.data.length; pos++) {
+      let value = src.data[pos];
+      dst.data[pos] = value & mask;
+    }
+
+    if (checkboxElem.checked)
+      cv.cvtColor(dst, dst, cv.COLOR_HSV2RGB);
+    cv.imshow('canvasTag', dst);
+
+    [src, dst].forEach(m => m.delete());
+  }
+
+  function rangeHandle() {
+    spanElem.innerHTML = rangeElem.value;
+    imgProc();
+  }
+
+  function checkboxHandle() {
+    imgProc();
+  }
+
+  var Module = {
+    onRuntimeInitialized: function() {
+      rangeElem.addEventListener('change', rangeHandle);
+      checkboxElem.addEventListener('change', checkboxHandle);
+      imgProc();
+    }
+  }
+</script>
+
+</body>
+</html>

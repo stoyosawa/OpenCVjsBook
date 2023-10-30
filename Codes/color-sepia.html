@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>セピア調にする（およびその他の線形フィルタ）</h1>
+
+<div>
+  <img id="imageTag" width="360" src="samples/wiener-rathaus.jpg"/>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+
+  let filters = {
+    sepia: [0.393,0.769,0.189,0.349,0.686,0.168,0.272,0.534,0.131],
+    monochrome: [0.299,0.587,0.114,0.299,0.587,0.114,0.299,0.587,0.114],
+    bgr: [0,0,1,0,1,0,1,0,0],
+    allGreen: [0,0,0,0.299,0.587,0.114,0,0,0],
+    reduction: [1.0,0,0,0,0.5,0,0,0,0.8]
+  }
+
+  function imgProc() {
+    let filter = filters.reduction;
+    let matrix = cv.matFromArray(3, 3, cv.CV_32FC1, filter);
+
+    let src = cv.imread(imgElem);
+    let dst = new cv.Mat();
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+    cv.transform(src, dst, matrix);
+    cv.imshow('canvasTag', dst);
+
+    [src, dst, matrix].forEach(mat => mat.delete());
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

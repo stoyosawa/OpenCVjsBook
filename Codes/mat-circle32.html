@@ -34,15 +34,11 @@
   function imgProc() {
     let width = 360;
     let height = 240;
-    let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(128));
-    drawCircle(200, mat, width/2, height/2, height*0.4);
-
-    let mat8 = new cv.Mat();
-    mat.convertTo(mat8, cv.CV_8UC1);
-    cv.imshow('canvasTag', mat8);
-
+    let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(0.5));
+    // mat.setTo(new cv.Scalar(0.7));    
+    drawCircle(0.8, mat, width/2, height/2, height*0.4);
+    cv.imshow('canvasTag', mat);
     mat.delete();
-    mat8.delete();
   }
 
   var Module = {

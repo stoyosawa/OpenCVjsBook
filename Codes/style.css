@@ -26,12 +26,11 @@ div.inline {
 span.currentValue {
 	color: DarkMagenta;
 	background-color: MistyRose;
-	margin-left: 1em;
-	padding: 3px 7px 3px 7px;
+	padding: 3px 12px 3px 12px;
 	border-radius: 5px;
 }
 
-/* <input> ボタンを目立たせる */
+/* <input type="button"> ボタンを目立たせる */
 input[type="button"].click {
 	color: LightBlue;
 	border-width: 0px;
