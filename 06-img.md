@@ -296,9 +296,10 @@ cv.resize(                                  // 戻り値なし
 プルダウンメニューからは他の3つの方法を選択できます。次にそれらの結果を示します。
 
 <!-- いずれも 360x202 -->
-<img src="Images/Ch06/img-blur-2.png" width="300">
-<img src="Images/Ch06/img-blur-3.png" width="300">
-<img src="Images/Ch06/img-blur-4.png" width="300">
+
+ガウス平滑化フィルタ | 中間値フィルタ | バイラテラルフィルタ
+---|---|---
+<img src="Images/Ch06/img-blur-2.png" width="300"> | <img src="Images/Ch06/img-blur-3.png" width="300"> | <img src="Images/Ch06/img-blur-4.png" width="300">
 
 左から順にガウス平滑化フィルタ、中間値フィルタ、バイラテラルフィルタのものです。ガウス平滑化フィルタは平均化のものとあまり変わりありませんが、後者2点は色合いがアニメ絵のように領域内でまとまった感じになります。これら2点の間で比較すると、中間値では輪郭がぼけているのに対し、バイラテラルではしっかりしています。
 
