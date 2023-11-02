@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>線画の生成（輪郭のみ）</h1>
+
+<div>
+  <img id="imageTag" width="240" src="samples/cinquecento.jpg"/>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+  <canvas id="canvasTag3" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+    // cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+
+    let edge = new cv.Mat();
+    cv.Sobel(src, edge, cv.CV_8U, 1, 1, 5);
+    cv.imshow('canvasTag1', edge);
+
+    cv.Laplacian(src, edge, cv.CV_8U, 3);
+    cv.imshow('canvasTag2', edge);
+
+    cv.Canny(src, edge, 50, 150);
+    cv.imshow('canvasTag3', edge);
+
+    [src, edge].forEach(m => m.delete());
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

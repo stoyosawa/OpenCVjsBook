@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>線画の生成（元画像付き）</h1>
+
+<div>
+  <img id="imageTag" width="240" src="samples/cinquecento.jpg"/>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+
+    let edge = new cv.Mat();
+    cv.cvtColor(src, edge, cv.COLOR_RGB2GRAY);
+    cv.Canny(edge, edge, 50, 150);
+    cv.bitwise_not(edge, edge);
+    cv.imshow('canvasTag1', edge);
+
+    let color = new cv.Scalar(50, 50, 50);
+    let bg = new cv.Mat(imgElem.height, imgElem.width, cv.CV_8UC3, color);
+
+    let fg = new cv.Mat();
+    cv.bilateralFilter(src, fg, 7, 75, 75, cv.BORDER_DEFAULT);
+
+    fg.copyTo(bg, edge);
+    cv.imshow('canvasTag2', bg);
+
+    [src, edge, bg, fg].forEach(m => m.delete());
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

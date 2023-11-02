@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>書類の傾きを補正する</h1>
+
+<div>
+  <img width="360" id="imageTag" src="samples/test.png"/>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
+</div>
+
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+
+  function prepare(img, mat) {
+    cv.cvtColor(img, mat, cv.COLOR_RGB2GRAY);
+    cv.pyrDown(mat, mat);
+    cv.pyrUp(mat, mat);
+    cv.threshold(mat, mat, 128, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+    let kernel = cv.Mat.ones(13, 13, cv.CV_8UC1);
+    cv.morphologyEx(mat, mat, cv.MORPH_CLOSE, kernel);
+  }
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+
+    let blob = new cv.Mat();
+    prepare(src, blob);
+    cv.imshow('canvasTag1', blob);
+
+    [src, blob].forEach(m => m.delete());
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

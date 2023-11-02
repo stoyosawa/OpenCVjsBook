@@ -6,9 +6,9 @@
 
 画像中で選択した部分領域にモザイクをかけます。
 
-技術的には、`cv.resize()`関数を使ったリサイズ操作です。画像を拡大するには、そこにはなかったピクセルを推定して補完しなければなりませんが、もっとも簡単な方法だとモザイク状になるという特徴を利用するわけです。画像の一部だけをリサイズするには[4.7節](./04-mat.md#47-部分領域だけ処理する "INTERNAL")のROIを使います。マウス操作で部分領域を選択するのには、[2.7節](./02-ui.md#27-マウス操作で部分領域を切り取る "INTERNAL")で作成した`RegionSelect`を使います。
+技術的には、`cv.resize()`関数を使ったリサイズ操作です。画像を拡大しようと引っ張り伸ばすと、間に隙間ができます。この隙間を埋めるのにもっともシンプルな方法を使うと、結果がモザイク状になるという特徴を利用するわけです。画像の一部だけをリサイズするには[4.7節](./04-mat.md#47-部分領域だけ処理する "INTERNAL")のROIを使います。マウス操作で部分領域を選択するのには、[2.7節](./02-ui.md#27-マウス操作で部分領域を切り取る "INTERNAL")で作成した`RegionSelect`を使います。
 
-本節ではコードを2つにわけて説明します。第1のコードでは、`cv.resize()`の用法と各種の補間方法を確認します。第2のコードでは主題の部分モザイクがけを実装します。
+本節ではコードを2つに分けて説明します。第1のコードでは、`cv.resize()`の用法と各種の補間方法を確認します。第2のコードでは主題の部分モザイクがけを実装します。
 
 実行例を次の画面に示します。まずは用法説明のコード①のものです。
 
@@ -99,13 +99,13 @@
 
 最も単純なアイデアは、左隣の値をそのまま繰り返すというものです。これで、①①③③⑤⑤という並びになります。この方法を最近傍補間、OpenCVの定数名では`cv.INTER_NEAREST`といいます。簡単で計算も早いのですが、極端に大きくすると滑らかだった線やグラデーションが階段状、つまりモザイクになるという問題が生じます。本節では、この問題を逆手にとってモザイク化を実現しています。
 
-もう少し凝った手なら、前後のピクセルの平均値を取ります。これだと①②➂④⑤⑤となり、もともとの滑らな変化が維持されます。右端がその前隣の⑤と同じなのは、右端の外にはピクセルは存在しないので、繰り返すしかないからです。これが実行例で用いた`cv.INTER_LINEAR`です。この方法はスムーズな絵がえられますが、本来はくっきりとした輪郭線がぼやけます。たとえば、②②⑩⑩のように背景の②と前景の⑩が明確に分かれていたのが、②②②⑥⑩⑩⑩⑩と、②と⑩の間に中間点ができます。これがぼけです。
+もう少し凝った手なら、前後のピクセルの平均値を取ります。これだと①②➂④⑤⑤となり、もともとの滑らな変化が維持されます。右端がその前隣の⑤と同じなのは、右端の外にはピクセルは存在しないので、繰り返すしかないからです。これが実行例で用いた`cv.INTER_LINEAR`です。この方法はスムーズな絵が得られますが、本来はくっきりとした輪郭線がぼやけます。たとえば、②②⑩⑩のように背景の②と前景の⑩が明確に分かれていたのが、②②②⑥⑩⑩⑩⑩と、②と⑩の間に中間点ができます。これがぼけです。
 
 この方法はスムーズな絵がえられますが、本来はくっきりとした輪郭線がぼやけます。たとえば、②②⑩⑩のように背景の②と前景の⑩が明確に分かれていたのが、②②②⑥⑩⑩⑩⑩と、②と⑩の間に中間点ができ、これがぼけになります。
 
 #### 補間方法定数
 
-`cv.resize()`関数で使える補間方法は現在10個が定義されています。いずれも`cv`オブジェクト直下のプロパティです。コード①では、（お手軽おという理由で）`<option>`をプログラム的に生成すために、これらプロパティを`Object.keys()`で機械的に取り出しています（24～30行目）。
+`cv.resize()`関数で使える補間方法は現在10個が定義されています。いずれも`cv`オブジェクト直下のプロパティです。コード①では、（お手軽という理由で）`<option>`をプログラム的に生成するために、これらプロパティを`Object.keys()`で機械的に取り出しています（24～30行目）。
 
 ```javascript
  22    let selectElem = document.getElementById('selectTag');
@@ -575,37 +575,49 @@ OpenCVリファレンスはσの値に10未満の値を指定しても大して�
 ### 6.3 線画の生成
 <!-- 残念ながら、OpenCV.js には cv.stylization()、cv.pencilSketch()、cv.edgePreservingFilter()、cv.detailEnhanve() といった Non-photorealistic 系は実装されていない。-->
 
+#### 目的
+
+画像から黒地に白い線の線画を生成します。また、前節のバイラテラルフィルタで元画像をアニメ絵っぽくしたうえで、その上に線を重畳することで、輪郭線付きのアニメ絵風にします。
+
+技術的には、線画は画像の「エッジ」を検出することで得られます。この処理は、ピクセル列に対して微分を施すフィルタを用いて畳み込み演算を施すことで行われます。どのようなフィルタかはおいおい説明します。
+
+本節ではコードを2つに分けて説明します。第1のコードでは、OpenCV関数はいくつかある画像微分フィルタ関数のうち`cv.Sobel()`、`cv.Laplacian()`、`cv.Canny()`を適用し、それぞれの出来栄えを比較します。第2のコードでは輪郭付きアニメ絵風を生成します。
+
+実行例を次の画面に示します。まずは微分フィルタ関数比較のコード①のものです。
+
+<img src="Images/Ch06/img-edge-1.png">
+
+左から元画像、Sobel、Laplacian、Cannyです。カタカナ読みすると順にソベル、ラプラシアン、キャニーで、いずれも開発者の人名から来ています。ソベルはかなり粗いですが、ラプラシアンとキャニーはなかなかです。
+
+輪郭付きアニメ絵風のコード②の画面を次に示します。
+
+<img src="Images/Ch06/img-edge-2.png">
+
+左が元画像、中央がキャニーの結果の白黒を反転させることで輪郭線を黒にしたものです。右が輪郭付きアニメ絵風で、元画像を`cv.bilateralFilter()`で処理し、それを中央の画像をマスクとして背景灰色の画像に貼り付けています（マスクについては[5.8節](./05-colors.md#58-背景を入れ替える（輝度調整付き） "INTERNAL")参照）。
+
 #### エッジ検出の原理
 
-写真からスケッチ（線画）を起こすような描くような効果を得るには、元画像から輪郭を抽出します。
+画像のエッジ（輪郭線）は、背景と前景の境界線でピクセル値が大きく変化するという仮定をもとに抽出されます。
 
-先に、本節のコードで生成される画像を次に示します。左が元画像、右が検出後の画像です。
+エッジ検出の原理を、白い前景がグレーの背景に写っている次の模式的な画像から考えます。データ型は1チャンネル8ビット符号なし整数（`cv.CV_8UC1`）としているので、ピクセル値の範囲は0～255です。
 
-<!-- <img src="Images/Ch04/img-canny-1.png"> -->
-
-輪郭は、背景と前景の境界線でピクセル輝度が大きく変化するという仮定をもとに抽出されます。前景の端なので、画像処理では輪郭のことを「エッジ」と呼びます。
-
-エッジ検出の原理を、白い前景がグレーの背景に写っている次の模式的な画像から考えます。データ型には1チャンネル符号なし8ビット整数（`cv.CV_8UC1`）を使うので、ピクセル値の範囲は0～255です。
-
-<!-- 969x303 -->
-<!-- <img src="Images/Ch04/img-canny-theory.png" width="600"> -->
+<!-- xlsx に原画あり。969x303 -->
+<img src="Images/Ch06/img-edge-theory.png" width="600">
 
 左図が元画像です。水平方向で切り取った5行目の黒枠に着目します。ピクセル値の並びは31、16、21、29、249、215、244、239、254、208で、グレー地と白い物体の境目で値が29から249へと急激に変化することがわかります。その前後ではブレはあるものの、だいたいおなじ値が連続しています。
 
-中央図では、それぞれのピクセルについて、その左側のピクセルとの差分を計算しています。左端のピクセルには左側のピクセルがないので0とします。これにより、変化量がわかります。差がとくに大きい箇所だけ太字で強調してあります。
+中央図では、それぞれのピクセルについて、その左側のピクセルとの差分を計算しています。デジタルなのでただの引き算ですが、連続したアナログ値と考えると、これは微分操作です。左端のピクセルには左側のピクセルがないので外挿して0とします。これにより、変化量がわかります。差がとくに大きい箇所だけ太字で強調してあります。
 
 右図は、変化差の大きいピクセルの値を255（白）、それ以外を0（黒）に変えています。これがエッジです。
 
-もっとも、これは理論的な話なので、期待しているほどにはエッジが浮かび上がるわけではありません。
+OpenCVには、いろいろな場面に対応できる高度なエッジ検出メカニズムがいくつか用意されています。`cv.Sobel()`は上述の通り微分を1回かける操作を施します。`cv.Laplacian()`は微分を2回、つまり2階微分をかけます。ソベルを距離÷時間の速度と考えれば、ラプラシアンは距離を時間で2回割った加速度に相当します。
 
-OpenCVには、いろいろな場面に対応できる高度なエッジ検出メカニズムがいくつか用意されています。本節では、その中でも性能が高いといわれるCanny（キャニー）アルゴリズムを実装した`cv.Canny()`メソッドを用います。
+#### コード①
 
-#### エッジ検出
-
-次にエッジ検出のコードを示します。
+3つのエッジ検出関数を使ったエッジ検出のコード①`img-edge1.html`は次の通りです。
 
 ```html
-[File] img-canny1.html
+[File] img-edge1.html
   1  <!DOCTYPE html>
   2  <html lang="ja-JP">
   3  <head>
@@ -615,98 +627,195 @@ OpenCVには、いろいろな場面に対応できる高度なエッジ検出�
   7  </head>
   8  <body>
   9
- 10  <h1>エッジ検出（輪郭抽出）</h1>
+ 10  <h1>線画の生成（輪郭のみ）</h1>
  11
  12  <div>
- 13    <img id="imageTag" width="480" src="samples/cable-car.jpg"/>
- 14    <canvas id="canvasTag" class="placeholder"></canvas>
- 15  </div>
- 16
- 17  <script>
- 18    let imgElem = document.getElementById('imageTag');
- 19
- 20    var Module = {
- 21      onRuntimeInitialized: imgProc
- 22    }
- 23
- 24    function imgProc() {
- 25      let src = cv.imread(imgElem);
- 26      let dst = new cv.Mat();
- 27      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
- 28      cv.Canny(src, dst, 50, 150);
- 29      cv.imshow('canvasTag', dst);
- 30      src.delete();
- 31      dst.delete();
- 32    }
- 33  </script>
- 34
- 35  </body>
- 36  </html>
+ 13    <img id="imageTag" width="240" src="samples/cinquecento.jpg"/>
+ 14    <canvas id="canvasTag1" class="placeholder"></canvas>
+ 15    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 16    <canvas id="canvasTag3" class="placeholder"></canvas>
+ 17  </div>
+ 18
+ 19  <script>
+ 20    let imgElem = document.getElementById('imageTag');
+ 21
+ 22    function imgProc() {
+ 23      let src = cv.imread(imgElem);
+ 24      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
+ 25
+ 26      let edge = new cv.Mat();
+ 27      cv.Sobel(src, edge, cv.CV_8U, 1, 1, 5);
+ 28      cv.imshow('canvasTag1', edge);
+ 29
+ 30      cv.Laplacian(src, edge, cv.CV_8U, 3);
+ 31      cv.imshow('canvasTag2', edge);
+ 32
+ 33      cv.Canny(src, edge, 50, 150);
+ 34      cv.imshow('canvasTag3', edge);
+ 35
+ 36      [src, edge].forEach(m => m.delete());
+ 37    }
+ 38
+ 39    var Module = {
+ 40      onRuntimeInitialized: imgProc
+ 41    }
+ 42  </script>
+ 43
+ 44  </body>
+ 45  </html>
 ```
 
-コードパターンはこれまでのものと変わりません。実行結果は本節冒頭に示した通りです。
+#### cv.Sobel関数
 
-#### cv.Cannyメソッド
+27行目では、`cv.Sobel`関数を使ってエッジを検出しています。1次微分関数です。
 
-エッジ検出の`cv.Canny()`メソッド（28行目）の定義を次に示します。
+```javascript
+ 24      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
+ 25
+ 26      let edge = new cv.Mat();
+ 27      cv.Sobel(src, edge, cv.CV_8U, 1, 1, 5);
+ 28      cv.imshow('canvasTag1', edge);
+```
 
-<!-- FunctionDefinition cv.Canny() -->
+24行目で入力画像をモノクロに変換しています。本節のエッジ検出関数はいずれも8ビット符号なし整数（`cv.CV_8U`）ならなんでも受け付けます。操作をどのチャネルにも等しく適用するだけだからです。アルファチャネルもです。
+
+しかし、RGBAのまま処理をすると結果が見えなくなります。RGB画像に加わったすべて255のアルファチャネルでは、（定数なので）1次でも2次でも微分を取ると0です。そして、すべて0のアルファチャネルは完全透明という意味なので、キャンバスに表示してもなにも見えません。ここでは事前にモノクロに変換していますが、せめて`cv.COLOR_RGBA2RGB`で3チャネルにへ変換しておきます。
+
+関数の定義を次に示します。
+
+<!-- FunctionDefinition cv.Sobel() 1次微分をかけることで画像のエッジを抽出する。-->
 ```Javascript
-cv.Canny(                      // 戻り値なし
- 	Mat image,                 // CV_8UC1 入力画像
- 	Mat edges,                 // CV_8UC1 出力画像
-	number threshold1,         // 第1閾値（0～255）
-	number threshold2,         // 第2閾値（0～255）
-	number apertureSize = 3,   // カーネルサイズ（3、5、7）
-	boolean	L2gradient = false // L2ノルムフラグ
+cv.Sobel(                                   // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    number ddepth,                          // 出力画像のビット深度
+    number dx,                              // x方向にかける微分の回数
+    number dy,                              // y方向にかける微分の回数
+    number ksize = 3,                       // フィルタサイズ
+    number scale = 1,                       // 倍数
+    number delta = 0,                       // 加算数
+    number borderType = cv.BORDER_DEFAULT   // 画像端でのピクセルの推定方法
 );
 ```
 
-第1引数には入力画像の`cv.Mat`を指定します。1チャンネル符号なし8ビット整数（`cv.CV_8UC1`）でなければならないので、`<img>`から読み込んだ画像（25行目）は`cv.cvtColor()`でモノクロに変更しなければなりません。
+第1引数`src`には入力画像の、第2引数`dst`には出力画像をそれぞれ指定します。画像のチャネル数にはとくに制限はありません。複数チャネルなら、それぞれ個別に処理されます。
 
-第2引数には出力画像を収容する`cv.Mat`を指定します。例によって、あらかじめ`new cv.Mat()`から定義したもの（26行目）でなければなりません。
+第3引数`ddepth`には出力画像のビット深度を定数から指定します。8ビット符号なし整数なら`cv.CV_8U`です。
 
-第3引数と第4引数は、Cannyアルゴリズムに関係する最大と最小の閾値です。Cannyエッジ検出では、最初に輝度の差分（先の図の右図）が指定の最大閾値より大きければ間違いなくエッジであると判断します。これが`threshold2`です。また、最小閾値未満なら閾値ではないと棄却します。最少と最大の間のピクセルについては、連結性をもとに判断します。そのピクセルが最大閾値以上の間違いなくエッジの隣にあれば、それもエッジとしてカウントされます。そうでなければ棄却します。最小閾値をあまり低い値にするとノイズをエッジと誤検出しやすくなり、最大閾値を高い値にするとエッジを見逃しやすくなります。`threshold1`と`threshold2`は交換可能で、小さいほうが最小閾値に用いられます。
+第4引数`dx`と第5引数`dy`は、それぞれX方向（水平）とy方向（垂直）に何回微分をかけるか指定します。`dx`に1を指定すると、水平方向に1回微分をかけるので、縦線が抽出されます。`dy`に1なら横線が抽出されます。ここではともに1を指定しているので、縦横の線を検出します。
 
-第5引数の`apertureSize`はカーネルサイズです。Cannyアルゴリズムでは、微分のSobelフィルタで最初のエッジ抽出を行いますが、これはそのサイズです。デフォルトでは3×3ですが、5または7も指定可能です。たいていはデフォルトでかまいません。
+第5引数`ksize`にはフィルタサイズを指定します。`cv.Sobel()`も中身は畳み込みフィルタなので、フィルタサイズは[6.2節](#62-画像をぼかす "INTERNAL")の線形フィルタで説明したものと同じですが、1、3、5、7だけしか使えません。オプションなので、27行目のように未指定ならば3が選択されるので、3×3行列が用いられます。
 
-参考までにSobelフィルタだけを適用したときの結果を次に示します。
+行列の中身は、3×3なら次のように構成されています（ $M_x$ がx方向の、 $M_y$ がy方向のもの）。
 
-<!-- <img src="Images/Ch04/img-canny-sobel.png"> -->
+$$M_x = \begin{pmatrix}
+  −1 & 0 & 1 \\
+  -2 & 0 & 2 \\
+  -1 & 0 & 1
+\end{pmatrix}, M_y = \begin{pmatrix}
+  −1 & −2 & −1 \\
+  0 & 0 & 0 \\
+  1 & 2 & 1
+\end{pmatrix}$$
 
-Sobelフィルタは横方向と縦方向の線を検出するバリエーションがありますが、これは横方向のものです。Cannyの結果と比べると、エッジの判定ステップを踏まえていないため、線が太く荒っぽくなることがわかります。
+第6引数`scale`と第7引数`delta`は得られた結果のピクセルの輝度を補正するため、定数倍と定数加算を行います。デフォルトはそれぞれ1と0なので、補正なしという意味です。
 
-この結果を得るには、`img-canny1.html`の28行目を次のものと置き換えます。詳細はOpenCVのリファレンスを参照してください。
+第7引数`borderType`にが画像外郭のピクセル値を外挿する方法を定数から指定します。外挿方法は[6.2節](#62-画像をぼかす "INTERNAL")で説明しました。
 
-```Javascript
- 28      cv.Sobel(edge, edge, cv.CV_8UC1, 0, 1);
+ソベルフィルタの原理は前述の通りですが、より詳しいことは、次にURLを示すOpenCVチュートリアルで説明されています。
+
+```https://docs.opencv.org/4.8.0/d2/d2c/tutorial_sobel_derivatives.html```
+
+#### cv.Laplacain関数
+
+30行目では、`cv.Laplacian`関数を使ってエッジを検出しています。2次微分関数です。
+
+```javascript
+ 30      cv.Laplacian(src, edge, cv.CV_8U, 3);
 ```
 
-第6引数の`L2gradient`は、差分の強さ（縦横の差分をベクトルと考えたときのその大きさ）を計算するときにL2ノルム（普通の距離）を使うか、L1ノルム（マンハッタン距離）を使うかの指定です。デフォルトの`false`ならL1ノルムで、こちらのほうが計算が簡単です。`true`ならばL2ノルム（二乗和の平方根）を計算します。
+関数の定義を次に示します。
 
-Cannyアルゴリズムは、OpenCVのチュートリアル「Canny Edge Detection」に詳しく説明されています。興味のあるかたは、次のURLから参照してください。
+<!-- FunctionDefinition cv.Laplacian() 2次微分をかけることで画像のエッジを抽出する。-->
+```Javascript
+cv.Laplacian(                               // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    number ddepth,                          // 出力画像のビット深度
+    number ksize = 1,                       // フィルタサイズ
+    number scale = 1,                       // 倍数
+    number delta = 0,                       // 加算数
+    number borderType = cv.BORDER_DEFAULT   // 画像端でのピクセルの推定方法
+);
+```
 
-```https://docs.opencv.org/3.4/da/d22/tutorial_py_canny.html```
+引数は前出の`cv.Sobel()`から`dx`、`dy`を抜いただけです。第4引数の`ksize`がデフォルトの1のときは、次の3×3行列が用いられます。
 
-#### 色付き輪郭
+$$M_x = \begin{pmatrix}
+  0 & 1 & 0 \\
+  1 & -4 & 1 \\
+  0 & 1 & 0
+\end{pmatrix}$$
 
-白い線だけのエッジ検出では素っ気ないので、元画像の上にエッジを描画します。つまり、このような画像を得ます。
+#### cv.Canny関数
 
-<!-- <img src="Images/Ch04/img-canny-2.png"> -->
+34行目では、`cv.Canny`関数を使ってエッジを検出しています。
 
-モノクロの紙面ではわかりませんが、線はピンク色（CSS名でPaleVioletRed）で描かれています。
+```javascript
+ 24      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
+ ︙
+ 30      cv.Laplacian(src, edge, cv.CV_8U, 3);
+```
 
-次の要領で作成します。
+関数の定義を次に示します。
 
-1. `img-canny-1.html`と同じ要領で`cv.Canny()`でエッジ検出をします。このエッジ画像（コードでは`edge`）は、背景が黒、エッジが白です。
-2. エッジ画像を反転します（`edgeReverse`）。これで、背景が白、エッジが黒の画像が得られます。これは、エッジ部分だけを温存するマスク画像として用います。
-3. 単一色で染められた、元画像と同じサイズの画像を用意します（`dstColor`）。この色を適当に選択することで、エッジ部分をその色にすることができます（ここではPaleVioletRed）。
-4. 元画像を、2の反転エッジ画像をマスクに用いて3の画像にコピーします。エッジ部分は黒なのでそこだけ背景色が残り、あとは元画像で埋められます。
+<!-- FunctionDefinition cv.Canny() キャニー法を用いたエッジ検出。-->
+```Javascript
+cv.Canny(                                   // 戻り値なし
+   	cv.Mat image,                           // 入力画像（cv.CV_8U）
+   	cv.Mat edges,                           // 出力画像（cv.CV_8UC1）
+   	number threshold1,                      // 第1閾値（0～255）
+    number threshold2,                      // 第2閾値（0～255）
+    number apertureSize = 3,                // カーネルサイズ（3、5、7）
+    boolean	L2gradient = false              // L2ノルムフラグ
+);
+```
 
-コードを次に示します。
+キャニーエッジ検出の基本はソベルと同じ1次微分フィルタですが、精度向上のための仕掛けがいくつか組み込まれています。関数引数に関係してくるので、やや細かいですが説明を加えます。
+
+1. ガウス平滑化フィルタ（[6.2節](#62-画像をぼかす "INTERNAL")をかけることでノイズを除去します。内部で自動的に行っているので、引数には関係しません。
+2. ソベルフィルタをxとy方向にかけます。第5引数の`apartureSize`がこのときのフィルタサイズです。`cv.Sobel()`のフィルタサイズには1～7の奇数のみしか指定できないので、ここでもこの制約が適用されます。
+3. 結果からエッジの大きさと方向を計算します。
+4. 線と線が重なると太くなってしまいます。そこで、重なりのあるところは1本の細線にします。
+5. 3で計算した強度と大小2つの閾値を比較し、それがエッジあるかを判断します。このときに用いるのが第3引数`threshold1`と第4引数`threshoold2`です。一方が他方より大きければよいので、順番は入れ替えてもかまいません。判断基準を次に示します。エッジ強度をG、閾値大は $\theta_l$、閾値小は $\theta_s$ と書いています。
+
+エッジ強度と閾値の関係 | 判定
+---|---
+$G \ge \theta_l$ | エッジと判定
+$G \le \theta_s$ | エッジではないと棄却
+$\theta_s \leq G \leq \theta_l$ | 他のエッジピクセルと隣り合わせになっていればエッジと判定。でなければ棄却。
+
+閾値小をあまり低い値にするとノイズをエッジと誤検出しやすくなり、閾値大を高い値にするとエッジを見逃しやすくなります。
+
+第6引数`L2gradient`はステップ3のエッジの大きさの計算方法を指定するもので、L1ノルムとL2ノルムから選びます。L1なら`false`を指定します。こちらがデフォルトです。`true`ならL2です。
+
+ノルムというのは距離のことで、次に示す図では左下の点から右上の点に移動するとき距離です。
+
+<!-- ODG に原画あり。564x212 -->
+<img src="Images/Ch06/img-edge-norms.png" width="300">
+
+左はL2ノルムで、対角線を突っ切って始点から終点に行ったときの直線距離です。横と縦の二乗和の平方根から計算できます。右がL1ノルムで、あみだくじのように格子線を通って終点に向かいます。道路が正確な碁盤の目状なら、どの経路でも距離は変わりません。わたしたちは碁盤の目の街というと京都をイメージしますが、ニューヨークのマンハッタンが代表的ということで、これをマンハッタン距離といいます。L1は引き算と絶対値演算だけで計算できるので、L2に比べて高速です。
+
+Cannyアルゴリズムは、OpenCVチュートリアルの「Canny Edge Detection」に詳しく説明されています。興味のあるかたは、次のURLから参照してください。
+
+```https://docs.opencv.org/4.8.0/da/d5c/tutorial_canny_detector.html```
+
+#### コード②
+
+輪郭付きアニメ絵風のコード②`img-edge2.html`は次の通りです。
 
 ```html
-[File] img-canny2.html
+[File] img-edge2.html
   1  <!DOCTYPE html>
   2  <html lang="ja-JP">
   3  <head>
@@ -716,50 +825,618 @@ Cannyアルゴリズムは、OpenCVのチュートリアル「Canny Edge Detecti
   7  </head>
   8  <body>
   9
- 10  <h1>エッジ検出（元画像付き）</h1>
+ 10  <h1>線画の生成（元画像付き）</h1>
  11
  12  <div>
- 13    <img id="imageTag" width="480" src="samples/cable-car.jpg"/>
- 14    <canvas id="canvasTag" class="placeholder"></canvas>
- 15  </div>
- 16
- 17  <script>
- 18    let imgElem = document.getElementById('imageTag');
- 19
- 20    var Module = {
- 21      onRuntimeInitialized: imgProc
- 22    }
- 23
- 24    function imgProc() {
- 25      let srcColor = cv.imread(imgElem);
- 26      let edge = new cv.Mat();
- 27      let edgeReverse = new cv.Mat();
- 28      let dstColor = new cv.Mat(imgElem.height, imgElem.width,
- 29        cv.CV_8UC4, new cv.Scalar(219, 112, 147, 128));
- 30      cv.cvtColor(srcColor, edge, cv.COLOR_RGBA2GRAY);
- 31      cv.Canny(edge, edge, 50, 150);
- 32      cv.bitwise_not(edge, edgeReverse);
- 33      srcColor.copyTo(dstColor, edgeReverse);
- 34      cv.imshow('canvasTag', dstColor);
- 35
- 36      [srcColor, edge, edgeReverse, dstColor].forEach(function(mat){
- 37        mat.delete();
- 38      });
- 39    }
- 40  </script>
- 41
- 42  </body>
- 43  </html>
+ 13    <img id="imageTag" width="240" src="samples/cinquecento.jpg"/>
+ 14    <canvas id="canvasTag1" class="placeholder"></canvas>
+ 15    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 16  </div>
+ 17
+ 18  <script>
+ 19    let imgElem = document.getElementById('imageTag');
+ 20
+ 21    function imgProc() {
+ 22      let src = cv.imread(imgElem);
+ 23      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+ 24
+ 25      let edge = new cv.Mat();
+ 26      cv.cvtColor(src, edge, cv.COLOR_RGB2GRAY);
+ 27      cv.Canny(edge, edge, 50, 150);
+ 28      cv.bitwise_not(edge, edge);
+ 29      cv.imshow('canvasTag1', edge);
+ 30
+ 31      let color = new cv.Scalar(50, 50, 50);
+ 32      let bg = new cv.Mat(imgElem.height, imgElem.width, cv.CV_8UC3, color);
+ 33
+ 34      let fg = new cv.Mat();
+ 35      cv.bilateralFilter(src, fg, 7, 75, 75, cv.BORDER_DEFAULT);
+ 36
+ 37      fg.copyTo(bg, edge);
+ 38      cv.imshow('canvasTag2', bg);
+ 39
+ 40      [src, edge, bg, fg].forEach(m => m.delete());
+ 41    }
+ 42
+ 43    var Module = {
+ 44      onRuntimeInitialized: imgProc
+ 45    }
+ 46  </script>
+ 47
+ 48  </body>
+ 49  </html>
 ```
 
-ポイントは28行目です。`cv.Mat`を生成するときに縦横のサイズと元画像（`imgElem`）に合わせ、同じデータ型（`cv.8UC4`）とし、背景色を`cv.Scalar`で埋めています。RGBの値はPaleVioletRedのもので、アルファチャネルは半分透過（128）にしていますが、好みの値に変更してください。あとは、33行目でこの単一色画像に、エッジの反転画像（32行目）をマスクにして元画像をコピーする（33行目）だけです。
+#### 要領
+
+輪郭付きアニメ絵風画像は`cv.Canny()`と`cv.bilateralFilter()`の組み合わせで生成します。
+
+①`img-edge1.html`同様、`cv.Canny()`でエッジ検出をします（27行目）。このエッジ画像は、背景が黒、エッジが白です。
+
+```javascript
+ 25      let edge = new cv.Mat();
+ 26      cv.cvtColor(src, edge, cv.COLOR_RGB2GRAY);
+ 27      cv.Canny(edge, edge, 50, 150);
+```
+
+②エッジ画像はマスクに使います。エッジ部分以外を前景として元画像をコピーしたいので、背景を白、エッジを黒に反転します（28行目)。
+
+```javascript
+ 28      cv.bitwise_not(edge, edge);
+```
+
+③単一色で染めた、元画像と同じサイズの画像を用意します（29行目）。この色が線色になります。ここでは(50, 50, 50）のやや濃い目のグレーを用いています。
+
+```javascript
+ 31      let color = new cv.Scalar(50, 50, 50);
+ 32      let bg = new cv.Mat(imgElem.height, imgElem.width, cv.CV_8UC3, color);
+```
+
+④元画像に`cv.bilateralFilter()`をかけることで、アニメ絵風にします（35行目）。
+
+```javascript
+ 34      let fg = new cv.Mat();
+ 35      cv.bilateralFilter(src, fg, 7, 75, 75, cv.BORDER_DEFAULT);
+``` 
+
+④元画像を、②の反転エッジ画像をマスクに用いて③の画像にコピーします。エッジ部分は黒なのでそこだけ背景色が残り、あとは元画像で埋められます。
+
+```javascript
+ 37      fg.copyTo(bg, edge);
+``` 
+
+### 6.4 QRコードを読む
+<!-- OpenCV には QRCodeEncoder クラスがあるが、OpenCV.js には実装されていない。Python で試したが、使い方がわからなくて core dump する。生成には Python の pip qrcode を使うとよい -->
+<!-- BE/LE の bytes を読む Node.js の Buffer.readFloat32BE/LE は普通の js には実装されていない。-->
+
+#### 目的
+
+画像に埋め込まれたQRコードを読み取ります。また、回転した状態でもコードが読み取れることも確認します。
+
+技術的には、`cv.QRCodeDetector()`クラスを紹介します。クラスには複数のコードを一気に読み取る、図形の検出と解読をまとめて行うなどのコンビニエンス機能が用意されていますが、ここでは対象は1つにかぎり、処理も検出とデコードを個別に行います。また、検出位置を確認できるように画像上に矩形を描きますが、これにはOpenCVのグラフィックス機能の`cv.polylines()`関数を使います。
+
+実行例を次の画面に示します。
+
+<img src="Images/Ch06/img-qrcode-1.png">
+
+左の画像ではウォールペーパーの上で18秒に1回の速さで回転しています。左下のボタンをクリックすると画像がキャプチャされ、QRコードが読み込まれます。結果はボタン脇に表示されます。ここではURLです。右はキャプチャ時点を示すキャンバスで、検出したコードの周囲に枠線を引いています。
+
+コンソールにもいろいろ出力されますが、その部分を説明するときに順に示します。
+
+#### コード
+
+コード`img-qrcode.html`は次の通りです。
+
+```html
+
+[File] img-qrcode.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>QRコードを読む</p>
+ 11
+ 12  <div>
+ 13    <img id="imgTagBg" src="samples/wallpaper.jpg" class="hide"/>
+ 14    <img id="imgTagQr" src="samples/qr.png" class="hide"/>
+ 15    <canvas id="canvasTag1"></canvas>
+ 16    <canvas id="canvasTag2"></canvas>
+ 17  </div>
+ 18  <div>
+ 19    <input type="button" id="buttonTag" value="Click" class="click"/>
+ 20    <span id="spanTag" width="100">解読結果</span>
+ 21  </div>
+ 22
+ 23
+ 24  <script>
+ 25    let imgElemBg = document.getElementById('imgTagBg');
+ 26    let imgElemQr = document.getElementById('imgTagQr');
+ 27    let canvasElem1 = document.getElementById('canvasTag1');
+ 28    let ctx = canvasElem1.getContext('2d');
+ 29    let buttonElem = document.getElementById('buttonTag');
+ 30    let spanElem = document.getElementById('spanTag');
+ 31    let deg = 0;
+ 32
+ 33    function rotate(deg=0) {
+ 34      let side = 400;
+ 35      canvasElem1.width = canvasElem1.height = side;
+ 36      ctx.drawImage(imgElemBg, 0, 0, canvasElem1.width, canvasElem1.height);
+ 37      ctx.translate(side/2, side/2);
+ 38      ctx.rotate(deg * Math.PI / 180);
+ 39      ctx.drawImage(imgElemQr,
+ 40        0, 0, imgElemQr.width, imgElemQr.height,
+ 41        -imgElemQr.width/2, -imgElemQr.height/2, imgElemQr.width, imgElemQr.height);
+ 42    }
+ 43
+ 44    function decodePoints(points) {
+ 45      let floatArr = [];
+ 46      for(let c=0; c<points.cols; c++)
+ 47        floatArr.push([...points.floatPtr(0, c)]);
+ 48      return floatArr;
+ 49    }
+ 50
+ 51    function drawPoly(img, points) {
+ 52      cv.cvtColor(img, img, cv.COLOR_RGBA2RGB);
+ 53      let mv = new cv.MatVector();
+ 54      let mat = new cv.Mat();
+ 55      points.convertTo(mat, cv.CV_32SC2);
+ 56      mv.push_back(mat);
+ 57      cv.polylines(img, mv, true, new cv.Scalar(255, 255, 0), 5);
+ 58      cv.imshow('canvasTag2', img);
+ 59      [mv, mat].forEach(m => m.delete());
+ 60    }
+ 61
+ 62    function imgProc() {
+ 63      console.log(`Click at ${deg}°`);
+ 64      let imgData = ctx.getImageData(0, 0, canvasElem1.width, canvasElem1.height);
+ 65      let src = cv.matFromImageData(imgData);
+ 66
+ 67      let detector = new cv.QRCodeDetector();
+ 68      let gray = new cv.Mat();
+ 69      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+ 70      let points = new cv.Mat();
+ 71      let ret = detector.detect(gray, points);
+ 72      console.log(`Detected: ${ret}.
+ 73        rows=${points.rows}, cols=${points.cols}, type=${points.type()}`);
+ 74
+ 75      let text = detector.decode(src, points);
+ 76      spanElem.innerHTML = text;
+ 77
+ 78      let floatArr = decodePoints(points);
+ 79      console.log('Point data: ', floatArr);
+ 80      drawPoly(src, points);
+ 81
+ 82      [src, points, detector].forEach(m => m.delete());
+ 83    }
+ 84
+ 85    function setup() {
+ 86      setInterval(function() {
+ 87        rotate(deg);
+ 88        deg = (deg + 1 % 360);
+ 89      }, 50);
+ 90    }
+ 91
+ 92    window.addEventListener('load', setup);
+ 93    var Module = {
+ 94      onRuntimeInitialized: function() {
+ 95        buttonElem.addEventListener('click', imgProc);
+ 96      }
+ 97    }
+ 98  </script>
+ 99
+100  </body>
+101  </html>
+```
+
+<!-- See https://misc.laboradian.com/html5/rotate-image-canvas-sample/001/ -->
+ウォールペーパーとサンプルQRコードは`<img>`で読み込みますが（13～14行目）、CSSの`display: none;`から非表示にしています。これらは`<canvas>`に重ねて貼り付けることで可視にします（15行目）。ウォールペーパーを背景にQRコードを回転させているのが`rotate()`関数（33～42行目）です。ウォールペーパーとQRコードの画像中心を合わせ、後者を回転するのは描画コンテクストの機能だけで達成しているので、とくに説明は必要ないでしょう。
+
+ボタンクリックで呼び出される`imgProc()`関数でQRコードの処理をします。回転QRコードのキャンバスをそのままコピーするには`CanvasRenderingContext2D.getImageData()`、得られた`ImageData`から`cv.Mat`を生成するには`cv.matFromImageData()`を用います（64～65行目）。要領は[4.2節](./04-mat.md#42-キャンバスをコピーする "INTERNAL")で説明しました。
+
+```javascript
+ 63      let imgData = ctx.getImageData(0, 0, canvasElem1.width, canvasElem1.height);
+ 65      let src = cv.matFromImageData(imgData);
+```
+
+#### cv.QRCodeDetectorクラス
+
+QRコードの検出と解読には、まず`cv.QRCodeDetector`クラスをインスタンス化します（67行目）。
+
+```javascript
+ 67      let detector = new cv.QRCodeDetector();
+```
+
+コンストラクタには引数はありません。戻り値はクラスオブジェクトです。コンストラクタの定義を次に示します。
+
+<!-- FunctionDefinition cv.QRCodeDetector() QRコードの検出と解読を行うクラスのコンストラクタ。 -->
+```Javascript
+cv.QRCodeDetector = cv.QRCodeDetector();    // インスタンスを返す
+```
+
+#### cv.QRCodeDetector.detect関数
+
+画像中のQRコードの位置（4隅の座標）を`cv.QRCodeDetector`のメンバ関数`detect()`から取得します（71行目）。
+
+```javascript
+ 68      let gray = new cv.Mat();
+ 69      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+ 70      let points = new cv.Mat();
+ 71      let ret = detector.detect(gray, points);
+ 72      console.log(`Detected: ${ret}.
+ 73        rows=${points.rows}, cols=${points.cols}, type=${points.type()}`);
+```
+
+入力画像画像はモノクロ（1チャネル）でなければならないので、ここで色変換します（68～69行目）。カラーでも検出はできますが、色空間はOpenCVネイティブのBGRでなければなりません。結果の座標は`cv.Mat`に収容されて返ってくるので、空のものをあらかじめ用意します（70行目）。
+
+関数定義を次に示します。
+<!-- FunctionDefinition cv.QRCodeDetector.detect() QRコードの4隅を検出する。 -->
+```Javascript
+boolean cv.QRCodeDetector.detect(           // 真偽値
+    cv.Mat img,                             // 入力画像
+    cv.Mat ponts,                           // 出力（座標値）
+);
+```
+
+関数はコードが検出されたら`true`を、、でなかったら`false`を返します。
+
+第2引数`points`は1行4列の2チャネル`cv.Mat`を返します。データ型は`cv.CV_32FC2`（整数値で13）です。このことを確認しているのが72～73行目です。コンソールの値を次に示します。
+
+```
+Detected: true.
+      rows=1, cols=4, type=13
+```
+
+ここから4点の座標を取り出す方法はあとで説明します。
+
+#### cv.QRCodeDetector.decode関数
+
+QRコードを含んだ画像とコードの4隅の座標値から中身のデータを取り出すには、`cv.QRCodeDetector`のメンバ関数`decode()`を用います（75行目）。
+
+```javascript
+ 75      let text = detector.decode(src, points);
+ 76      spanElem.innerHTML = text; 
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.QRCodeDetector.decode() QRコードを解読する。 -->
+```Javascript
+string cv.QRCodeDetector.decde(             // 文字列を返す
+    cv.Mat img,                             // 入力画像
+    cv.Mat points,                          // 出力（座標値）
+    cv.Mat straight_code = noArray()        // バイナリコード
+);
+```
+
+戻り値はUTF-8文字列です。戻り値は第1引数`img`にはQRコードを含んだ画像を、第2引数`points`には`detect()`で取得した`cv.Mat`を指定します。第3引数はバイナリコードを返しますが、オプションなので使いません。
+
+ここでは戻り値の文字列をそのまま`<span>`（20行目）に書き込んでいます。
+
+#### 点の情報
+
+`cv.QRCodeDetector.detect()`の返す`cv.Mat`は4×1の2チャネル32ビット浮動小数点数で、次の図のようにチャネル0にx座標4つが、チャネル1にy座標4つが、それぞれ別個に縦に並んでいます。
+
+<!-- ODG に原画あり。424 x 295 -->
+<img src="Images/Ch06/img-qrcode-points.png" width="300">
+
+このままでは読みにくいので、[[x0, y0], [x1, y1], [x2, y2], [x3, y3]]の格好の配列の配列に直します。これをやっているのが44～49行目の`decodePoints()`関数です。
+
+```javascript
+ 44    function decodePoints(points) {
+ 45      let floatArr = [];
+ 46      for(let c=0; c<points.cols; c++)
+ 47        floatArr.push([...points.floatPtr(0, c)]);
+ 48      return floatArr;
+ 49    }
+```
+
+`cv.Mat`には`data`プロパティがあり、数値のバイナリデータを収容しています。ここではIEEE 754の単精度小数点数です（[4.5節](./04-mat.md#45-浮動小数点数で円を描く "INTERNAL")参照）。`cv.Mat.data`から行列位置を指定して値を得るには、[4.3節](./04-mat.md#43-ピクセルの色名を判定する "INTERNAL")で使った`cv.Mat.ucharPtr()`の32ビット浮動小数点数版の`cv.Mat.floatPtr()`です（47行目）。この関数は、チャネル数ぶんの値を収容した同じ型の`TypedArray`を返します。ここでは、それをいったん2要素の配列に直してから外側の配列に収容しています。
+
+これで、4点ぶんの浮動小数点数が得られました。78行目でこれを確認のためにコンソールに出力しています。例を次に示します（読みやすいように手で整形しています）。
+
+```javascript
+Point data: [
+  [162, 87],
+  [313.3069152832031, 162.72605895996094],
+  [236.28421020507812, 313.1889953613281],
+  [85.53795623779297, 236.69090270996094]
+]
+```
+#### 多角形を描く
+<!-- See https://stackoverflow.com/questions/68289572/how-to-use-cv-polylines-in-opencv-js -->
+
+最後に、座標値から画像`src`（64行目）に矩形を描きます（51～60行目）。これには、頂点のリストを与えることで、それら頂点を線でつないで描画する`cv.polylines()`関数を使います。
+
+```javascript
+ 51    function drawPoly(img, points) {
+ 52      cv.cvtColor(img, img, cv.COLOR_RGBA2RGB);
+ 53      let mv = new cv.MatVector();
+ 54      let mat = new cv.Mat();
+ 55      points.convertTo(mat, cv.CV_32SC2);
+ 56      mv.push_back(mat);
+ 57      cv.polylines(img, mv, true, new cv.Scalar(255, 255, 0), 5);
+ 58      cv.imshow('canvasTag2', img);
+ 59      [mv, mat].forEach(m => m.delete());
+ 60    }
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.polylines() 頂点を線で連結したグラフィックスを描く。 -->
+```Javascript
+cv.polylines(                               // 戻り値なし
+    cv.Mat img,                             // 描画対象の画像
+    cv.MatVector points,                    // 頂点のリスト
+    cv.Scalar color,                        // 線色
+    number thickness = 1,                   // 線の太さ
+    number lineType = cv.LINE_8,            // 線の種類
+    number shift = 0                        // 小数部分のビット数
+);
+```
+
+第2引数`points`は[5.4節](./05-colors.md#54-RGB画像を色成分に分解する "INTERNAL")で説明した、複数の`cv.Mat`を収容するコンテナの`cv.MatVector`です（53行目）。複数といいつつ、ここでは要素は1つだけです。要素のデータ型は2チャネル32ビット符号あり整数（`cv.CV_32SC2`）でなければならないので、`cv.QRCodeDetector.detect()`の戻り値をそのままでは使えません。そこで、`cv.Mat.convertTo()`関数から型変換をします（55行目）。
+
+第3引数`color`は色で、`cv.Scalar`から指定します。OpenCVのグラフィック関数はアルファチャネルに対応していないので、キャンバスから読んだRGBAはRGBに変換しておきます（52行目）。
+
+以降の引数はオプションです。
+
+第4引数`thickness`は線の太さをピクセル単位で示します。ここでは5を指定しています。太い線は多角形の外側に描かれます。
+
+第5引数`lineType`の線種はあとから説明します。
+
+第6引数`shift`は座標値に小数点数を用いるときに使うものです。画像処理ではピクセルとピクセルの間にサブピクセルと呼ばれる仮想的なピクセルを考えることで計算精度を高めることがありますが、そのときに使います。デフォルトは0です（小数点数扱いしない）。
+
+#### 線種
+
+OpenCVの多角形や直線の描画関数では、次の表に示す3つの線種から1つを指定できます。デフォルトは8連結です。
+
+`lineType`定数 | 線種名 | 斜線（原寸） | 斜線（拡大）
+---|---|---|---
+`cv.LINE_4` | 4連結（Bresenhamアルゴリズム） | ![line-4](Images/Ch06/line-types/line-4.png) | ![line-4-enlarge](Images/Ch06/line-types/line-4-enlarge.png)
+`cv.LINE_8` | 8連結（デフォルト） | ![line-4](Images/Ch06/line-types/line-8.png) | ![line-4-enlarge](Images/Ch06/line-types/line-8-enlarge.png)
+`cv.LINE_AA` | アンチエイリアス | ![line-4](Images/Ch06/line-types/line-aa.png) | ![line-4-enlarge](Images/Ch06/line-types/line-aa-enlarge.png)
+
+`cv.LINE_4`は4連結と呼ばれる線種で、格子状の整数平面に1点ずつ点をプロットしながら線を描画するときに、上下左右の4方向に移動しながら描画する方法です。チェスの駒がその軌跡で線を引いていくとしたら、ルークのようにしか動けない描きかたです。高速ですがギザギザな線になります。
+
+`cv.LINE_8`は8連結で、上下左右斜めの8方向に動くものです（チェスのクィーン）。斜めに移動することができるぶん、4連結よりも若干細く描画されます。
+
+`cv.LINE_AA`は線を背景の色になじむようににじませす。ギザギザな4連結や8連結と異なり、線がスムースに見えます。この手法をアンチエイリアスといい、AAはそこからきています。
+
+
+
+### 6.5 電線を消す
+
+#### 目的
+
+画像から電線や金網などの細線を消去します。
+
+技術的には、モルフォロジー演算と呼ばれるテクニックを用います。OpenCVの関数は`cv.morphologyEx()`です。モルフォロジー演算は細線以外にも影響を与えるため、細線のなくなった画像からマスク画像を生成し、これらと元画像を合成します。この後処理は、[5.8節](./05-colors.md#58-背景を入れ替える（輝度調整付き） "INTERNAL")の`cv.threshold()`と`cv.Mat.copyTo()`の組み合わせ技と同じです。
+
+実行例を次の画面に示します。
+
+<img src="Images/Ch06/img-morph-1.png">
+
+左上が元画像です。右上はモルフォロジー演算のなかでもクロージングと呼ばれるタイプの処理を適用したものです。水平に走る電線が消えましたが、メインの電柱と変圧器が水彩画が水でにじんだような感じになっています。
+
+このにじみを解消しているのが下段の画像です。左下は、モルフォロジー処理後の画像から`cv.threhold()`で生成したマスク画像です。右下はモルフォロジー画像に、このマスクをかけた元画像をコピーしたものです。にじみが（すべての点ではないにしても）戻っています。
+
+画面上部のプルダウンメニューでは、モルフォロジー演算時のカーネルの構造を指定できます（後述）。
+
+#### コード
+
+コード`img-morph.html`を次に示します。
+
+```html
+[File] img-morph.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>電線を消す</h1>
+ 11
+ 12  <div>
+ 13    <select id="selectTag">
+ 14      <option value="111111111" selected>すべて1</option>
+ 15      <option value="010010010">縦線</option>
+ 16      <option value="000111000">横線</option>
+ 17    </select>
+ 18  </div>
+ 19  <div>
+ 20    <img width="360" id="imageTag" src="samples/power-pole.jpg"/>
+ 21    <canvas id="canvasTag1" class="placeholder"></canvas>
+ 22    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 23    <canvas id="canvasTag3" class="placeholder"></canvas>
+ 24  </div>
+ 25
+ 26
+ 27  <script>
+ 28    let imgElem = document.getElementById('imageTag');
+ 29    let selectElem = document.getElementById('selectTag');
+ 30
+ 31    function imgProc() {
+ 32      let src = cv.imread(imgElem);
+ 33
+ 34      let kernelArray = selectElem.value.split('').map(i => Number(i));
+ 35      let kernel = cv.matFromArray(3, 3, cv.CV_8UC1, kernelArray);
+ 36
+ 37      let morph = new cv.Mat();
+ 38      let anchor = new cv.Point(-1, -1);
+ 39      cv.morphologyEx(src, morph, cv.MORPH_CLOSE, kernel, anchor, 1);
+ 40      cv.imshow('canvasTag1', morph);
+ 41
+ 42      let mask = new cv.Mat();
+ 43      cv.cvtColor(morph, mask, cv.COLOR_RGBA2GRAY);
+ 44      cv.threshold(mask, mask, 128, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+ 45      console.log('ready');
+ 46      cv.imshow('canvasTag2', mask);
+ 47
+ 48      src.copyTo(morph, mask);
+ 49      cv.imshow('canvasTag3', morph);
+ 50
+ 51      [src, kernel, morph, mask].forEach(m => m.delete());
+ 52    }
+ 53
+ 54    function opencvReady() {
+ 55      selectElem.addEventListener('change', imgProc);
+ 56      imgProc();
+ 57    }
+ 58
+ 59    var Module = {
+ 60      onRuntimeInitialized: opencvReady
+ 61    }
+ 62  </script>
+ 63
+ 64  </body>
+ 65  </html>
+```
+
+`<select>`オプションの値は、モルフォロジー演算で用いるカーネルを0と1の9つの数字で表現しています（14~16行目）。これらは1文字ずつに分解して数値の配列に直すことで、`cv.matFromArray()`を使って3×3で`cv.CV_8UC1`の`cv.Mat`に変換します（35行目）。
+
+```javascript
+ 34      let kernelArray = selectElem.value.split('').map(i => Number(i));
+ 35      let kernel = cv.matFromArray(3, 3, cv.CV_8UC1, kernelArray);
+```
+
+#### モルフォロジー演算
+
+モルフォロジー演算の原理を説明します。
+
+モルフォロジー演算には膨張（dilate）、収縮（erode）、オープニング（opening）、クロージング（closing）の4つのタイプがあります。いずれも畳み込み演算と同じで、3×3などのカーネル（フィルタ）をすべてのピクセルについて適用します。
+
+白黒画像から説明します。白が前景、黒が背景と考えてください。
+
+膨張は次の図に示すように、カーネルサイズ内に1つでも白があったら、その域内をすべて白にする操作です。
+
+<!-- ODG に原画あり。1060×308 -->
+<img src="Images/Ch06/img-morph-dilate.png" width="600">
+
+左手が処理前の状態です。灰色の丸が注目ピクセル、そのカーネルは点線の枠線です。このとき、前景のテトリスブロックもどきの1点がカーネルに含まれているので、カーネル範囲をすべて白にします（中央）。この操作を画像全体に対して施すと、図右手のように前景の輪郭が膨れ上がります。また、輪郭のでこぼこが減ります。
+
+図にはありませんが、背景の黒がカーネル以上に広がっているところでは、カーネルに1点も白が含まれていないため、膨張操作をしてもままっくろが保たれます。
+
+収縮は次の図に示すように、カーネル内に1つでも黒があったら、その域内をすべて黒にする操作です。
+
+<!-- ODG に原画あり。1068×308 -->
+<img src="Images/Ch06/img-morph-erode.png" width="600">
+
+操作要領は、白黒が反転しているだけで膨張と変わりませんが、白い前景が黒で塗りつぶされます。これにより、電線や野球場のバックネットなどの細線が背景に溶け込んで見えなくなります。前景がカーネルサイズに比べて十分に大きければ、前景は残りますが輪郭部分がやや浸食されます。
+
+前景（明るいほう）は膨張では膨らみ、収縮では縮こまります。これだと、前景のサイズが変わってしまいます。そこで、膨張したら収縮する、あるいは収縮したら膨張するのように、反対の操作を組み合わせることでサイズを戻します。膨張＞収縮をクロージング、収縮＞膨張をオープニングといいます。本節のように細線を消したいときは先に収縮するので、オープニングを使います。
+
+1回のオープニングあるいはクロージングでは思った効果が得られないこともあります。その場合は、同じことを何回も繰り返します。
+
+#### 構造要素の形状
+
+先ほどの説明で、「1つでも」白か黒があれば域内を塗り潰すと述べました。この条件はカーネルを構成する行列から変更できます。カーネルの要素を0と1だけとし、収縮なら1の箇所に白が1つでもあればそこを黒で塗りつぶします。0のところに白があっても無視します。このカーネルは構造要素と呼ばれています。
+
+「1つでも」のケースでは、構造要素はすべて1の行列です。本節のコードでは、14行目のオプションの111111111がこれです。
+
+$$\begin{pmatrix}
+  1 & 1 & 1 \\
+  1 & 1 & 1 \\
+  1 & 1 & 1
+\end{pmatrix}$$
+
+中央行だけ、横一列に1の並んだカーネルというのも考えられます。
+
+$$ K_{横線} \begin{pmatrix}
+  0 & 0 & 0 \\
+  1 & 1 & 1 \\
+  0 & 0 & 0
+\end{pmatrix}$$
+
+これを前述の縮小処理の模式図に当てはめると、白ピクセルはカーネルの左下に1つありますが、そこはカーネルでは1ではありません。そこで、ここでは塗りつぶしはしません。
+
+同様に、中央列だけ縦一列に並んだカーネルも可能です。
+
+$$ K_{縦線} \begin{pmatrix}
+  0 & 1 & 0 \\
+  0 & 1 & 0 \\
+  0 & 1 & 0
+\end{pmatrix}$$
+
+次に、中央行横一列カーネルと中央列縦一列カーネルを本節のサンプルに適用したところを示します。
+
+<!-- いずれも 360x222。枠なしバージョンあり -->
+横一列 | 縦一列
+---|---
+<img src="Images/Ch06/img-morph-3.png" width="200"> | <img src="Images/Ch06/img-morph-2.png" width="200">
+
+画像からわかるように、横一列カーネルは水平に走る送電線は温存しますが、設備を縦に走るケーブルは削除しています。縦一列のものは反対に送電線がなくなりますが、垂直に落ちるケーブルは残しています。
+
+モルフォロジー変換については、次にURLが示すOpenCVチュートリアルの翻訳がていねいなのでそちらを参照してください。2016年から更新された気配がありませんが（おそらく鳥取大にあるアーカイブ）、技術に変わりはありません。
+
+````http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html```
+
+#### cv.morphologyEx関数
+
+コードでモルフォロジー演算のオープニング操作をしているのは39行目の`cv.morphologyEx()`関数です。
+
+```javascript
+ 37      let morph = new cv.Mat();
+ 38      let anchor = new cv.Point(-1, -1);
+ 39      cv.morphologyEx(src, morph, cv.MORPH_CLOSE, kernel, anchor, 1);
+ 40      cv.imshow('canvasTag1', morph);
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.morphologyEx() モルフォロジー演算をする。 -->
+```Javascript
+cv.morphologyEx(                            // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    number op,                              // 演算タイプ
+    cv.Point anchor,                        // アンカーポイント
+    number iteration = 1,                   // 繰り返し回数
+    number borderType = cv.BORDER_CONSTANT  // 画像端でのピクセルの推定方法
+    Array borderValue = cv.morphologyDefaultBorderValue()  // 境界値
+);
+```
+
+第3引数には、操作タイプを次の表に示すOpenCVの定数から指定します。
+
+タイプ | 演算内容
+---|---
+`cv.MORPH_ERODE` | 収縮処理
+`cv.MORPH_DILATE` | 膨張処理
+`cv.MORPH_OPEN` | オープニング処理（収縮してから膨張）
+`cv.MORPH_CLOSE` | クロージング処理（膨張してから収縮）
+
+第1引数`src`には入力の、第2引数`dst`には出力の`cv.Mat`をそれぞれ指定します。入力画像にチャネル数の制約はありません。複数チャネルならば、それぞれのチャネルにモルフォロジー演算が施されます。出力はサイズもデータ型も入力に合わせられます。
+
+第3引数`op`にはカーネルを指定します。カーネルの大きさは任意ですが、畳み込み演算と同じく、奇数の正方形を用いるのが普通です。
+
+第4引数`anchor`は[6.2節](#62-画像をぼかす "INTERNAL")の`cv.blur()`と同じもので、注目ピクセルの位置です。デフォルトのまま使うことが多いのですが、39行目では続く第5引数を指定したいので、デフォルト値を引数に指定しています。
+
+第5引数`iteration`は処理の繰り返し回数です。`cv.MORPH_OPEN`で2を指定すると、収縮＞膨張＞収縮＞膨張と処理を繰り返します。1回だけでは効果が現れないときに指定します。39行目ではデフォルト1を指定していますが、他の値も試してください。
+
+第6引数`borderType`も[6.2節](#62-画像をぼかす "INTERNAL")の`cv.blur()`と同じもので、画像端でのピクセルの推定方法を定数から指定します。デフォルトは`cv.BORDER_CONSTANT`です。
+
+第7引数`borderValue`は第6引数が`cv.BORDER_CONSTNAT`のときの固定値を指定します。リファレンスは、関数定義に示されている関数から得られるデフォルト値には特別な意味があると書いています。その値は、コンソールから確認すると次の値です。
+
+```javascript
+> cv.morphologyDefaultBorderValue() 
+< (4)[1.7976931348623157e+308, 1.7976931348623157e+308,
+      1.7976931348623157e+308, 1.7976931348623157e+308]
+```
+
+モルフォロジー演算を施した画像が得られれば、あとはこれに元画像を貼り付けるだけです。元画像に貼り付ける（`morph.copyTo(src)`）ではなく、元画像を貼り付ける（`src.copyTo(morph)`）なところに注意してください。元画像からは送電線を除いた電柱と変圧器などだけをマスクを使ってコピーしたいからです。 `cv.threshold()`と`cv.Mat.copyTo()`はすでに取り上げたので、説明は割愛します。
+
 
 
 ### 6.4 顔を検出する
 
-### 6.5 QRコードを読む
-
-<!-- OpenCV には QRCodeEncoder クラスがあるが、OpenCV.js には実装されていない。Python で試したが、使い方がわからなくて core dump する。生成には Python の pip qrcode を使うとよい -->
 
 ### 6.6 画像の傷を補修する
 

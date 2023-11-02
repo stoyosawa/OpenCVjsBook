@@ -553,7 +553,7 @@ C/C++のデータ型 | OpenCV.jsのデータ型 | 注意
 `String` | `string`
 `InputArray`、`OutputArray` | `cv.Mat` | `Input`は入力画像の、`Output`は結果画像を収容するコンテナをそれぞれ指す。
 `Mat` | `cv.Mat` | 画像のコンテナ。[4.1節](./04-mat.md#41-画像の構造を調べる "INTERNAL")参照。
-`std::vector<Mat>` | `cv.MatVector` | 画像を複数収容した配列（C++の`Vector`）。
+`std::vector<Mat>` | `cv.MatVector` | 画像を複数収容した配列（C++の`Vector`）。[5.4節](./05-colors.md#54-RGB画像を色成分に分解する "INTERNAL")参照。
 `Point` | `cv.Point` | 画像ピクセルの(x, y)座標を収容する構造体。`Point2f`のように付加情報が加わっているときは中のデータ数とその型を示す（`2f`は2個の浮動小数点数型）。[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")参照。
 `Rect` | `cv.Rect` | 四角形の形状（x, y, width, height)を指定する構造体。[4.7節](./04-mat.md#47-部分領域だけ処理する "INTERNAL")参照。
 `Scalar` | `cv.Scalar` | 複数（1～4）の数値を収容する構造体。[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")参照。

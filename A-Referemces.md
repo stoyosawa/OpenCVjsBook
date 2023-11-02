@@ -6,9 +6,6 @@
 
 <!-- 国旗絵文字は絵文字コード2つからなる。Sublime Text 3 ではまだ対応していないが、ブラウザなら OK。🇯🇵 U+1F1EF U+1F1F5 🇺🇸 U+1F1FA U+1F1F8 -->
 
-- [Canny Edge Detection](https://docs.opencv.org/3.4/da/d22/tutorial_py_canny.html "LINK") 🇺🇸 https://docs.opencv.org/3.4/da/d22/tutorial_py_canny.html  
-OpenCVチュートリアルに掲載されている、Cannyエッジ検出アルゴリズムの詳細な説明です。サンプルコードはPythonで書かれていますが、理論を学ぶぶんには何語でもかまわないでしょう。
-
 - [emscripten](https://emscripten.org/ "LINK") 🇺🇸 `https://emscripten.org/`  
 C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるようにコンパイルしたコンパイラ。たとえば`Module`のAPIを知りたいときに参照しますが、OpenCV.jsの開発者でもなければ触れることもないでしょう。
 
@@ -42,6 +39,18 @@ OpenCV本家のメインページ。メソッド・関数の仕様なら［Docum
 
 - [OpenCV](https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html`  
 OpenCVのグラフィックス描画関数一覧。
+
+- [OpenCVチュートリアル Canny Edge Detection](https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html`  
+OpenCVチュートリアルに掲載されているCannyフィルタのの理論的解説と関数用法の説明。
+
+- [OpenCVチュートリアル Laplace Operator](https://docs.opencv.org/4.8.0/d5/db5/tutorial_laplace_operator.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d5/db5/tutorial_laplace_operator.html`  
+OpenCVチュートリアルに掲載されているLaplacianフィルタのの理論的解説と関数用法の説明。
+
+- [OpenCVチュートリアル Sobel Derivatives](https://docs.opencv.org/4.8.0/d2/d2c/tutorial_sobel_derivatives.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d2/d2c/tutorial_sobel_derivatives.html`  
+OpenCVチュートリアル記載のSobelフィルタの理論的解説と関数用法の説明。
+
+- [OpenCVチュートリアル モルフォロジー変換](http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html "LINK") 🇯🇵 `http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html`  
+古いOpenCVチュートリアルの翻訳のおそらくはアーカイブ（アーカイブ元は鳥取大の先生）。モルフォロジー演算について日本語で学べます。
 
 - [OpenCV.jp](http://opencv.jp/ "LINK") 🇯🇵 `http://opencv.jp/`  
 日本のOpenCVユーザによる非公式なマニュアル翻訳。Version 2のものなのでかなり古いですが、最新機能には触れない本書の範囲内ではさほど問題にはなりません。さくっと理解するのには便利でしょう。

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>QRコードを読む</p>
+
+<div>
+  <img id="imgTagBg" src="samples/wallpaper.jpg" class="hide"/>
+  <img id="imgTagQr" src="samples/qr.png" class="hide"/>
+  <canvas id="canvasTag1"></canvas>
+  <canvas id="canvasTag2"></canvas>
+</div>
+<div>
+  <input type="button" id="buttonTag" value="Click" class="click"/>
+  <span id="spanTag" width="100">解読結果</span>
+</div>
+
+
+<script>
+  let imgElemBg = document.getElementById('imgTagBg');
+  let imgElemQr = document.getElementById('imgTagQr');
+  let canvasElem1 = document.getElementById('canvasTag1');
+  let ctx = canvasElem1.getContext('2d');
+  let buttonElem = document.getElementById('buttonTag');
+  let spanElem = document.getElementById('spanTag');
+  let deg = 0;
+
+  function rotate(deg=0) {
+    let side = 400;
+    canvasElem1.width = canvasElem1.height = side;
+    ctx.drawImage(imgElemBg, 0, 0, canvasElem1.width, canvasElem1.height);
+    ctx.translate(side/2, side/2);
+    ctx.rotate(deg * Math.PI / 180);
+    ctx.drawImage(imgElemQr,
+      0, 0, imgElemQr.width, imgElemQr.height,
+      -imgElemQr.width/2, -imgElemQr.height/2, imgElemQr.width, imgElemQr.height);
+  }
+
+  function decodePoints(points) {
+    let floatArr = [];
+    for(let c=0; c<points.cols; c++)
+      floatArr.push([...points.floatPtr(0, c)]);
+    return floatArr;
+  }
+
+  function drawPoly(img, points) {
+    cv.cvtColor(img, img, cv.COLOR_RGBA2RGB);
+    let mv = new cv.MatVector();
+    let mat = new cv.Mat();
+    points.convertTo(mat, cv.CV_32SC2);
+    mv.push_back(mat);
+    cv.polylines(img, mv, true, new cv.Scalar(255, 0, 0), 5);
+    cv.imshow('canvasTag2', img);
+    [mv, mat].forEach(m => m.delete());
+  }
+
+  function imgProc() {
+    console.log(`Click at ${deg}°`);
+    let imgData = ctx.getImageData(0, 0, canvasElem1.width, canvasElem1.height);
+    let src = cv.matFromImageData(imgData);
+
+    let detector = new cv.QRCodeDetector();
+    let gray = new cv.Mat();
+    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+    let points = new cv.Mat();  
+    let ret = detector.detect(gray, points);
+    console.log(`Detected: ${ret}.
+      rows=${points.rows}, cols=${points.cols}, type=${points.type()}`);
+
+    let text = detector.decode(src, points);
+    spanElem.innerHTML = text;
+
+    let floatArr = decodePoints(points);
+    console.log('Point data: ', floatArr);
+    drawPoly(src, points);
+
+    [src, points, detector].forEach(m => m.delete());
+  }
+
+  function setup() {
+    setInterval(function() {
+      rotate(deg);
+      deg = (deg + 1 % 360);
+    }, 50);
+  }
+
+  window.addEventListener('load', setup);
+  var Module = {
+    onRuntimeInitialized: function() {
+      buttonElem.addEventListener('click', imgProc);
+    }
+  }
+</script>
+
+</body>
+</html>
