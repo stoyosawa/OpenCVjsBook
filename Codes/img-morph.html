@@ -42,7 +42,6 @@
     let mask = new cv.Mat();
     cv.cvtColor(morph, mask, cv.COLOR_RGBA2GRAY);
     cv.threshold(mask, mask, 128, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
-    console.log('ready');
     cv.imshow('canvasTag2', mask);
 
     src.copyTo(morph, mask);

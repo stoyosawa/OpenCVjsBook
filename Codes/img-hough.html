@@ -10,33 +10,104 @@
 <h1>書類の傾きを補正する</h1>
 
 <div>
-  <img width="360" id="imageTag" src="samples/test.png"/>
+  <img id="imageTagHidden" src="samples/referral.png" class="hide"/>
+  <img id="imageTag" width="240" src="samples/referral.png"/>
   <canvas id="canvasTag1" class="placeholder"></canvas>
   <canvas id="canvasTag2" class="placeholder"></canvas>
+  <canvas id="canvasTag3" class="placeholder"></canvas>
 </div>
 
 
 <script>
+  let imgElemHidden = document.getElementById('imageTagHidden');
   let imgElem = document.getElementById('imageTag');
 
-  function prepare(img, mat) {
-    cv.cvtColor(img, mat, cv.COLOR_RGB2GRAY);
-    cv.pyrDown(mat, mat);
-    cv.pyrUp(mat, mat);
-    cv.threshold(mat, mat, 128, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
-    let kernel = cv.Mat.ones(13, 13, cv.CV_8UC1);
-    cv.morphologyEx(mat, mat, cv.MORPH_CLOSE, kernel);
+  function showResized(canvasId, src) {
+    let scale = imgElem.width / imgElem.naturalWidth;
+    let dst = new cv.Mat();
+    cv.resize(src, dst, new cv.Size(), scale, scale);
+    cv.imshow(canvasId, dst);
+    dst.delete();
+  }
+
+  function prepare(img, contour) {
+    cv.cvtColor(img, contour, cv.COLOR_RGB2GRAY);
+    cv.Canny(contour, contour, 50, 150);
+    let kernel = cv.Mat.ones(7, 7, cv.CV_8UC1);
+    cv.morphologyEx(contour, contour, cv.MORPH_CLOSE, kernel);
+
+    kernel.delete();
+  }
+
+  function getLines(img) {
+    let mat = new cv.Mat();
+    cv.HoughLinesP(img, mat, 1, Math.PI/180, 50, 100, 0);
+
+    let lines = [];
+    for(let r=0; r<mat.rows; r++) {
+      let ptr = mat.intPtr(r, 1);
+      let arr = [];
+      for(let i=0; i<ptr.length; i++)
+        arr.push(ptr[i]);
+      lines.push(arr);
+    }
+
+    console.log(`Hough mat format:
+      Type=${mat.type()}, Cols=${mat.cols}, Rows=${mat.rows}`);
+    mat.delete();
+    return lines;
+  }
+
+  function screenLines(lines) {
+    let maxRadian = 20 * Math.PI / 180;
+    let screened = lines.filter(function(arr) {
+        let theta = Math.atan((arr[3] - arr[1]) / (arr[2] - arr[0]));
+        return Math.abs(theta) < maxRadian;
+    });
+
+    console.log(`After screening: ${screened.length}`);
+    return screened;
+  }
+
+  function drawLines(img, lines) {
+    let color = new cv.Scalar(128, 128, 128);
+    lines.forEach(function(line) {
+      let p0 = new cv.Point(line[0], line[1]);
+      let p1 = new cv.Point(line[2], line[3]);
+      cv.line(img, p0, p1, color, 3);
+    });
+  }
+
+  function averageAngle(lines) {
+    let radianArr = lines.map(function(arr) {
+      return Math.atan((arr[3] - arr[1]) / (arr[2] - arr[0]));
+    });
+    let radian = radianArr.reduce((a, b) => a + b) / radianArr.length;
+    let degree = radian * 180 / Math.PI;
+    console.log(`Rotaion: ${radian} (${degree})`);
+    return [radian, degree];
   }
 
   function imgProc() {
-    let src = cv.imread(imgElem);
+    let src = cv.imread(imgElemHidden);
     cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
 
-    let blob = new cv.Mat();
-    prepare(src, blob);
-    cv.imshow('canvasTag1', blob);
+    let contour = new cv.Mat();
+    prepare(src, contour);
+    showResized('canvasTag1', contour);
 
-    [src, blob].forEach(m => m.delete());
+    let lines = getLines(contour);
+    let screened = screenLines(lines);
+    let linedSrc = src.clone();
+    drawLines(linedSrc, screened);
+    showResized('canvasTag2', linedSrc);
+    let [radian, degree] = averageAngle(screened);
+
+    let rotMat = cv.getRotationMatrix2D(new cv.Point(src.rows/2, src.cols/2), degree, 1);
+    cv.warpAffine(src, src, rotMat, new cv.Size(src.cols, src.rows));
+    showResized('canvasTag3', src);
+
+    [src, contour, linedSrc].forEach(m => m.delete());
   }
 
   var Module = {

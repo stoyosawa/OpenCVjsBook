@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>顔を検出する</h1>
+
+<img id="imageTag" width="320" src="samples/siblings.jpg"/>
+<canvas id="canvasTag1" class="placeholder"></canvas>
+<canvas id="canvasTag2" class="placeholder"></canvas>
+
+<script>
+  let cascadeFile = 'haarcascades/haarcascade_frontalface_alt.xml';
+  let imgElem = document.getElementById('imageTag');
+
+  function drawRectangles(mat, faces) {
+    for(let i=0; i<faces.size(); i++) {
+      let face = faces.get(i);
+      let point1 = new cv.Point(face.x, face.y);
+      let point2 = new cv.Point(face.x+face.width, face.y+face.height);
+      cv.rectangle(mat, point1, point2, new cv.Scalar(255, 0, 0), 3);
+    }
+  }
+
+  function imgProc() {
+    let src = cv.imread(imgElem);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+
+    let gray = new cv.Mat();
+    cv.cvtColor(src, gray, cv.COLOR_RGB2GRAY);
+    cv.equalizeHist(gray, gray);
+    cv.imshow('canvasTag1', gray);
+
+    let req = new XMLHttpRequest();
+    req.responseType = 'arraybuffer';
+    req.open('GET', cascadeFile, true);
+    req.onload = function(evt) {
+      console.log(`XML request: Status:
+        ${req.status}, Type ${req.responseType}, ReadyState ${req.readyState}`); 
+
+      let path = 'boo';
+      let data = new Uint8Array(req.response);
+      console.log(`Cacade data size: ${data.length}`);
+      cv.FS_createDataFile('/', path, data, true, false, false); 
+
+      let classifier = new cv.CascadeClassifier();
+      classifier.load(path);
+
+      let faces = new cv.RectVector();
+      classifier.detectMultiScale(gray, faces);
+      console.log(`${faces.size()} faces detected.`);
+
+      drawRectangles(src, faces);
+      cv.imshow('canvasTag2', src);
+
+      [src, gray, faces, classifier].forEach(m => m.delete());
+    }
+    req.send();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

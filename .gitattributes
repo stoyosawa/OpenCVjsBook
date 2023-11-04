@@ -1,4 +1,7 @@
 # リポジトリのセッティング
 
-# opencv.js ファイルは LF 終端にする
+# opencv.js ファイルは LF 終端にする（オリジナルのまま）
 opencv.js text eol=lf
+
+# Haarカスケード xml ファイルの終端はオリジナルのままの LF を保つ。
+*.xml text eol=lf

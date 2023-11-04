@@ -9,20 +9,32 @@
 - [emscripten](https://emscripten.org/ "LINK") 🇺🇸 `https://emscripten.org/`  
 C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるようにコンパイルしたコンパイラ。たとえば`Module`のAPIを知りたいときに参照しますが、OpenCV.jsの開発者でもなければ触れることもないでしょう。
 
+- [emscripten File System API](https://emscripten.org/docs/api_reference/Filesystem-API.html "LINK") 🇺🇸 `https://emscripten.org/docs/api_reference/Filesystem-API.html`  
+`cv.FS_createDataFile()`が内部で使っているemscriptenのファイルシステムの詳細です。この関数を説明するものではないですが、仮想的なファイルがどのように扱われているかを知るのに重宝します。
+
 - [HTML Living Standard](https://html.spec.whatwg.org/ "LINK") 🇺🇸 `https://html.spec.whatwg.org/`  
 Web技術を開発するWHATWG（Web Hypertext Application Technology Working Group）によるHTMLの標準規格。たいていのことはMDNで済みますが、ほんとうの細部を知りたいときに役立ちます。たとえば`<script>`に`async`を付けたときと付けないときの動作の違いは、本ドキュメントの4.12.1節に図入りで説明されています。
 
-- [MDN Code values for keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values) 🇺🇸 `https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values`  
+- [Github opencv Haarカスケード分類器のモデルデータ](https://github.com/opencv/opencv/tree/master/data/haarcascades "LINK") 🇺🇸 `https://github.com/opencv/opencv/tree/master/data/haarcascades`  
+OpenCVのオフィシャルGithubに置かれたHarrカスケード分類器のモデルデータ（xmlファイル）。現在17ファイルが登録されています。
+
+- [Github murtazahassan OpenCV-Python-Tutorials-and-Projects](https://github.com/murtazahassan/OpenCV-Python-Tutorials-and-Projects/blob/master/Intermediate/Custom%20Object%20Detection/haarcascades/haarcascade_frontalcatface.xml "LINK") 🇺🇸 `https://github.com/murtazahassan/OpenCV-Python-Tutorials-and-Projects/blob/master/Intermediate/Custom%20Object%20Detection/haarcascades/haarcascade_frontalcatface.xml`  
+Murtaza Hassan（murtazahassan）という方が作成した「OpenCV Python Tutorials andProjects」というリポジトリには、猫顔検出用のHarrカスケード分類器のモデルデータであります。
+
+- [MDN Code values for keyboard events](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values "LINK") 🇺🇸 `https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values`  
 `keydown`や`keyup`イベントで取得されるキーボードのキーコード（`code`プロパティ）の値のリストです。
 
-- [MDN <color\>](https://developer.mozilla.org/ja/docs/Web/CSS/color_value) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/CSS/color_value`  
+- [MDN <color\>](https://developer.mozilla.org/ja/docs/Web/CSS/color_value "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/CSS/color_value`  
 CSSがサポートしている色空間のリストです。
 
 - [MDN filter](https://developer.mozilla.org/ja/docs/Web/CSS/filter) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/CSS/filter`  
 CSSプロパティから基本的な画像処理を実行できる`filter`の説明です。関数は現在10個定義されています。  
 
-- [MDN HTMLMediaElement](https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement) 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement`  
+- [MDN HTMLMediaElement](https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement`  
 `HTMLVideoElement`の親クラスの`HTMLMediaElement`の詳細ページです。`HTMLVideoElement`で利用できるメソッドやプロパティのほとんどはこのクラスから継承しています。
+
+- [MDN XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest`  
+スクリプト内から別途HTTP通信を行う`XMLHttpRequest`クラスの詳細ページです。
 
 - [MDN プロミスの使用](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises`  
 MDNの「JavaScriptガイド」に掲載されている、`Promise`の用法です。
@@ -37,11 +49,14 @@ Chirag Mehta（`https://chir.ag/`）が開発した、RGB値から最も直近�
 - [OpenCV](https://opencv.org/ "LINK") 🇺🇸 `https://opencv.org/`  
 OpenCV本家のメインページ。メソッド・関数の仕様なら［Documentation］から適当なバージョンへのリンクを選択します。
 
-- [OpenCV](https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html`  
+- [OpenCV Drawing Functions](https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html`  
 OpenCVのグラフィックス描画関数一覧。
 
 - [OpenCVチュートリアル Canny Edge Detection](https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html`  
 OpenCVチュートリアルに掲載されているCannyフィルタのの理論的解説と関数用法の説明。
+
+- [OpenCVチュートリアル Cascade Classifier ](https://docs.opencv.org/4.8.0/db/d28/tutorial_cascade_classifier.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/db/d28/tutorial_cascade_classifier.html`  
+OpenCVチュートリアルに掲載されているHaar特徴をもとにしたカスケード分類器の解説とサンプルコード（C++、Java、Python版あり）。
 
 - [OpenCVチュートリアル Laplace Operator](https://docs.opencv.org/4.8.0/d5/db5/tutorial_laplace_operator.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d5/db5/tutorial_laplace_operator.html`  
 OpenCVチュートリアルに掲載されているLaplacianフィルタのの理論的解説と関数用法の説明。
@@ -70,6 +85,9 @@ Pythonインストーラのダウンロードページです。Windowsならexe�
 - [Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) 🇺🇸 `https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry`  
 現在登録されている言語タグをすべて収容したリストです。言語タグは`<track>`の`srclang`属性で指定できるja（日本語）などの文字列です。蛇足ですが、日本語にはjpx（琉球語も含む日本語族）、ojp（日本の古語）、jsl（日本語の手話）といった言語タグも定義されています。さらに蛇足ですが、クリンゴン語はtlhです。
 
+- [Viola & Johnes, "Rapid Object Detection using a Boosted Cascade of Simple Features"](https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf) 🇺🇸 `https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf`  
+Haar特徴をもとにしたカスケード分類器のオリジナルの論文（2001）。
+
 - [W3C HTMLVideoElement.requestVideoFrameCallback()](https://wicg.github.io/video-rvfc/ "LINK") 🇺🇸 `https://wicg.github.io/video-rvfc/`  
 W3Cのワーキンググループが開発中のフレーム単位でのビデオ処理のためのメソッドの仕様です。まだ「勧告」（標準規格）のレベルには達していないドラフト段階です。
 
@@ -87,6 +105,9 @@ HSV（HueーSaturationーValue）色空間の説明。類似の色空間にHSL�
 
 - [Wikipedia 色差](https://ja.wikipedia.org/wiki/色差 "LINK") 🇯🇵 `https://ja.wikipedia.org/wiki/色差`  
 2つの色の距離（類似度）を測る方法。
+
+- [Wikipedia ハフ変換](https://ja.wikipedia.org/wiki/ハフ変換 "LINK") 🇯🇵 `https://ja.wikipedia.org/wiki/ハフ変換`  
+画像から直線や円などを検出するハフ変換の概説。
 
 - [エヴァンゲリオン壁紙](https://www.evangelion.co.jp/news/web_screen/ "LINK") 🇯🇵 https://www.evangelion.co.jp/news/web_screen/  
 エヴァンゲリオン公式が提供する、Web会議などで利用できる「エヴァンゲリオン壁紙」です。なお、「個人的利用を目的として提供しています。商業利用、企業宣伝等には利用できません」。
