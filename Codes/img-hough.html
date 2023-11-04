@@ -103,7 +103,8 @@
     showResized('canvasTag2', linedSrc);
     let [radian, degree] = averageAngle(screened);
 
-    let rotMat = cv.getRotationMatrix2D(new cv.Point(src.rows/2, src.cols/2), degree, 1);
+    let point = new cv.Point(src.rows/2, src.cols/2);
+    let rotMat = cv.getRotationMatrix2D(point, degree, 1);
     cv.warpAffine(src, src, rotMat, new cv.Size(src.cols, src.rows));
     showResized('canvasTag3', src);
 

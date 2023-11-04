@@ -24,8 +24,12 @@
   let imgElem = document.getElementById('imageTag');
   let rangeElem = document.getElementById('rangeTag');
   let region = [167, 56, 117, 102];
+  let readyFlag = 0;
 
   function imgProc(evt) {
+    if (readyFlag != 3)
+      return;
+    
     if (evt.type === 'regionselect')
       region = evt.detail;
 
@@ -46,12 +50,14 @@
   }
 
   function resourceReady() {
+    readyFlag |= 1;
     let rs = new RegionSelect('imageTag');
     imgElem.addEventListener('regionselect', imgProc);
     rangeElem.addEventListener('input', imgProc);
   }
 
   function opencvReady() {
+    readyFlag |= 2;
     rangeElem.dispatchEvent(new InputEvent('input'));
   }
 
