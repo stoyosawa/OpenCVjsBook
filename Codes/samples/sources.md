@@ -2,15 +2,14 @@
 
 > このページはコード付属のテスト画像の出所を明らかにするためのもので、書籍の一部ではありません。
 
-本書で使用した画像は、筆者が作成した数点を除いて、いずれも[Pixabay](https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/ "LINK")からダウンロードしたものです。投稿者の皆様、素敵な写真をありがとうございました。
-
+本書で使用した画像は、筆者が作成した数点を除いて、いずれも[Pixabay](https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/ "LINK")からダウンロードしたものです。
 
 画像 | 使用箇所 | サイズ | 投稿者 | URL
 ---|---|---|---|---
 <img src="sheep.jpg" width="100" title="ニュージーランドの羊"/> | 1.2, 1.3 | 1280x884 | VK1960 | `https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/`
 <img src="cat.png" width="100" title="ぶちねこ, MP4"/> | 1.4, 1.5, 1.6, 1.7, 1.9 | 640x360 | Luiz-Jorge-Artista | `https://pixabay.com/videos/cat-gata-feline-wall-animal-3245/`
 <img src="cable-car.jpg" width="100" title="SFOのケーブルカー"/> | 2.1 | 1280x581 | dretzlaff | `https://pixabay.com/photos/san-francisco-market-street-2369581/`
-<img src="ny.png" width="100" title="NYの人通り"/> | 2.2 | 640x360 | Coverr-Free-Footage | `https://pixabay.com/photos/san-francisco-market-street-2369581/`
+<img src="ny.png" width="100" title="NYの人通り"/> | 2.2, 7.3 | 640x360 | Coverr-Free-Footage | `https://pixabay.com/photos/san-francisco-market-street-2369581/`
 <img src="san-gimignano.jpg" width="100" title="San Gimignano"/> | 2.4 | 1280x960 | Ben_Kerckx | `https://pixabay.com/photos/san-gimignano-buildings-architecture-228455/`
 <img src="bodega-bay.jpg" width="100" title="Bodega Bay, CA"/> | 2.5, 2.6 | 1280x853 |  glynn424 | `https://pixabay.com/videos/new-york-city-manhattan-people-cars-1044/`
 <img src="avon-river.jpg" width="100" title="Avon River, Christchurch"/> | 2.7 | 1280x960 |  csharker | `https://pixabay.com/photos/christchurch-new-zealand-bridge-fall-170557/`
@@ -35,11 +34,7 @@
 <img src="referral.png" width="100" title="紹介状"/> | 6.6 | 482x711 | 自作 | スキャン画像
 <img src="siblings.jpg" width="100" title="母と4人兄弟"/> | 6.7 | 853x1280 | Liliya_Arslanova | `https://pixabay.com/photos/siblings-family-portrait-love-care-7103506/`
 <img src="girls-and-chickens.png" width="100" title="少女とニワトリ"/> | 6.7 | 875x1280 | mai_hint | `https://pixabay.com/illustrations/ai-generated-chickens-girls-anime-8332902/`
-
-
-<img src="ny-subway.png" width="100" title="ny-subway.mp4: NY subway"/> |  | 640x360 | Coverr-Free-Footage | `https://pixabay.com/videos/subway-metro-train-urban-city-1003/`
-
-
-
-
-
+<img src="traffic.png" width="100" title="上からの道路"/> | 7.2 | 640x360 | wserrano | `https://pixabay.com/videos/traffic-street-city-urban-people-33004/`
+<img src="ny-subway.png" width="100" title="NYC地下鉄"/> | 7.3  | 640x360 | Coverr-Free-Footage | `https://pixabay.com/videos/subway-metro-train-urban-city-1003/`
+<img src="motorway.png" width="100" title="高速道路"/> | 7.4  | 640x360 | Mikes-Photography | `https://pixabay.com/videos/cars-motorway-speed-motion-traffic-1900/`
+<img src="bicycle.png" width="100" title="自転車"/> | 7.5  | 640x360 | Vimeo-Free-Videos | `https://pixabay.com/videos/bike-bicycle-transport-travel-911/`

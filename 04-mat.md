@@ -945,7 +945,7 @@ OpenCVには円を描く`cv.circle()`という関数があり、そちらはcが
 
 コンストラクタの引数には、配列要素を指定する要領で数値を列挙します。書式を次に示します。
 
-<!-- FunctionDefinition cv.Circle() 中心座標と半径を収容したオブジェクトのコンストラクタ。 -->
+<!-- FunctionDefinition cv.Scalar() 1～4個の数値を収容するコンテナのコンストラクタ（色指定に使う）。 -->
 ```Javascript
 cv.Scalar = cv.Scalar(       // cv.Scalarを返す
     number, ...              // 1～4個の数値
@@ -1454,7 +1454,7 @@ cv.Rect = cv.Rect(           // cv.Rectを返す
 
 `cv.Mat`の関数`roi()`の引数には、前述の`cv.Rect`を指定します。書式を次に示します。
 
-<!-- FunctionDefinition cv.Mat.roi() cv.MatにROIを設定する。 -->
+<!-- FunctionDefinition cv.Mat.roi() `cv.Mat`にROIを設定する。 -->
 ```Javascript
 cv.Mat.roi(                  // 戻り値なし
     cv.Rect rect             // 矩形領域

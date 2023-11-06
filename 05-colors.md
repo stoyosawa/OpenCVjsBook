@@ -620,7 +620,7 @@ cv.MatVector = cv.MatVector();   // cv.MatVectorを返す
 
 関数定義は次の通りです。
 
-<!-- FunctionDefinition cv.split() マルチチャネル（カラー）画像を1チャンネルの配列（MatVector）に分解する。 -->
+<!-- FunctionDefinition cv.split() マルチチャネル（カラー）画像を1チャンネルの配列（`cv.MatVector`）に分解する。 -->
 ```Javascript
 cv.split(                    // 戻り値なし
     cv.Mat src,              // 入力画像

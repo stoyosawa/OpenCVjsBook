@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>2つのカットをトランジションでつなぐ</h1>
+
+<div>
+  <video width="360" id="videoTagA" controls autoplay muted loop src="samples/ny.mp4"></video>
+  <video width="360" id="videoTagB" autoplay muted loop src="samples/ny-subway.mp4"></video>
+</div>
+<div>
+  <canvas id="canvasTagA" class="placeholder"></canvas>
+  <canvas id="canvasTagB" class="placeholder"></canvas>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+  <select id="selectTag">
+    <option value="h" selected>水平ワイプ</option>
+    <option value="v">垂直ワイプ</option>
+    <option value="c">円形ワイプ</option>
+  </select>
+</div>
+
+<script>
+  let videoElemA = document.getElementById('videoTagA');
+  let videoElemB = document.getElementById('videoTagB');
+  let selectElem = document.getElementById('selectTag');
+  let readyFlag = 0;
+
+  function makeMask(size, startTime=4, period=5) {
+    let type = selectElem.value;
+    let time = videoElemA.currentTime - startTime;
+    let color = new cv.Scalar(255, 255, 255);
+    let pos = Math.max(0, time);
+    pos = Math.min(pos, period);
+
+    let mask1 = cv.Mat.zeros(size, cv.CV_8UC3);        // 先に CV_8UC3 で作成する
+    if (type === 'h') {
+      let w =  Math.floor(videoElemA.width * pos / period);
+      cv.rectangle(mask1, new cv.Point(w, 0), new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+    }
+    else if (type === 'v') {
+      let h = Math.floor(videoElemA.height * pos / period);
+      cv.rectangle(mask1, new cv.Point(0, h), new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+    }
+    else if (type === 'c') {
+      let r = Math.floor(Math.hypot(size.width, size.height) * (period - pos) / period);
+      cv.circle(mask1, new cv.Point(Math.floor(size.width/2), Math.floor(size.height/2)), r, color, cv.FILLED);
+    }
+    cv.blur(mask1, mask1, new cv.Size(17, 17));
+
+    let mask2 = new cv.Mat();
+    cv.bitwise_not(mask1, mask2);
+
+    mask1.convertTo(mask1, cv.CV_32FC3, 1/255);       // 32FC3 に変換する
+    mask2.convertTo(mask2, cv.CV_32FC3, 1/255);
+
+    return [mask1, mask2];
+  }
+
+  function showFloat32Image(canvasID, src) {
+    let dst = new cv.Mat();
+    src.convertTo(dst, cv.CV_8UC3, 255);
+    cv.imshow(canvasID, dst);
+    dst.delete();
+  }
+
+  function readFrameAsFloat32(cap, size) {
+    let src = new cv.Mat(size, cv.CV_8UC4);
+    cap.read(src);                                 // とりあえず CV_8UC4 で読む
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);      // Alpha を落とす
+    src.convertTo(src, cv.CV_32FC3, 1/255);        // CV_32FC3 にする. [0.0, 1.0] にスケーリング
+    return src;
+  }
+
+  function perFrame() {
+    let capA = new cv.VideoCapture(videoElemA);
+    let capB = new cv.VideoCapture(videoElemB);
+
+    let size = new cv.Size(videoElemA.width, videoElemA.height);
+    let srcA = readFrameAsFloat32(capA, size);
+    let srcB = readFrameAsFloat32(capB, size);
+
+    let [maskA, maskB] = makeMask(size);
+    showFloat32Image('canvasTagA', maskA);
+    showFloat32Image('canvasTagB', maskB);
+
+    cv.multiply(srcA, maskA, srcA);
+    cv.multiply(srcB, maskB, srcB);  
+    let dst = new cv.Mat();
+    cv.add(srcA, srcB, dst);
+    showFloat32Image('canvasTag', dst);
+
+    [srcA, srcB, maskA, maskB, dst].forEach(m => m.delete());
+
+    videoElemA.requestVideoFrameCallback(perFrame);
+  }
+
+  function videoReady() {
+    if (readyFlag === 7) {
+      console.log('OpenCV, VideoA, VideoB ready.');
+      perFrame();
+    }
+  }
+
+  videoElemA.addEventListener('loadeddata', function() {
+    console.log('videoA ready');
+    videoElemA.height = videoElemA.offsetHeight;
+    readyFlag |= 1;
+    videoReady();
+  }); 
+  videoElemB.addEventListener('loadeddata', function() {
+    console.log('videoB ready');
+    videoElemB.height = videoElemB.offsetHeight;
+    readyFlag |= 2;
+    videoReady();
+  });
+ 
+  var Module = {
+    onRuntimeInitialized: function() {
+      console.log('opencv ready.');
+      readyFlag |= 4;
+      videoReady();
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -479,9 +479,9 @@ cv.blur(                                    // 戻り値なし
 
 $$ g(r) = a\ exp( - \frac{(r - \mu)^2}{2 \sigma^2 }) $$
 
-$a$ は定数、 $r$ は注目ピクセルからの距離、 $\mu$ は注目領域の平均値、 $\sigma$ は標準偏差です。$\sigma$ は試験の成績で見る偏差値のことで、1.0が偏差値10個ぶん（40または60）に相当します。
+$a$ は定数、 $r$ は注目ピクセルからの距離、 $\mu$ は注目領域の平均値、 $\sigma$ は標準偏差です。 $\sigma$ は試験の成績で見る偏差値のことで、1.0が偏差値10個ぶん（40または60）に相当します。
 
-ガウス関数は次の図が示すように吊り鐘上になっています（偏差値でよく見る正規分布です）。$\sigma$ の値が小さくなればなるほど吊り鐘はとがり、したがって注目ピクセルから外れたところの寄与が減ります。反対に、$\sigma$ の値が大きくなればなるほど吊り鐘はフラットになり、遠方のピクセルが結果に寄与する度合いが大きくなります。
+ガウス関数は次の図が示すように吊り鐘上になっています（偏差値でよく見る正規分布です）。 $\sigma$ の値が小さくなればなるほど吊り鐘はとがり、したがって注目ピクセルから外れたところの寄与が減ります。反対に、 $\sigma$ の値が大きくなればなるほど吊り鐘はフラットになり、遠方のピクセルが結果に寄与する度合いが大きくなります。
 
 <!-- 原画は xlsx にあり。 1059 x 502 -->
 <img src="Images/Ch06/img-blur-gaussian.png" width="500">
@@ -571,13 +571,21 @@ cv.bilateralFilter(                         // 戻り値なし
 
 OpenCVリファレンスは $\sigma$ の値に10未満の値を指定しても大して効果はなく、150より大きいと効果が絶大すぎてアニメ絵に近くなると述べています。なお、コードで用いている75という値は、OpenCVのチュートリアルからそのまま取ってきたものです。
 
-参考までに、$\sigma$ を50、75（再掲）、150にしたときの結果を次に左から順に示します。
+参考までに、 $\sigma$ を50、75（再掲）、150にしたときの結果を次に左から順に示します。
 
-<!-- いずれも 360x202。img-blur-4.png は再掲 -->
-
-$\sigma = 50$ | $\sigma = 75$ | $\sigma = 150$ | 
----|---|---
-<img src="Images/Ch06/img-blur-5.png" width="300"> | <img src="Images/Ch06/img-blur-4.png" width="300"> | <img src="Images/Ch06/img-blur-6.png" width="300">
+<!-- いずれも 360x202。img-blur-4.png は再掲。markdown の表内の画像は github が反応しないので、<table> を使う。 -->
+<table>
+  <tr>
+    <td><img src="Images/Ch06/img-blur-5.png" width="300"></td>
+    <td><img src="Images/Ch06/img-blur-4.png" width="300"></td>
+    <td><img src="Images/Ch06/img-blur-6.png" width="300"></td>
+  </tr>
+  <tr>
+    <td> $\sigma = 50$ </td>
+    <td> $\sigma = 75$ </td>
+    <td> $\sigma = 150$ </td>
+  </tr>
+</table>
 
 
 
@@ -2228,14 +2236,14 @@ emscriptenのファイルシステムAPIについての詳細は次のURLから�
 
 コンストラクタの定義を示します。
 
-<!-- FunctionDefinition cv.CascadeClassifier() Haarカスケード分類器のデータファイルを収容するオブジェクトを生成する。 -->
+<!-- FunctionDefinition cv.CascadeClassifier() Haarカスケード分類器オブジェクトを生成する。 -->
 ```javasctipt
 cv.CascadeClassifier cv.CascadeClassifier(); // コンストラクタ
 ```
 
 続いて、オブジェクトにデータファイルを読み込む`load()`メソッドの定義です。
 
-<!-- FunctionDefinition cv.CascadeClassifier() Haarカスケード分類器のデータファイルを収容するオブジェクトを生成する。 -->
+<!-- FunctionDefinition cv.CascadeClassifier.load() Haarカスケード分類器にデータファイルを取り込む。 -->
 ```javasctipt
 boolean cv.CascadeClassifier.load(          // 真偽値を返す
     string filename                         // ファイル名
@@ -2301,9 +2309,9 @@ cv.CascadeClassifier.detectMultiScale(      // 戻り値なし
 
 `cv.rectangle()`関数の定義を次に示します。
 
-<!-- FunctionDefinition cv.CascadeClassifier.detectMultiScale() カスケード分類器を実行する。 -->
+<!-- FunctionDefinition cv.rectangle() 矩形（辺が水平垂直）を描画する。 -->
 ```Javascript
-cv.polylines(                               // 戻り値なし
+cv.rectangle(                               // 戻り値なし
     cv.Mat img,                             // 描画対象の画像
     cv.Point pt1,                           // 頂点座標
     cv.Point pt2,                           // pt1の対角の頂点の座標
