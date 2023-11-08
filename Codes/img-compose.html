@@ -53,7 +53,7 @@
 
     cv.addWeighted(img1, 0.5, img2, 0.5, 0, result);
     cv.imshow('canvasTagWei', result);
-    new Overlay('divTagWei',  '重み付け加算（cv.addWeighted）', 0, 0, 16, 'black');
+    new Overlay('divTagWei',  '重付加算（cv.addWeighted）', 0, 0, 16, 'black');
 
     [img1, img2, result].forEach(m => m.delete());
   }
