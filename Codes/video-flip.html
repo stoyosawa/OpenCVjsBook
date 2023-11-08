@@ -16,9 +16,8 @@
 
 <script>
   let videoElem = document.getElementById('videoTag');
-  let buttonElem = document.getElementById('buttonTag');
-  let src, dst;
   let readyFlag = 0;
+  let frameCallbackId;
 
   let constraints = {
     audio: false,
@@ -32,6 +31,9 @@
   });
 
   function perFrame() {
+    if (readyFlag !== 3)
+      return;
+
     let cap = new cv.VideoCapture(videoElem);
     let src = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
     cap.read(src);
@@ -39,7 +41,7 @@
     cv.imshow('canvasTag', src);
 
     src.delete();
-    videoElem.requestVideoFrameCallback(perFrame);
+    frameCallbackId = videoElem.requestVideoFrameCallback(perFrame);
   }
 
   function videoStop() {
@@ -49,28 +51,23 @@
     tracks[0].stop();
     videoElem.srcObject = undefined;
     videoElem.removeEventListener('pause', videoStop);
+    videoElem.cancelVideoFrameCallback(frameCallbackId);
     readyFlag = 0;
-  }
-
-  function init() {
-    if (readyFlag !== 3)
-      return;
-    videoElem.addEventListener('pause', videoStop);
-    perFrame();
   }
 
   function videoReady() {
     console.log('video ready');
+    readyFlag |= 2;
     videoElem.width = videoElem.videoWidth;
     videoElem.height = videoElem.videoHeight;
-    readyFlag |= 1;
-    init();
+    videoElem.addEventListener('pause', videoStop);
+    perFrame();
   }
 
   function opencvReady() {
     console.log('openv ready');
-    readyFlag |= 2;
-    init();
+    readyFlag |= 1;
+    perFrame();
   }
 
   videoElem.addEventListener('loadeddata', videoReady)

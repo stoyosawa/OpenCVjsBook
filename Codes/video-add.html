@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>ビデオフレームと画像を合成する</h1>
+
+<div>
+  <img id="imageTag" src="samples/comet.png" class="hide"/>
+  <video width="360" id="videoTag" controls autoplay muted
+    src="samples/night-sky.mp4"></video>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let imgElem = document.getElementById('imageTag');
+  let videoElem = document.getElementById('videoTag');
+  let readyFlag = 0;
+  let src, star;
+  let frameCbHandle;
+  let period = 5;
+
+  function perFrame() {
+    let cap = new cv.VideoCapture(videoElem);
+    cap.read(src);
+    cv.imshow('canvasTag', src);
+
+    let time = videoElem.currentTime % period;
+    let speed = (src.cols - star.cols) / period;
+    let accel = (src.rows / 2)  / (period ** 2);
+    let x = (src.cols - star.cols) - speed * time;
+    let y = accel * (time ** 2);
+    let rect = new cv.Rect(x, y, star.cols, star.rows);
+    let roi = src.roi(rect);
+    cv.add(roi, star, roi);
+    cv.imshow('canvasTag', src);
+    frameCbHandle = videoElem.requestVideoFrameCallback(perFrame);
+  }
+
+  function stop() {
+    console.log('Video stopped');
+    [src, star].forEach(m => m.delete());
+    videoElem.removeEventListener('pause', stop);
+    videoElem.removeEventListener('ended', stop);
+    videoElem.cancelVideoFrameCallback(frameCbHandle);
+  }
+
+  function init() {
+    if (readyFlag !== 7)
+      return;
+
+    src = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+
+    let img = cv.imread(imgElem);
+    star = new cv.Mat();
+    cv.resize(img, star, new cv.Size(), 1/10, 1/10);
+    img.delete();
+
+    videoElem.addEventListener('pause', stop);
+    videoElem.addEventListener('ended', stop);
+    perFrame();
+  }
+
+  function videoReady() {
+    console.log('video ready');
+    readyFlag |= 4;
+    videoElem.width = videoElem.offsetWidth;
+    videoElem.height = videoElem.offsetHeight;
+    init();
+  }
+
+  function imageReady() {
+    console.log('image ready');
+    readyFlag |= 2;
+    init();
+  }
+
+  function opencvReady() {
+    console.log('OpenCV ready');
+    readyFlag |= 1;
+    init();
+  }
+
+  if (imgElem.complete)
+    readyFlag |= 2;
+  imgElem.addEventListener('load', imageReady);
+  videoElem.addEventListener('loadeddata', videoReady);
+  var Module = {
+    onRuntimeInitialized: opencvReady
+  }
+</script>
+
+</body>
+</html>

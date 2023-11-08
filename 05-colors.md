@@ -84,11 +84,11 @@ RGBAカラー画像をモノクロ（白黒）化します。
 
 <!-- FunctionDefinition cv.cvtColor() 色空間を変換する（RGBからHSVなど）。 -->
 ```Javascript
-cv.cvtColor(                 // 戻り値なし
-    cv.Mat src,              // 入力画像
-    cv.Mat dst,              // 出力画像
-    number code,             // 色変換コード
-    number dstCn = 0         // 出力画像のチャネル数
+cv.cvtColor(                                // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    number code,                            // 色変換コード
+    number dstCn = 0                        // 出力画像のチャネル数
 );
 ```
 
@@ -106,7 +106,7 @@ cv.cvtColor(                 // 戻り値なし
 `cv.COLOR_RGB2HSV` | 41 | RGB > HSV
 `cv.COLOR_HSV2RGB` | 55 | HSV > RGB
 
-色空間変換コード定数名は`cv.COLOR_[変換元]2[変換先]`の形式になっています。利用可能な定数はOpenCVリファレンスを参照するか、[3.2節](./03-opencv.md#32-OpenCV.jsの定数と関数 "INTERNAL")の定数表から確認できます。
+色空間変換コード定数名は`cv.COLOR_[変換元]2[変換先]`の形式になっています。利用可能な定数はOpenCVリファレンスを参照するか、[3.2節](./03-opencv.md#32-OpenCV.jsの定数と関数を調べる "INTERNAL")の定数表から確認できます。
 
 たいていの色空間のあいだの変換は用意されていますが、ないものもあります。たとえば、RGBAを直接HSVに変換する定数はありません。その場合は、RGBA > RGB > HSVのように、別の色空間を経由します。中継に使う色空間はBGRがよいでしょう。RGBの順序が入れ替わった色空間です。というのも、BGRはOpenCVがデフォルトで用いる色空間なので、そこから、あるいはそこへの色変換定数が豊富だからです。
 
@@ -196,14 +196,14 @@ cv.cvtColor(                 // 戻り値なし
 
 <!-- FunctionDefinition cv.bitwise_not() 画像のピクセル値をビット単位で反転する（ネガになる）。 -->
 ```Javascript
-cv.bitwise_not(              // 戻り値なし
-    cv.Mat src,              // 入力画像
-    cv.Mat dst               // 出力画像
+cv.bitwise_not(                             // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst                              // 出力画像
 );
-cv.bitwise_not(              // 戻り値なし
-    cv.Mat src,              // 入力画像
-    cv.Mat dst,              // 出力画像
-    cv.Mat mask              // マスク画像
+cv.bitwise_not(                             // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    cv.Mat mask                             // マスク画像
 );
 ```
 
@@ -373,11 +373,11 @@ $$r' = 0.393 r + 0.769 g  + 0.189 b$$
 
 <!-- FunctionDefinition cv.matFromArray() 配列から`cv.Mat`を生成する。 -->
 ```Javascript
-cv.Mat = cv.matFromArray(    // 出力はcv.Mat
-    number rows,             // 出力行列の行数
-    number cols,             // 出力行列の列数
-    number rtype,            // データ型
-    Array array              // 配列
+cv.Mat = cv.matFromArray(                   // 出力はcv.Mat
+    number rows,                            // 出力行列の行数
+    number cols,                            // 出力行列の列数
+    number rtype,                           // データ型
+    Array array                             // 配列
 );
 ```
 
@@ -393,10 +393,10 @@ cv.Mat = cv.matFromArray(    // 出力はcv.Mat
 
 <!-- FunctionDefinition cv.transform() 行列式からピクセル値を変換する。 -->
 ```javascript
-cv.transform(                  // 戻り値なし
-    cv.Mat src,                // 入力画像
-    cv.Mat dst,                // 出力画像
-    cv.Mat m                   // 変換行列（浮動小数点数使用）
+cv.transform(                               // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    cv.Mat m                                // 変換行列（浮動小数点数使用）
 );
 ```
 
@@ -589,7 +589,7 @@ C/C++版にはいろいろなコンストラクタが用意されていますが
 
 <!-- FunctionDefinition cv.MatVector() `cv.Mat`専用のVector（配列）を生成するコンストラクタ。 -->
 ```Javascript
-cv.MatVector = cv.MatVector();   // cv.MatVectorを返す
+cv.MatVector = cv.MatVector();              // cv.MatVectorを返す
 ```
 
 インスタンスには、次の表に示す操作関数が用意されています。
@@ -622,9 +622,9 @@ cv.MatVector = cv.MatVector();   // cv.MatVectorを返す
 
 <!-- FunctionDefinition cv.split() マルチチャネル（カラー）画像を1チャンネルの配列（`cv.MatVector`）に分解する。 -->
 ```Javascript
-cv.split(                    // 戻り値なし
-    cv.Mat src,              // 入力画像
-    cv.MatVector dstMat,     // 出力画像（の配列）
+cv.split(                                   // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.MatVector dstMat,                    // 出力画像（の配列）
 );
 ```
 
@@ -653,14 +653,14 @@ cv.split(                    // 戻り値なし
 関数は`cv.Scalar`オブジェクトを返しますが、中身はただの配列なので、そのまま`console.log()`から出力できます。関数定義を次に示します。
 
 ```Javascript
-cv.Scalar = cv.mean(         // 出力はcv.Scalar
-    cv.Mat mat               // 入力画像
+cv.Scalar = cv.mean(                        // 出力はcv.Scalar
+    cv.Mat mat                              // 入力画像
 );
 ```
 
 `cv.Scalar`の各要素は、それぞれ対応するチャネルのピクセルの平均値です。R、G、Bすべての平均を求めたいのなら、次の要領で要素を足して3で割ります（アルファは0のはずなので、加えても影響はありません。気になるなら`slice(0, 3)`で最初の3要素だけにします）。
 
-```
+```javascript
 cv.mean(src).reduce((a, b) => a + b, 0) / 3)
 ```
 
@@ -792,7 +792,7 @@ OpenCVを用いて色相図を描いているのは、36～52行目の`imgProc()
 
 絵は[4.3節](./04-mat.md#43-ピクセルの色名を判定する "INTERNAL")のものと実は変わりません。枠内のr、g、bの文字をh、s、vに置き換えただけです。つまり、`cv.Mat.data`の形式はRGBと変わらず`Uint8Array`で、並び具合も要素の数も同じです。単に、収容されたものをなにとみなすかが違うだけです。
 
-#### HSVーRGB変換
+#### HSV―RGB変換
 
 HSVのつもりで生成した行列をそのままキャンバスに貼り付けると、たいていはサイケデリックな色合いになります。HTML5が、値の並びをRGBと解釈するからです。このコードの場合、ピクセル値は(deg, 255, 255)なので、シアン系の色がだんだんと白んでいくグラデーションになります。
 
@@ -1118,12 +1118,12 @@ HSVチェックボックス（19行目）がチェックされていたら（`ch
 
 <!-- FunctionDefinition cv.threshold() 画像を2値化する。 -->
 ```Javascript
-number = cv.threshold(       // 選択閾値
-    cv.Mat src,              // 入力画像
-    cv.Mat dst,              // 出力画像
-    number thresh,           // 閾値
-    number maxval,           // 最大値
-    int type                 // 変換方法
+number = cv.threshold(                      // 選択閾値
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    number thresh,                          // 閾値
+    number maxval,                          // 最大値
+    int type                                // 変換方法
 );
 ```
 
@@ -1305,11 +1305,11 @@ number = cv.threshold(       // 選択閾値
 
 <!-- FunctionDefinition cv.convertScaleAbs() 画像ピクセル値を加減乗除する。 -->
 ```Javascript
-cv.convertScaleAbs(          // 戻り値なし
-    cv.Mat src,              // 入力画像
-    cv.Mat dst,              // 出力画像
-    number alpha = 1,        // 倍数
-    number beta = 0          // 加算
+cv.convertScaleAbs(                         // 戻り値なし
+    cv.Mat src,                             // 入力画像
+    cv.Mat dst,                             // 出力画像
+    number alpha = 1,                       // 倍数
+    number beta = 0                         // 加算
 );
 ```
 
@@ -1335,9 +1335,9 @@ cv.convertScaleAbs(          // 戻り値なし
 
 <!-- FunctionDefinition cv.Mat.copyTo() 画像をコピーする。 -->
 ```Javascript
-cv.Mat.copyTo(              // 戻り値なし
-    cv.Mat dst,             // 背景画像
-    cv.Mat mask,            // マスク画像
+cv.Mat.copyTo(                              // 戻り値なし
+    cv.Mat dst,                             // 背景画像
+    cv.Mat mask,                            // マスク画像
 );
 ```
 

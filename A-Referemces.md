@@ -49,8 +49,11 @@ Chirag Mehta（`https://chir.ag/`）が開発した、RGB値から最も直近�
 - [OpenCV](https://opencv.org/ "LINK") 🇺🇸 `https://opencv.org/`  
 OpenCV本家のメインページ。メソッド・関数の仕様なら［Documentation］から適当なバージョンへのリンクを選択します。
 
-- [OpenCV Drawing Functions](https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html`  
+- [OpenCVリファレンス Drawing Functions](https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html`  
 OpenCVのグラフィックス描画関数一覧。
+
+[OpenCVリファレンス Operations on arrays](https://docs.opencv.org/4.8.0/d2/de8/group__core__array.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d2/de8/group__core__array.html`  
+OpenCVの行列`cv.Mat`操作関数一覧。 
 
 - [OpenCVチュートリアル Canny Edge Detection](https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html`  
 OpenCVチュートリアルに掲載されているCannyフィルタのの理論的解説と関数用法の説明。

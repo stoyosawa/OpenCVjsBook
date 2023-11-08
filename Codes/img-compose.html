@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+  <script async src="libs/overlay.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>2つの画像を合成する</h1>
+
+<div>
+  <img id="imageTag1" width="320" src="samples/dachshund.jpg"/>
+  <img id="imageTag2" width="320" src="samples/dune-sand.jpg"/>
+</div>
+<div>
+  <div id="divTagAdd" class="inline"><canvas id="canvasTagAdd"></canvas></div>
+  <div id="divTagSub" class="inline"><canvas id="canvasTagSub"></canvas></div>
+  <div id="divTagMul" class="inline"><canvas id="canvasTagMul"></canvas></div>
+  <div id="divTagDiv" class="inline"><canvas id="canvasTagDiv"></canvas></div>
+  <div id="divTagWei" class="inline"><canvas id="canvasTagWei"></canvas></div>
+</div>
+
+<script> 
+  let imgElem1 = document.getElementById('imageTag1');
+  let imgElem2 = document.getElementById('imageTag2');
+
+  function imgProc() {
+    let img1 = cv.imread(imgElem1);
+    cv.cvtColor(img1, img1, cv.COLOR_RGBA2RGB);
+    let img2 = cv.imread(imgElem2);
+    cv.cvtColor(img2, img2, cv.COLOR_RGBA2RGB);
+    cv.resize(img2, img2, img1.size());
+
+    let result = new cv.Mat();
+    cv.add(img1, img2, result);
+    cv.imshow('canvasTagAdd', result);
+    new Overlay('divTagAdd',  '加算（cv.add）', 0, 0, 16, 'black');
+
+    cv.subtract(img2, img1, result);
+    result.convertTo(result, -1, 1.2, 20);
+    cv.imshow('canvasTagSub', result);
+    new Overlay('divTagSub',  '減算（cv.subtract）', 0, 0, 16, 'white');
+
+    cv.multiply(img1, img2, result, 1/255);
+    cv.imshow('canvasTagMul', result);
+    new Overlay('divTagMul',  '乗算（cv.multiply）', 0, 0, 16, 'white');
+
+    cv.divide(img1, img2, result, 100);
+    cv.imshow('canvasTagDiv', result);
+    new Overlay('divTagDiv',  '除算（cv.divide）', 0, 0, 16, 'black');
+
+    cv.addWeighted(img1, 0.5, img2, 0.5, 0, result);
+    cv.imshow('canvasTagWei', result);
+    new Overlay('divTagWei',  '重み付け加算（cv.addWeighted）', 0, 0, 16, 'black');
+
+    [img1, img2, result].forEach(m => m.delete());
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
+  }
+</script>
+
+</body>
+</html>

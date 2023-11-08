@@ -1197,7 +1197,7 @@ cv.polylines(                               // 戻り値なし
 );
 ```
 
-第2引数`points`は[5.4節](./05-colors.md#54-RGB画像を色成分に分解する "INTERNAL")で説明した、複数の`cv.Mat`を収容するコンテナの`cv.MatVector`です（53行目）。複数といいつつ、ここでは要素は1つだけです。要素のデータ型は2チャネル32ビット符号あり整数（`cv.CV_32SC2`）でなければならないので、`cv.QRCodeDetector.detect()`の戻り値をそのままでは使えません。そこで、`cv.Mat.convertTo()`関数から型変換をします（55行目）。
+第2引数`points`は[5.4節](./05-colors.md#54-RGB画像を色成分に分解する "INTERNAL")で説明した、複数の`cv.Mat`を収容するコンテナの`cv.MatVector`です（53行目）。複数といいつつ、ここでは要素は1つだけです。要素のデータ型は2チャネル32ビット符号あり整数（`cv.CV_32SC2`）でなければならないので、`cv.QRCodeDetector.detect()`の戻り値をそのままでは使えません。そこで、型変換関数の`cv.Mat.convertTo()`で型変換をします。関数説明はあとにまわします。
 
 第3引数`color`は色で、`cv.Scalar`から指定します。OpenCVのグラフィック関数はアルファチャネルに対応していないので、キャンバスから読んだRGBAはRGBに変換しておきます（52行目）。
 
@@ -1208,6 +1208,34 @@ cv.polylines(                               // 戻り値なし
 第5引数`lineType`の線種はあとから説明します。
 
 第6引数`shift`は座標値に小数点数を用いるときに使うものです。画像処理ではピクセルとピクセルの間にサブピクセルと呼ばれる仮想的なピクセルを考えることで計算精度を高めることがありますが、そのときに使います。デフォルトは0です（小数点数扱いしない）。
+
+#### 型変換－cv.Mat.converTo
+
+符号なし整数値行列を32ビット符号あり整数に変換するのに、先ほど`cv.Mat.convertTo()`関数を使いました（55行目）。
+
+```javascript
+ 55      points.convertTo(mat, cv.CV_32SC2);
+```
+
+関数定義を次に示します。 
+
+<!-- FunctionDefinition cv.Mat.convertTo() 作用元の`cv.Mat`の型変換をする  -->
+```Javascript
+cv.Mat.convertTo(                           // 戻り値なし
+    cv.Mat mat,                             // 出力先のcv.Mat
+    number rtype,                           // データ型
+    number alpha=1,                         // 倍率
+    number beta=0                           // 加算値
+);
+```
+
+第1引数には変換後の`cv.Mat`を指定します。中身のサイズやデータ型は関数が自動的に調整するので、引数は指定する必要はありません。
+
+第2引数には変換先のデータ型を指定しますが、このとき、入力とチャネル数が同じでなければなりません。たとえば、`cv.CV_8UC4`が入力なら、出力も4チャンネルでなければならないので、`cv.CV_32FC4`などです。チャネル抜き（`C`以降なし）でビット深度指定（`cv.CV_32F`など）でもかまいません。-1を指定すると、型変換はしません。
+
+第3引数と第4引数はピクセル値の定数倍と増減も用います。第3引数が指定されるとピクセル値にその値が掛けられるので、1より上の値なら輝度が増します。1未満なら暗くなります。第4引数も同様で、その値がピクセル値に加えられるので、正の値なら明るくなり、負なら暗くなります。オプション引数なので、指定がなければ輝度調整はありません。指定値にもよりますが、ピクセル値がデータ型の規定する最大値よりも大きく、または小さくなることもあります。その場合は強制的に最大値、または最小値に計算結果が抑えられます（飽和処理）。
+
+OpenCV.jsの`cv.Mat`には定数倍あるいは定数加算を計算する方法がありません。そのような演算が必要なときは、`rtype`に-1を指定し、第3第4引数を使えば、四則演算の代用にできます。
 
 #### 線種
 
@@ -2341,24 +2369,237 @@ cv.rectangle(                               // 戻り値なし
 
 2枚の画像を加減乗除で合成します。四則演算によって画像がどう変化するかを確認するのが目的です。
 
-技術的には、`cv.Mat`に収容された(x, y)座標とチャネル位置が対応する値どうしの演算です。加算なら、画像1のピクセル $P_1(r_1, g_1, b_1, a_1)$ と画像2のピクセル $P_2(r_2, g_2, b_2, a_2)$ を足せば、$P'(r_1 + r_2, g_1 + g_2, , b_1 + b_2, a_1 +a_2)$ になります。加算あるいは乗算をすると、値は基本的に大きくなり、画面が明るくなります。結果がビット深度が表現できる最大値を超えたときは、最大値に飽和されます（`cv.CV_8U`なら255）。反対に、減算や除算では値は小さく、暗くなります。減算では、表現可能な最小値より小さくなったら、最小値に飽和されます（`cv.CV_8U`では0）。
+技術的には、`cv.Mat`に収容された(x, y)座標とチャネル位置が対応する値どうしの演算です。加算なら、画像1のピクセル $P_1(r_1, g_1, b_1, a_1)$ と画像2のピクセル $P_2(r_2, g_2, b_2, a_2)$ を足せば、 $P'(r_1 + r_2, g_1 + g_2, , b_1 + b_2, a_1 +a_2)$ になります。加算あるいは乗算をすると、値は基本的に大きくなり、画面が明るくなります。結果がビット深度が表現できる最大値を超えたときは、最大値に飽和されます（`cv.CV_8U`なら255）。反対に、減算や除算では値は小さく、暗くなります。減算では、表現可能な最小値より小さくなったら、最小値に飽和されます（`cv.CV_8U`では0）。
 
 `cv.Mat`に対する加減乗除の関数はそれぞれ`cv.add()`、`cv.subtract()`、`cv.multiply()`、`cv.divide()`です。
 
 実行例を次の画面に示します。
 
-<img src="Images/Ch07/img-compose-1.png">
+<img src="Images/Ch06/img-compose-1.png">
 
-上段の2つが元画像です。左は背景の輝度が234くらいとかなり明るい反面、前景のダックスフンドが14くらいと暗くなっています。右の赤茶けた風紋は輝度144くらいで、おおよそ中間程度の明るさです。
+上段の2枚が元画像です。左は背景の輝度が234くらいとかなり明るい反面、前景のダックスフンドが14くらいと暗くなっています。右の赤茶けた風紋は輝度144くらいで、おおよそ中間程度の明るさです。
 
 2段目以降が合成結果です。画像左上に、用いた演算とその関数を示してあります（[2.4節](./02-ui.md#24-日本語文字を画像に重畳する "INTERNAL")の`Overlay`クラス使用）。
 
 加算は、2枚の画像を透明なシートに印画し、重ねたうえですかして見たような絵を生成します。透明シートと異なるのは、もともと明るいところ同士を重ねると値が飽和し、白く飛んでしまうところです。ここでは、もともと明るい左の背景がほとんどで飽和します。その代わり、ダックスフンド部分はもとが黒いので、そのテクスチャが風紋に置き換わります。このサンプルのように背景と前景がはっきりした画像なら、これにプレーンな一色の画像を加えることで、着色することができます。
 
-減算では引く側が負になることから、ネガ状になります。この例では右の風紋から左のダックスを引いているので、ダックスがネガになります。背景がまっくろなのは、左元画像の明るい背景が負になり、0に飽和しているからです。一方のテクスチャが他方に映るのは、加算と同じです。なお、この用例ではやや輝度を調整しています。
+引くという操作は画像を負にして加えるということなので、引く側がネガ状になります。この例では右の風紋から左のダックスフンドを引いているので、ダックスフンドがネガになります。背景がまっくろなのは、ダックスフンドの明るい背景が負になり、0に飽和しているからです。一方のテクスチャが他方に映るのは、加算と同じです。なお、この用例ではやや輝度を調整しています。
 
-乗算はピクセル値が最大で65025にもなるため、画像の大半が飽和して白く飛んでしまいます。そこで、たいていは一定の数で割ることで輝度を適正に保ちます。この例では1/255倍しています。これで、背景と前景がうまく混ざりあう画像が得られます。
+乗算はピクセル値が最大で255×255＝65025にもなるため、画像の大半が飽和して白く飛んでしまいます。そこで、たいていは一定の数で割ることで輝度を適正に保ちます。この例では1/255倍しています。これで、背景と前景がうまく混ざりあう画像が得られます。
 
 除算も効果としては乗算と同じようなものです。ただ、低いほうの値に集中しがちなので、一定の数を掛けるのが一般的です。ここでは100倍しています。ダックスフンド（背景白）を風紋（背景赤茶）で割っているので、白い背景から赤い成分がごそっと減ります。そのため、結果では背景が青っぽくなります。
 
-重み付け加算は加算に係数をかけることのできる計算です。つまり、 $P' = \alpha P_1 + \beta P_2$ で、輝度を極端に上げたり下げたりしないよう、係数の和は1に保つのが一般的です（ $\alpha + \beta = 1$ ）。
+重み付け加算は加算に係数をかけることのできる計算です。つまり、 $P' = \alpha P_1 + \beta P_2$ です。輝度を極端に上げたり下げたりしないよう、係数の和は1に保つのが一般的です（ $\alpha + \beta = 1$ ）。
+
+#### コード
+
+コード`img-compose.html`は次の通りです。
+
+```html
+[File] img-compose.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7    <script async src="libs/overlay.js" type="text/javascript"></script>
+  8  </head>
+  9  <body>
+ 10
+ 11  <h1>2つの画像を合成する</h1>
+ 12
+ 13  <div>
+ 14    <img id="imageTag1" width="320" src="samples/dachshund.jpg"/>
+ 15    <img id="imageTag2" width="320" src="samples/dune-sand.jpg"/>
+ 16  </div>
+ 17  <div>
+ 18    <div id="divTagAdd" class="inline"><canvas id="canvasTagAdd"></canvas></div>
+ 19    <div id="divTagSub" class="inline"><canvas id="canvasTagSub"></canvas></div>
+ 20    <div id="divTagMul" class="inline"><canvas id="canvasTagMul"></canvas></div>
+ 21    <div id="divTagDiv" class="inline"><canvas id="canvasTagDiv"></canvas></div>
+ 22    <div id="divTagWei" class="inline"><canvas id="canvasTagWei"></canvas></div>
+ 23  </div>
+ 24
+ 25  <script>
+ 26    let imgElem1 = document.getElementById('imageTag1');
+ 27    let imgElem2 = document.getElementById('imageTag2');
+ 28
+ 29    function imgProc() {
+ 30      let img1 = cv.imread(imgElem1);
+ 31      cv.cvtColor(img1, img1, cv.COLOR_RGBA2RGB);
+ 32      let img2 = cv.imread(imgElem2);
+ 33      cv.cvtColor(img2, img2, cv.COLOR_RGBA2RGB);
+ 34      cv.resize(img2, img2, img1.size());
+ 35
+ 36      let result = new cv.Mat();
+ 37      cv.add(img1, img2, result);
+ 38      cv.imshow('canvasTagAdd', result);
+ 39      new Overlay('divTagAdd',  '加算（cv.add）', 0, 0, 16, 'black');
+ 40
+ 41      cv.subtract(img2, img1, result);
+ 42      result.convertTo(result, -1, 1.5, 50);
+ 43      cv.imshow('canvasTagSub', result);
+ 44      new Overlay('divTagSub',  '減算（cv.subtract）', 0, 0, 16, 'white');
+ 45
+ 46      cv.multiply(img1, img2, result, 1/255);
+ 47      cv.imshow('canvasTagMul', result);
+ 48      new Overlay('divTagMul',  '乗算（cv.multiply）', 0, 0, 16, 'white');
+ 49
+ 50      cv.divide(img1, img2, result, 100);
+ 51      cv.imshow('canvasTagDiv', result);
+ 52      new Overlay('divTagDiv',  '除算（cv.divide）', 0, 0, 16, 'black');
+ 53
+ 54      cv.addWeighted(img1, 0.5, img2, 0.5, 0, result);
+ 55      cv.imshow('canvasTagWei', result);
+ 56      new Overlay('divTagWei',  '重み付け加算（cv.addWeighted）', 0, 0, 16, 'black');
+ 57
+ 58      [img1, img2, result].forEach(m => m.delete());
+ 59    }
+ 60
+ 61    var Module = {
+ 62      onRuntimeInitialized: imgProc
+ 63    }
+ 64  </script>
+ 65
+ 66  </body>
+ 67  </html>
+```
+
+四則演算をするには、両者の間でサイズが一致していなければなりません。ここでは、サイズが左側（`img1`）のものに右側（`img2`）を合わせます（34行目）。
+
+```javascript
+ 30      let img1 = cv.imread(imgElem1);
+ 31      cv.cvtColor(img1, img1, cv.COLOR_RGBA2RGB);
+ 32      let img2 = cv.imread(imgElem2);
+ 33      cv.cvtColor(img2, img2, cv.COLOR_RGBA2RGB);
+ 34      cv.resize(img2, img2, img1.size());
+```
+
+データ型はRGBに揃えます（31、33行目）。元画像にもとからあるアルファチャネルが備わっているのでなければ、値はすべて255（完全不透過）です。加算では255に255を足し、乗算では255に255を掛けるので、飽和して255となり、効果はありません。255から255を引くと0になり、255を255で割ると1になり、全体がほぼ透明になって見えません。
+
+#### 加算－cv.add
+
+加算には`cv.add()`関数を使います（37行目）。
+
+```javascript
+ 37      cv.add(img1, img2, result);
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.add() 画像を加算する。 -->
+```Javascript
+cv.add(                                     // 戻り値なし
+    cv.Mat src1,                            // 入力画像1
+    cv.Mat src2,                            // 入力画像2
+    cv.Mat dst,                             // 出力画像（1 + 2）
+    cv.Mat mask = noArray(),                // マスク画像
+    number dtype = -1                       // 出力画像のビット深度
+);
+```
+
+入力画像の第1引数`src1`と第2引数`src2`のサイズとチャネル数は一致していなければなりません。オプションの第4引数`mask`から、演算範囲をマスク画像から指定することができます。
+
+第5引数は出力のビット深度を指定するためのものです。`cv.add()`では足す数と足される数のビット深度（ビット数）は同じでなくてもよいので、たとえば16ビット符号ありと8ビット符号なしを足して、32ビット浮動小数点数で保存することもできます。ただ、できるというだけで、そういう妙なことをしなければならないのは、特殊な事情でしょう。普通は入力の2枚の画像はデータ型を揃え、出力もそれと同じになるよう、デフォルトの-1を指定します。
+
+#### 減算－cv.subtract
+
+減算には`cv.subtract()`関数を使います（41行目）。
+
+```javascript
+ 41      cv.subtract(img2, img1, result);
+ 42      result.convertTo(result, -1, 1.5, 50);
+```
+
+関数定義を次に示します。といっても、フォーマットは`cv.add()`とまったく同じです。
+
+<!-- FunctionDefinition cv.subtract() 画像を減算する。 -->
+```Javascript
+cv.subtract(                                // 戻り値なし
+    cv.Mat src1,                            // 入力画像1
+    cv.Mat src2,                            // 入力画像2
+    cv.Mat dst,                             // 出力画像（1 - 2）
+    cv.Mat mask = noArray(),                // マスク画像
+    number dtype = -1                       // 出力画像のビット深度
+);
+```
+
+入力画像の第1引数`src1`から第2引数`src2`を引きます（`src1 - src2`）。
+
+`cv.add()`と`cv.subtract()`には加減の結果をさらに定数倍、あるいは定数の加減をする引数がないので、補正は`cv.Mat.convertTo()`から自力で行ないます。ここでは1.2倍してから20を加えています。
+
+#### 乗算－cv.multiply
+
+乗算には`cv.multiply()`関数を使います（46行目）。
+
+```javascript
+ 46      cv.multiply(img1, img2, result, 1/255);
+```
+
+関数定義を次に示します。フォーマットは`cv.add()`とほぼ同じでですが、定数倍の第4引数が加わり、代わりにマスク画像が削除されています。
+
+<!-- FunctionDefinition cv.multiply() 画像を乗算する。 -->
+```Javascript
+cv.multiply(                                // 戻り値なし
+    cv.Mat src1,                            // 入力画像1
+    cv.Mat src2,                            // 入力画像2
+    cv.Mat dst,                             // 出力画像（1 * 2）
+    number scale = 1,                       // 定数倍（scale * 1 * 2）
+    number dtype = -1                       // 出力画像のビット深度
+);
+```
+
+乗算結果に加減算する機能はないので、必要なら`cv.Mat.convertTo()`を使います。
+
+#### 除算－cv.divide
+
+除算には`cv.divide()`関数を使います（50行目）。
+
+```javascript
+ 50      cv.divide(img1, img2, result, 100);
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.divide() 画像を除算する。 -->
+```Javascript
+cv.divide(                                 // 戻り値なし
+    cv.Mat src1,                            // 入力画像1
+    cv.Mat src2,                            // 入力画像2
+    cv.Mat dst,                             // 出力画像（1 / 2）
+    number scale = 1,                       // 定数倍（scale * 1 / 2）
+    number dtype = -1                       // 出力画像のビット深度
+);
+```
+
+入力画像の第1引数`src1`を第2引数`src2`で割ります（`src1 / src2`）。`src2`側のピクセル値が0のときは、出力も0になります。
+
+#### 重み付け加算－cv.addWeighted
+
+重み付け加算には`cv.addWeighted()`関数を使います（54行目）。
+
+```javascript
+ 54      cv.addWeighted(img1, 0.5, img2, 0.5, 0, result);
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.addWeighted() 画像を重み付け加算する。 -->
+```Javascript
+cv.addWeighted(                             // 戻り値なし
+    cv.Mat src1,                            // 入力画像1
+    number alpha,                           // 画像1の係数
+    cv.Mat src2,                            // 入力画像1
+    number beta,                            // 画像2の係数
+    number gamma,                           // 補正用の加算値
+    cv.Mat dst,                             // 出力画像（α * 1 + β * 2 + γ）
+    number dtype = -1                       // 出力画像のビット深度
+);
+```
+
+計算式は $P' = \alpha P_1 + \beta P_2 + \gamma$ です。それ以外は他と同じです。冒頭で述べたように、たいていは $\alpha + \beta = 1$ となるように係数を選びます。
+
+`cv.Mat`同士の演算には四則演算以外にもビット演算（ANDやOR)、べき乗、最大最小値などいろいろな関数がで定義されているので、それらでどんな絵が得られるかを試すのも楽しいでしょう。次のURLに示すOpenCVリファレンスの「Operations on arrays」にまとめて掲載されていますので、詳細はそちらを参照してください。
+
+```https://docs.opencv.org/4.8.0/d2/de8/group__core__array.html```

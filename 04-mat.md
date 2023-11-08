@@ -106,8 +106,8 @@ OpenCV.jsで画像処理を行うには、`<img>`で読み込んだ画像を`cv.
 
 <!-- FunctionDefinition cv.imread() `HTMLImageElement`上の画像を`cv.Mat`に取り込む。 -->
 ```Javascript
-cv.Mat = cv.imread(          // cv.Matを返す
-    HTMLImageElement img     // 入力元のオブジェクト
+cv.Mat = cv.imread(                         // cv.Matを返す
+    HTMLImageElement img                    // 入力元のオブジェクト
 );
 ```
 
@@ -125,9 +125,9 @@ cv.Mat = cv.imread(          // cv.Matを返す
 
 <!-- FunctionDefinition cv.imshow() 第2引数の`cv.Mat`を第1引数の`<canvas>`に貼り付ける。 -->
 ```Javascript
-cv.imshow(                   // 戻り値なし
-    string id,               // <canvas>のid
-    cv.Mat mat               // 画像を収容したcv.Matオブジェクト
+cv.imshow(                                  // 戻り値なし
+    string id,                              // <canvas>のid
+    cv.Mat mat                              // 画像を収容したcv.Matオブジェクト
 );
 ```
 
@@ -192,7 +192,7 @@ cv.imshow(                   // 戻り値なし
 - 符号のあるなし ... 数字のうしろの文字はUが符号なし整数（unsigned）、Sが符号あり整数（signed）、Fが浮動小数点数（float）という意味です。
 - チャネル数 ... 上述の通りで、1～4のいずれかです。
 
-実行例で示したように、`type()`関数は整数値でしか返しません。数値から型名を知るには、オンラインマニュアルを参照するか、[3.2節](./03-opencv.md#32-OpenCVjsの定数と関数 "INTERNAL")で作成した定数チェッカーを用います。コードからというのなら、こういう手もあります（コンソールから実行。末尾の24が検索したい定数名）。
+実行例で示したように、`type()`関数は整数値でしか返しません。数値から型名を知るには、オンラインマニュアルを参照するか、[3.2節](./03-opencv.md#32-OpenCVjsの定数と関数を調べる "INTERNAL")で作成した定数チェッカーを用います。コードからというのなら、こういう手もあります（コンソールから実行。末尾の24が検索したい定数名）。
 
 ```javascript
 > Object.entries(cv).filter(c => c[0].startsWith('CV_') && c[1] == 24)[0][0]
@@ -213,7 +213,7 @@ cv.imshow(                   // 戻り値なし
 
 浮動小数点数は計算誤差を抑えるときに用いられます。画像処理、すなわちピクセル値をもとになんらかの演算をするとき、8ビット符号なし整数だと小数点数以下の切り捨てや256以上の値のオーバーフローが計算のたびに発生するからです。画像はもともと8ビット符号なし整数なので、浮動小数点数に変えることで途中計算時の誤差をなくし、表示するときにまたもとの8ビット符号なし整数に戻します。
 
-`cv.Mat`は行列なので2次元に広がる、あるいはそれらが積み重なったデータならば画像以外のものも収容できます。たとえば、`cv.CV_32SC4`は4つで1組のデータのそれぞれの要素をチャネル単位に収容するのに用いられます（[6.6節](./06-img.md#66―書類の傾きを補正する "INTERNAL")。2チャネルの`cv.CV_32FC2`は[6.4節](./06-img.md#64-QRコードを読むオプティカルフロー "INTERNAL")で、浮動小数点数2つで構成される点の座標を複数個収容するときに用いています（チャネル0がx座標、チャネル1がy座標）。他にも、画像圧縮では複素数が出てきますが、実部と虚部をそれぞれ収容するのにも使われます。
+`cv.Mat`は行列なので2次元に広がる、あるいはそれらが積み重なったデータならば画像以外のものも収容できます。たとえば、`cv.CV_32SC4`は4つで1組のデータのそれぞれの要素をチャネル単位に収容するのに用いられます（[6.6節](./06-img.md#66―書類の傾きを補正する "INTERNAL")。2チャネルの`cv.CV_32FC2`は[6.4節](./06-img.md#64-QRコードを読む "INTERNAL")で、浮動小数点数2つで構成される点の座標を複数個収容するときに用いています（チャネル0がx座標、チャネル1がy座標）。他にも、画像圧縮では複素数が出てきますが、実部と虚部をそれぞれ収容するのにも使われます。
 
 #### ビット深度
 
@@ -384,8 +384,8 @@ OpenCV.jsが準備できたら（48～50行目）、キャンバスから画像�
 
 <!-- FunctionDefinition cv.matFromImageData() `ImageData`オブジェクトを`cv.Mat`に取り込む。 -->
 ```Javascript
-cv.Mat = cv.matFromImageData(  // cv.Matを返す
-    ImageData imgData          // 入力元のオブジェクト
+cv.Mat = cv.matFromImageData(               // cv.Matを返す
+    ImageData imgData                       // 入力元のオブジェクト
 );
 ```
 
@@ -622,9 +622,9 @@ OpenCV.jsの準備完了の検出にはいつもの`Module.onRuntimeInitialized`
 
 <!-- FunctionDefinition cv.Mat.ucharPtr() `cv.Mat.data`の指定の位置からのピクセル値を`Uint8Array`で返す。 -->
 ```Javascript
-Uint8Array = cv.Mat.ucharPtr(   // cv.Matを返す
-    number row,                 // ピクセルの行位置（y）
-    number col                  // ピクセルの列位置（x）
+Uint8Array = cv.Mat.ucharPtr(               // cv.Matを返す
+    number row,                             // ピクセルの行位置（y）
+    number col                              // ピクセルの列位置（x）
 );
 ```
 
@@ -784,20 +784,20 @@ HTML5画像がRGBAなので、`cv.Mat`のデータ型は`cv.CV_8UC4`です。し
 
 <!-- FunctionDefinition cv.Mat() `cv.Mat`を生成するコンストラクタ。 -->
 ```Javascript
-cv.Mat = cv.Mat(             // cv.Matを返す
-    cv.Size size,            // サイズ
-    number rtype             // データ型
+cv.Mat = cv.Mat(                            // cv.Matを返す
+    cv.Size size,                           // サイズ
+    number rtype                            // データ型
 );
-cv.Mat = cv.Mat(             // cv.Matを返す
-    number rows,             // 行数（高さ）
-    number cols,             // 列数（横幅）
-    number rtype             // データ型
+cv.Mat = cv.Mat(                            // cv.Matを返す
+    number rows,                            // 行数（高さ）
+    number cols,                            // 列数（横幅）
+    number rtype                            // データ型
 );
-cv.Mat = cv.Mat(             // cv.Matを返す
-    number rows,             // 行数（高さ）
-    number cols,             // 列数（横幅）
-    number rtype,            // データ型
-    cv.Scalar color          // 埋める値
+cv.Mat = cv.Mat(                            // cv.Matを返す
+    number rows,                            // 行数（高さ）
+    number cols,                            // 列数（横幅）
+    number rtype,                           // データ型
+    cv.Scalar color                         // 埋める値
 );
 ```
 
@@ -819,9 +819,9 @@ cv.Mat = cv.Mat(             // cv.Matを返す
 
 <!-- FunctionDefinition cv.Size() 横と縦の大きさを収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Size = cv.Size(           // cv.Sizeを返す
-    number width,            // 横幅
-    number height            // 高さ
+cv.Size = cv.Size(                          // cv.Sizeを返す
+    number width,                           // 横幅
+    number height                           // 高さ
 );
 ```
 
@@ -860,9 +860,9 @@ JavaScript上は`number`なので浮動小数点数であっても問題はあ�
 
 <!-- FunctionDefinition cv.Point() 座標位置(x, y)を収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Point = cv.Point(         // cv.Pointを返す
-    number x,                // x位置（列位置）
-    number y                 // y位置（行位置）
+cv.Point = cv.Point(                        // cv.Pointを返す
+    number x,                               // x位置（列位置）
+    number y                                // y位置（行位置）
 );
 ```
 
@@ -883,9 +883,9 @@ cv.Point = cv.Point(         // cv.Pointを返す
 
 <!-- FunctionDefinition cv.Circle() 中心座標と半径を収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Circle = cv.Circle(       // cv.Cicleを返す
-    cv.Point center          // 中心座標
-    number radius            // 半径
+cv.Circle = cv.Circle(                      // cv.Cicleを返す
+    cv.Point center                         // 中心座標
+    number radius                           // 半径
 );
 ```
 
@@ -935,7 +935,7 @@ OpenCVには円を描く`cv.circle()`という関数があり、そちらはcが
 
 ```https://docs.opencv.org/4.8.0/d6/d6e/group__imgproc__draw.html```
 
-すべての関数が実装されているわけではないので、利用できるかは[3.2節](./03-opencv.md#32-OpenCVjsの定数と関数 "INTERNAL")を参照してください（たとえば、矢印付き直線を描く`cv.arrowedLine()`はOpenCV.jsにはありません）。
+すべての関数が実装されているわけではないので、利用できるかは[3.2節](./03-opencv.md#32-OpenCVjsの定数と関数を調べる "INTERNAL")を参照してください（たとえば、矢印付き直線を描く`cv.arrowedLine()`はOpenCV.jsにはありません）。
 
 もちろん、描画コンテクストの`arc()`関数を使って描くという手もあります（[4.2節](#42-キャンバスをコピーする "INTERNAL")参照）。
 
@@ -947,18 +947,18 @@ OpenCVには円を描く`cv.circle()`という関数があり、そちらはcが
 
 <!-- FunctionDefinition cv.Scalar() 1～4個の数値を収容するコンテナのコンストラクタ（色指定に使う）。 -->
 ```Javascript
-cv.Scalar = cv.Scalar(       // cv.Scalarを返す
-    number, ...              // 1～4個の数値
+cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
+    number, ...                             // 1～4個の数値
 );
 ```
 
 `cv.Circle`自体の要素数は必ず4ですが、引数の個数は問いません。1個しか指定しなければ、残りは0で埋められます。5個以上指定すると、5番目以降は無視されます。実行例をコンソールから示します。
 
 ```javascript
-> new cv.Scalar(1, 2, 3)                // 3個だけ指定
-< Scalar(4) [1, 2, 3, 0]                // 4番目は0
-> new cv.Scalar(1, 2, 3, 4, 5, 6)       // 6個指定
-< Scalar(4) [1, 2, 3, 4]                // 5番目以降は切り捨て
+> new cv.Scalar(1, 2, 3)                    // 3個だけ指定
+< Scalar(4) [1, 2, 3, 0]                    // 4番目は0
+> new cv.Scalar(1, 2, 3, 4, 5, 6)           // 6個指定
+< Scalar(4) [1, 2, 3, 4]                    // 5番目以降は切り捨て
 ```
 
 このオブジェクトは単なる数値配列なので、値をどのように解釈するかは受け手次第です。4要素ありますが、モノクロ画像のピクセルのときは最初の要素だけが参照されます。
@@ -1118,11 +1118,11 @@ cv.Scalar = cv.Scalar(       // cv.Scalarを返す
 
 FunctionDefinition cv.imshow() 第2引数の`cv.Mat`を第1引数の`<canvas>`に貼り付ける。
 ```Javascript
-cv.Mat.convertTo(            // 戻り値なし
-    cv.Mat mat,              // 出力先のcv.Mat
-    number rtype,            // データ型
-    number alpha=1,          // 倍率
-    number beta=0            // 加算値
+cv.Mat.convertTo(                           // 戻り値なし
+    cv.Mat mat,                             // 出力先のcv.Mat
+    number rtype,                           // データ型
+    number alpha=1,                         // 倍率
+    number beta=0                           // 加算値
 );
 ```
 
@@ -1411,7 +1411,7 @@ cv.Mat.convertTo(            // 戻り値なし
 
 <!-- FunctionDefinition cv.Mat.clone() `cv.Mat`のコピーを生成する。 -->
 ```Javascript
-cv.Mat = cv.Mat.clone();     // cv.Matを返す
+cv.Mat = cv.Mat.clone();                    // cv.Matを返す
 ```
 
 #### cv.Rectオブジェクト
@@ -1432,11 +1432,11 @@ ROIは、左上頂点座標を起点とした横縦のサイズを持つ矩形�
 
 <!-- FunctionDefinition cv.Rect() 左上頂点座行、横幅、高さを収容したオブジェクトのコンストラクタ。 -->
 ```Javascript
-cv.Rect = cv.Rect(           // cv.Rectを返す
-    number x,                // 左上頂点x座標
-    number y,                // 左上頂点y座標
-    number width,            // 横幅
-    number height            // 高さ
+cv.Rect = cv.Rect(                          // cv.Rectを返す
+    number x,                               // 左上頂点x座標
+    number y,                               // 左上頂点y座標
+    number width,                           // 横幅
+    number height                           // 高さ
 );
 ```
 
@@ -1456,8 +1456,8 @@ cv.Rect = cv.Rect(           // cv.Rectを返す
 
 <!-- FunctionDefinition cv.Mat.roi() `cv.Mat`にROIを設定する。 -->
 ```Javascript
-cv.Mat.roi(                  // 戻り値なし
-    cv.Rect rect             // 矩形領域
+cv.Mat.roi(                                 // 戻り値なし
+    cv.Rect rect                            // 矩形領域
 );
 ```
 
