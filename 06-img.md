@@ -574,10 +574,11 @@ OpenCVリファレンスは $\sigma$ の値に10未満の値を指定しても�
 
 参考までに、 $\sigma$ を50、75（再掲）、150にしたときの結果を次に左から順に示します。
 
-<!-- いずれも 360x202。img-blur-4.png は再掲。github が <table> でも | でも反応しないので、直列に並べる。-->
-<img src="Images/Ch06/img-blur-5.png" width="300">
-<img src="Images/Ch06/img-blur-4.png" width="300">
-<img src="Images/Ch06/img-blur-6.png" width="300">
+<!-- いずれも 360x202。img-blur-4.png は再掲 -->
+
+$\sigma = 50$ | $\sigma = 75$ | $\sigma = 150$
+---|---|---
+<img src="Images/Ch06/img-blur-5.png" width="300"> | <img src="Images/Ch06/img-blur-4.png" width="300"> | <img src="Images/Ch06/img-blur-6.png" width="300">
 
 
 
