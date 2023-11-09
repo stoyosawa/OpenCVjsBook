@@ -10,15 +10,18 @@
 <h1>2つのカットをトランジションでつなぐ</h1>
 
 <div>
-  <video width="360" id="videoTagA" controls autoplay muted loop src="samples/ny.mp4"></video>
-  <video width="360" id="videoTagB" autoplay muted loop src="samples/ny-subway.mp4"></video>
+  <video width="320" id="videoTagA" autoplay muted loop
+    src="samples/ny.mp4"></video>
+  <video width="320" id="videoTagB" autoplay muted loop
+    src="samples/ny-subway.mp4"></video>
 </div>
 <div>
   <canvas id="canvasTagA" class="placeholder"></canvas>
   <canvas id="canvasTagB" class="placeholder"></canvas>
   <canvas id="canvasTag" class="placeholder"></canvas>
   <select id="selectTag">
-    <option value="h" selected>水平ワイプ</option>
+    <option value="d" selected>ディゾルブ</option>
+    <option value="h">水平ワイプ</option>
     <option value="v">垂直ワイプ</option>
     <option value="c">円形ワイプ</option>
   </select>
@@ -33,30 +36,34 @@
   function makeMask(size, startTime=4, period=5) {
     let type = selectElem.value;
     let time = videoElemA.currentTime - startTime;
-    let color = new cv.Scalar(255, 255, 255);
+    let color = new cv.Scalar(1, 1, 1);
     let pos = Math.max(0, time);
     pos = Math.min(pos, period);
 
-    let mask1 = cv.Mat.zeros(size, cv.CV_8UC3);        // 先に CV_8UC3 で作成する
-    if (type === 'h') {
+    let mask1 = cv.Mat.zeros(size, cv.CV_32FC3);
+    if (type === 'd') {
+      mask1.data32F.fill((period - pos) / period);
+    }
+    else if (type === 'h') {
       let w =  Math.floor(videoElemA.width * pos / period);
-      cv.rectangle(mask1, new cv.Point(w, 0), new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+      cv.rectangle(mask1, new cv.Point(w, 0),
+        new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
     }
     else if (type === 'v') {
       let h = Math.floor(videoElemA.height * pos / period);
-      cv.rectangle(mask1, new cv.Point(0, h), new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+      cv.rectangle(mask1, new cv.Point(0, h),
+        new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
     }
     else if (type === 'c') {
-      let r = Math.floor(Math.hypot(size.width, size.height) * (period - pos) / period);
-      cv.circle(mask1, new cv.Point(Math.floor(size.width/2), Math.floor(size.height/2)), r, color, cv.FILLED);
+      let rMax = Math.hypot(size.width, size.height);
+      let r = Math.floor(rMax * (period - pos) / period);
+      cv.circle(mask1, new cv.Point(Math.floor(size.width/2),
+        Math.floor(size.height/2)), r, color, cv.FILLED);
     }
     cv.blur(mask1, mask1, new cv.Size(17, 17));
 
     let mask2 = new cv.Mat();
-    cv.bitwise_not(mask1, mask2);
-
-    mask1.convertTo(mask1, cv.CV_32FC3, 1/255);       // 32FC3 に変換する
-    mask2.convertTo(mask2, cv.CV_32FC3, 1/255);
+    mask1.convertTo(mask2, -1, -1, 1);
 
     return [mask1, mask2];
   }
@@ -70,16 +77,18 @@
 
   function readFrameAsFloat32(cap, size) {
     let src = new cv.Mat(size, cv.CV_8UC4);
-    cap.read(src);                                 // とりあえず CV_8UC4 で読む
-    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);      // Alpha を落とす
-    src.convertTo(src, cv.CV_32FC3, 1/255);        // CV_32FC3 にする. [0.0, 1.0] にスケーリング
+    cap.read(src);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+    src.convertTo(src, cv.CV_32FC3, 1/255);
     return src;
   }
 
   function perFrame() {
+    if (readyFlag != 7)
+      return;
+
     let capA = new cv.VideoCapture(videoElemA);
     let capB = new cv.VideoCapture(videoElemB);
-
     let size = new cv.Size(videoElemA.width, videoElemA.height);
     let srcA = readFrameAsFloat32(capA, size);
     let srcB = readFrameAsFloat32(capB, size);
@@ -95,36 +104,32 @@
     showFloat32Image('canvasTag', dst);
 
     [srcA, srcB, maskA, maskB, dst].forEach(m => m.delete());
-
     videoElemA.requestVideoFrameCallback(perFrame);
   }
 
-  function videoReady() {
-    if (readyFlag === 7) {
-      console.log('OpenCV, VideoA, VideoB ready.');
-      perFrame();
-    }
+   function videoBReady() {
+    readyFlag |= 4;
+    videoElemB.width = videoElemB.offsetWidth;
+    videoElemB.height = videoElemB.offsetHeight;
+    perFrame();
   }
 
-  videoElemA.addEventListener('loadeddata', function() {
-    console.log('videoA ready');
-    videoElemA.height = videoElemA.offsetHeight;
-    readyFlag |= 1;
-    videoReady();
-  }); 
-  videoElemB.addEventListener('loadeddata', function() {
-    console.log('videoB ready');
-    videoElemB.height = videoElemB.offsetHeight;
+  function videoAReady() {
     readyFlag |= 2;
-    videoReady();
-  });
- 
+    videoElemA.width = videoElemA.offsetWidth;
+    videoElemA.height = videoElemA.offsetHeight;
+    perFrame();
+  }
+
+  function opencvReady() {
+    readyFlag |= 1;
+    perFrame();
+  }
+
+  videoElemA.addEventListener('loadeddata', videoAReady);
+  videoElemB.addEventListener('loadeddata', videoBReady);
   var Module = {
-    onRuntimeInitialized: function() {
-      console.log('opencv ready.');
-      readyFlag |= 4;
-      videoReady();
-    }
+    onRuntimeInitialized: opencvReady
   }
 </script>
 
