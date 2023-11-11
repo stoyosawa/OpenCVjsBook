@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<h1>OpenCV.jsで利用可能なコンストラクタ、メソッド</h1>
+<h1>OpenCV.jsの関数を調べる</h1>
 
 <div>
   <pre id="preTag"></pre>
@@ -16,23 +16,23 @@
 <script>
   let preElem = document.getElementById('preTag');
 
-  function listFunctions(obj) {
-    let keys = Object.keys(obj);
+  function listFunctions() {
+    let keys = Object.keys(cv);
     console.log(`${keys.length} entries in CV.`);
 
     let functions = keys.filter(function(key) {
-      return typeof cv[key] === 'function';
+      let isFunction = typeof cv[key] === 'function';
+      let isDyncall = key.startsWith('dynCall_');
+      let isDunder = key.startsWith('__');
+      return isFunction && ! isDyncall && ! isDunder;
     }).sort();
     console.log(`${functions.length} functions in CV.`);
     preElem.innerHTML = functions.join('\n');
   }
 
   var Module = {
-    onRuntimeInitialized: function() {
-      console.log(`OpenCV ready`);
-      listFunctions(cv)
-    }
-  };
+    onRuntimeInitialized: listFunctions
+  }
 </script>
 
 </body>

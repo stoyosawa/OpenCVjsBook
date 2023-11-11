@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<h1>2つのカットをトランジションでつなぐ</h1>
+<h1>ショットをトランジションでつなぐ</h1>
 
 <div>
   <video width="320" id="videoTagA" autoplay muted loop
@@ -75,7 +75,8 @@
     dst.delete();
   }
 
-  function readFrameAsFloat32(cap, size) {
+  function readFrameAsFloat32(videoElem, size) {
+    let cap = new cv.VideoCapture(videoElem);
     let src = new cv.Mat(size, cv.CV_8UC4);
     cap.read(src);
     cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
@@ -87,11 +88,9 @@
     if (readyFlag != 7)
       return;
 
-    let capA = new cv.VideoCapture(videoElemA);
-    let capB = new cv.VideoCapture(videoElemB);
     let size = new cv.Size(videoElemA.width, videoElemA.height);
-    let srcA = readFrameAsFloat32(capA, size);
-    let srcB = readFrameAsFloat32(capB, size);
+    let srcA = readFrameAsFloat32(videoElemA, size);
+    let srcB = readFrameAsFloat32(videoElemB, size);
 
     let [maskA, maskB] = makeMask(size);
     showFloat32Image('canvasTagA', maskA);

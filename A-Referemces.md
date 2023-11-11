@@ -42,6 +42,9 @@ CSSプロパティから基本的な画像処理を実行できる`filter`の説
 - [MDN「HTMLMediaElement」](https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement`  
 `HTMLVideoElement`の親クラスの`HTMLMediaElement`の詳細ページ。`HTMLVideoElement`で利用できるメソッドやプロパティのほとんどはこのクラスから継承しています。
 
+- [MDN「WebAssembly」](https://developer.mozilla.org/ja/docs/WebAssemblyt "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/WebAssembly`  
+C/C++で書かれたコードをJavaScriptで利用する方法であるWebAssembly（WASM）の解説。
+
 - [MDN「XMLHttpRequest」](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest`  
 スクリプト内から別途HTTP通信を行う`XMLHttpRequest`クラスの詳細ページ。
 

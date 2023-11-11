@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+<head>
+  <meta charset="UTF-8">
+  <link rel=stylesheet type="text/css" href="style.css">
+  <script async src="libs/opencv.js" type="text/javascript"></script>
+</head>
+<body>
+
+<h1>動いているものだけを抜き出す</h1>
+
+<div>
+  <video id="videoTag" width="360" src="samples/motorway.mp4"></video>
+  <canvas id="canvasTag" class="placeholder"></canvas>
+</div>
+
+<script>
+  let videoElem = document.getElementById('videoTag');
+  let src, dst;
+  let mog2;
+  let frameCallbackHandle;
+  let readyFlag;
+
+  function perFrame() {
+    let cap = new cv.VideoCapture(videoElem);
+    cap.read(src);
+    mog2.apply(src, dst);
+    // 第1引数: history。int32。デフォルト 500
+    // 第2引数: threshold。float。デフォルト 16f。"# of mixture components" らしいがなんのこっちゃかわからない。
+    // 第3引数: shadowDetection。boolean。デフォルト true。影を除外するかを決める。遅いので、早いのが好きなら false。
+    // Tutorial はすべてデフォルトの (500, 16, true) を指定している。
+    cv.imshow('canvasTag', dst);
+    frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
+  }
+
+  function stop() {
+    [src, dst, mog2].forEach(m => m.delete());
+    videoElem.cancelVideoFrameCallback(frameCallbackHandle);
+    videoElem.removeEventListener('pause', stop);
+    videoElem.removeEventListener('ended', stop);
+    readyFlag = 0;
+  }
+
+  function init() {
+    if (readyFlag != 3)
+      return;
+    src = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+    dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC1);
+    mog2 = new cv.BackgroundSubtractorMOG2();
+    videoElem.muted = true;
+    videoElem.play();
+    perFrame();
+  }
+
+  function videoReady() {
+    readyFlag |= 2;
+    videoElem.width = videoElem.offsetWidth;
+    videoElem.height = videoElem.offsetHeight;
+    videoElem.muted  = true;
+    videoElem.play();
+    init();
+  }
+
+  function opencvReady() {
+    readyFlag |= 1;
+    init();
+  }
+
+  videoElem.addEventListener('loadeddata', videoReady);
+  videoElem.addEventListener('pause', stop);
+  videoElem.addEventListener('ended', stop);
+  var Module = {
+    onRuntimeInitialized: opencvReady
+  }
+</script>
+
+</body>
+</html>

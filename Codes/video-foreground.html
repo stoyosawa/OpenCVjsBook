@@ -10,7 +10,7 @@
 <h1>動いているものだけを抜き出す</h1>
 
 <div>
-  <video id="videoTag" width="480" height="270" autoplay muted src="samples/motorway.mp4"></video>
+  <video id="videoTag" width="360" autoplay muted src="samples/motorway.mp4"></video>
   <canvas id="canvasTag" class="placeholder"></canvas>
 </div>
 <div>
@@ -21,86 +21,95 @@
 
 <script>
   let videoElem = document.getElementById('videoTag');
-  let src, src8, src32, src32gray, bg32gray, fg32gray, fg8mask, dst;
+  let srcOrig, src, srcGray, bgGray, fgGray, mask, dst;
   let frameCallbackHandle;
   let readyFlag = 0;
 
   function showImage(canvasID, src, half=false) {
-    let dst = new cv.Mat();
+    let mat = new cv.Mat();
     if (src.depth === cv.CV_32F)
-      src.convertTo(dst, cv.CV_8UC3, 255);
+      src.convertTo(mat, cv.CV_8UC3, 255);
     else
-      dst = src.clone();
+      mat = src.clone();
     if (half)
-      cv.resize(dst, dst, new cv.Size(), 0.5, 0.5);
-    cv.imshow(canvasID, dst);
-    dst.delete();
+      cv.resize(mat, mat, new cv.Size(), 0.5, 0.5);
+    cv.imshow(canvasID, mat);
+    mat.delete();
   }
 
   function perFrame() {
     if (readyFlag !== 3)
       return;
 
+    // 元フレームにはカラー版（src）とグレー版（srcGray）を用意する。どちらも cv.CV_32FC3
     let cap = new cv.VideoCapture(videoElem);
-    cap.read(src);
-    cv.cvtColor(src, src8, cv.COLOR_RGBA2RGB);
-    src8.convertTo(src32, cv.CV_32FC3, 1/255);
-    cv.cvtColor(src32, src32gray, cv.COLOR_RGB2GRAY);
+    cap.read(srcOrig);
+    cv.cvtColor(srcOrig, src, cv.COLOR_RGBA2RGB);
+    src.convertTo(src, cv.CV_32FC3, 1/255)
+    cv.cvtColor(src, srcGray, cv.COLOR_RGB2GRAY);
 
     // 背景画像と加算していくころで、前景抜きの画像を生成する
-    cv.addWeighted(src32gray, 0.01, bg32gray, 0.99, 0.0, bg32gray);         // マニュアルには multichannel でもチャネル単位にやると書いてあるが、32FC4 のままだとエラーになる。
-    showImage('canvasTag1', bg32gray, true);
+    cv.addWeighted(srcGray, 0.01, bgGray, 0.99, 0.0, bgGray);         // マニュアルには multichannel でもチャネル単位にやると書いてあるが、32FC4 のままだとエラーになる。
+    showImage('canvasTag1', bgGray, true);
 
     // 差分を取ることで前景画像を生成する
-    cv.absdiff(src32gray, bg32gray, fg32gray);
-    showImage('canvasTag2', fg32gray, true);
+    cv.absdiff(srcGray, bgGray, fgGray);
+    showImage('canvasTag2', fgGray, true);
 
     // 前景を 8UC1 に戻すことで、マスク画像にする
-    fg32gray.convertTo(fg8mask, cv.CV_8UC1, 255);
-    cv.threshold(fg8mask, fg8mask, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
-    showImage('canvasTag3', fg8mask, true);
+    fgGray.convertTo(mask, cv.CV_8UC1, 255);
+    cv.threshold(mask, mask, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
+    showImage('canvasTag3', mask, true);
 
     // 現在のフレームの CV_8UC3版に前景マスクをかける
-    dst.data.fill(196);
-    src8.copyTo(dst, fg8mask);
-    cv.imshow('canvasTag', dst);
+    dst.data32F.fill(0.8);
+    src.copyTo(dst, mask);
+    showImage('canvasTag', dst);
 
-    // cv.imshow('canvasTag', dst);
     frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
   }
 
-  function videoReady() {
-    console.log('video ready');
-    readyFlag |= 1;
-    perFrame();
-  }
 
-  function videoEnd() {
-    console.log('video ended');
-    [src, src8, src32, src32gray, bg32gray, fg32gray, fg8mask, dst].forEach(m => m.delete());
+  function stop() {
+    [srcOrig, src, srcGray, bgGray, fgGray, mask, dst].forEach(
+      m => m.delete());
     videoElem.cancelVideoFrameCallback(frameCallbackHandle);
-    videoElem.removeEventListener('pause', videoEnd);
-    videoElem.removeEventListener('ended', videoEnd);
+    videoElem.removeEventListener('pause', stop);
+    videoElem.removeEventListener('ended', stop);
     readyFlag = 0;
   }
 
-  function opencvReady() {
-    console.log('opencv ready');
-    src = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
-    src8 = new cv.Mat();
-    src32 = new cv.Mat();
-    src32gray = new cv.Mat();
-    bg32gray = new cv.Mat(videoElem.height, videoElem.width, cv.CV_32FC1, new cv.Scalar(0.5));
-    fg32gray = new cv.Mat();
-    fg8mask = new cv.Mat();
+  function init() {
+    if (readyFlag != 3)
+      return;
+
+    srcOrig = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+    src = new cv.Mat();
+    srcGray = new cv.Mat();
+    bgGray = new cv.Mat(videoElem.height, videoElem.width, cv.CV_32FC1,
+      new cv.Scalar(0.5));
+    fgGray = new cv.Mat();
+    mask = new cv.Mat();
     dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+
+    perFrame();    
+  }
+
+  function videoReady() {
     readyFlag |= 2;
-    perFrame();
+    videoElem.width = videoElem.offsetWidth;
+    videoElem.height = videoElem.offsetHeight;
+    init();
+  }
+
+  function opencvReady() {
+    readyFlag |= 1;
+    init();
   }
 
   videoElem.addEventListener('loadeddata', videoReady);
-  videoElem.addEventListener('pause', videoEnd);
-  videoElem.addEventListener('ended', videoEnd);
+  videoElem.addEventListener('pause', stop);
+  videoElem.addEventListener('ended', stop);
   var Module = {
     onRuntimeInitialized: opencvReady
   }

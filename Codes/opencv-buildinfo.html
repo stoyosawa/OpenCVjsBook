@@ -7,19 +7,17 @@
 </head>
 <body>
 
-<h1>OpenCV.js の動作確認</h1>
-
-<p>opencv.jsをロードし、ビルド情報を表示します。</p>
+<h1>OpenCV.js のビルド情報</h1>
 
 <div>
-  <pre id="statusTag">OpenCV Loading ...</pre>
+  <pre id="preTag">OpenCV Loading ...</pre>
 </div>
 
 <script>
-  let statusElem = document.getElementById('statusTag');
+  let preElem = document.getElementById('preTag');
   var Module = {
     onRuntimeInitialized: function() {
-      statusElem.innerHTML = cv.getBuildInformation();
+      preElem.innerHTML = cv.getBuildInformation();
     }
   };
 </script>

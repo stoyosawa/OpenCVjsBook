@@ -689,9 +689,9 @@ ROIも`cv.Mat`なので、明示的に解放するのを忘れないように（
 
 2本のビデオをトランジションを交えて切り替えます。
 
-2つのショットからひとつなぎの映像を作成するとき、前のショットの末尾フレームと次のショットの先頭フレームを単純につなぐのが基本です。しかし、前のショットの末尾数秒分と次のショットの先頭数秒分をオーバーラップさせることで、前後のショットを同一画面に同時に示す特殊なつなぎかたもあります。これがトランジションです。本節では、ディゾルブ、左右ワイプ、上下ワイプ、円形ワイプの4種類のトランジションを実装します。
+2つのショットからひとつなぎの映像を作成するには、前のショットの末尾フレームと次のショットの先頭フレームをそのままつなぐのが基本です。しかし、前のショットの末尾数秒分と次のショットの先頭数秒分をオーバーラップさせることで、前後のショットを同一画面に同時に示す特殊なつなぎかたもあります。これがトランジションです。本節では、ディゾルブ、水平ワイプ、垂直ワイプ、円形ワイプの4種類のトランジションを実装します。
 
-技術的には、先行するフレームからは徐々にその要素を取り除いていき、続くフレームは反対に徐々に要素を増やしていき、その結果を合成することでトランジションは構成されます（[6.8節](./06-img.md#68-画像を合成する "INTERNAL")）。この要素の増減は0～1の小数点数を値を持つ、フレームと同じサイズの行列で表現できます。値が1.0の箇所では要素を保持し、0.0の箇所では完全に要素を削除し、その中間だと画像を薄くします。この行列を時間に応じて変化させ、フレームに掛ければできあがりです。つまり、トランジションとは時間によって変化する行列を重みとした麻績付け加算と表現することができます。
+技術的には、先行するフレームからは徐々にその要素を取り除いていき、続くフレームは反対に徐々に要素を増やしていき、その結果を合成することでトランジションは構成されます（[6.8節](./06-img.md#68-画像を合成する "INTERNAL")）。要素の増減は、0～1の小数点数を値を持つフレームと同サイズの行列で表現できます。値が1.0の箇所では要素を保持し、0.0の箇所では完全に要素を削除し、その中間だと画像を薄くします。そして、この行列を時間に応じて変化させ、フレームに掛けます。つまり、トランジションとは時間によって変化する行列を重みとした重み付け加算ということができます。式にすれば次の通りです。
 
 $$ S(t) = S_1(t) M_1(t) + S_2(t) M_2(t) $$
 
@@ -699,9 +699,9 @@ $S_1(t),\ S_2(t)$が時間 $t$ の元映像のフレーム、 $M_1(t),\ F_2(t)$ 
 
 $$ S(t) = S_1(t) M(t) + S_2(t) (1 - M(t)) $$
 
-OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。1から行列を引くのはOpenCV.js得意ではないので、`cv.Mat.convertTo()`を流用します。1から行列を引く、は行列を-1倍して1を足すという操作に置き換えられます。
+OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。OpenCV.jsはスカラー値1から行列を引くのが得意ではないので、`cv.Mat.convertTo()`を流用します。「1から行列を引く」は、行列を-1倍して1を足すという操作に置き換えられます。
 
-小数点数を用いるので、画像のデータ型には4チャネル32ビット浮動小数点数型（`cv.CV_32FC3`）を用います。この型を画像に使うときは0がまっくろ（最低輝度）、1がまっしろ（最大輝度）であるとするのが通例なので、型変換時にはピクセル値をすべて1/255倍します。
+小数点数を用いるので、画像のデータ型には4チャネル32ビット浮動小数点数型（`cv.CV_32FC3`）を用います。この型を画像に使うときは0をまっくろ（最低輝度）、1をまっしろ（最大輝度）にするのが通例なので、型変換時にはピクセル値をすべて1/255倍します。
 
 ディゾルブの実行例を次の画面に示します。
 
@@ -709,9 +709,9 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。1か
 
 上段の左が先行ショット、右が後続ショットです。
 
-下段の左と中央が、それぞれのショットにかける行列を画像として示したものです。スタート時点では、左はまっしろ（1.0）ですが次第に黒くなっていきます。反対に中央はまっくろ（0.0）ですが、次第に白くなっていきます。この濃度が、2つのショットをどれだけ混ぜ合わせるか度合いを示しています。
+下段の左と中央が、それぞれのショットにかける行列を画像として示したものです。スタート時点では、左はまっしろ（1.0）ですが次第に黒くなっていきます。反対に中央はまっくろ（0.0）ですが、次第に白くなっていきます。この濃度が、2つのショットをどれだけ混ぜ合わせるか度合いを示します。
 
-下段右の画像が合成後のフレームです。
+下段右の画像が合成後のフレームです。後続フレームの地下鉄プラットフォームが微妙に映り込んでいるのがわかります。
 
 サンプルには同サイズ（原寸は640×360）、同時間長（13秒）のものを選びました。`<video>`では`autoplay muted loop`の属性を指定しているので、ページがロードされれば即座にスタートしてまわり続けます。
 
@@ -721,22 +721,469 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。1か
 
 #### コード
 
+コード`video-transition.html`を次に示します。
+
+```html
+[File] video-transition.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>ショットをトランジションでつなぐ</h1>
+ 11
+ 12  <div>
+ 13    <video width="320" id="videoTagA" autoplay muted loop
+ 14      src="samples/ny.mp4"></video>
+ 15    <video width="320" id="videoTagB" autoplay muted loop
+ 16      src="samples/ny-subway.mp4"></video>
+ 17  </div>
+ 18  <div>
+ 19    <canvas id="canvasTagA" class="placeholder"></canvas>
+ 20    <canvas id="canvasTagB" class="placeholder"></canvas>
+ 21    <canvas id="canvasTag" class="placeholder"></canvas>
+ 22    <select id="selectTag">
+ 23      <option value="d" selected>ディゾルブ</option>
+ 24      <option value="h">水平ワイプ</option>
+ 25      <option value="v">垂直ワイプ</option>
+ 26      <option value="c">円形ワイプ</option>
+ 27    </select>
+ 28  </div>
+ 29
+ 30  <script>
+ 31    let videoElemA = document.getElementById('videoTagA');
+ 32    let videoElemB = document.getElementById('videoTagB');
+ 33    let selectElem = document.getElementById('selectTag');
+ 34    let readyFlag = 0;
+ 35
+ 36    function makeMask(size, startTime=4, period=5) {
+ 37      let type = selectElem.value;
+ 38      let time = videoElemA.currentTime - startTime;
+ 39      let color = new cv.Scalar(1, 1, 1);
+ 40      let pos = Math.max(0, time);
+ 41      pos = Math.min(pos, period);
+ 42
+ 43      let mask1 = cv.Mat.zeros(size, cv.CV_32FC3);
+ 44      if (type === 'd') {
+ 45        mask1.data32F.fill((period - pos) / period);
+ 46      }
+ 47      else if (type === 'h') {
+ 48        let w =  Math.floor(videoElemA.width * pos / period);
+ 49        cv.rectangle(mask1, new cv.Point(w, 0),
+ 50          new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+ 51      }
+ 52      else if (type === 'v') {
+ 53        let h = Math.floor(videoElemA.height * pos / period);
+ 54        cv.rectangle(mask1, new cv.Point(0, h),
+ 55          new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+ 56      }
+ 57      else if (type === 'c') {
+ 58        let rMax = Math.hypot(size.width, size.height);
+ 59        let r = Math.floor(rMax * (period - pos) / period);
+ 60        cv.circle(mask1, new cv.Point(Math.floor(size.width/2),
+ 61          Math.floor(size.height/2)), r, color, cv.FILLED);
+ 62      }
+ 63      cv.blur(mask1, mask1, new cv.Size(17, 17));
+ 64
+ 65      let mask2 = new cv.Mat();
+ 66      mask1.convertTo(mask2, -1, -1, 1);
+ 67
+ 68      return [mask1, mask2];
+ 69    }
+ 70
+ 71    function showFloat32Image(canvasID, src) {
+ 72      let dst = new cv.Mat();
+ 73      src.convertTo(dst, cv.CV_8UC3, 255);
+ 74      cv.imshow(canvasID, dst);
+ 75      dst.delete();
+ 76    }
+ 77
+ 78    function readFrameAsFloat32(videoElem, size) {
+ 79      let cap = new cv.VideoCapture(videoElem);
+ 80      let src = new cv.Mat(size, cv.CV_8UC4);
+ 81      cap.read(src);
+ 82      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+ 83      src.convertTo(src, cv.CV_32FC3, 1/255);
+ 84      return src;
+ 85    }
+ 86
+ 87    function perFrame() {
+ 88      if (readyFlag != 7)
+ 89        return;
+ 90
+ 91      let size = new cv.Size(videoElemA.width, videoElemA.height);
+ 92      let srcA = readFrameAsFloat32(videoElemA, size);
+ 93      let srcB = readFrameAsFloat32(videoElemB, size);
+ 94
+ 95      let [maskA, maskB] = makeMask(size);
+ 96      showFloat32Image('canvasTagA', maskA);
+ 97      showFloat32Image('canvasTagB', maskB);
+ 98
+ 99      cv.multiply(srcA, maskA, srcA);
+100      cv.multiply(srcB, maskB, srcB);
+101      let dst = new cv.Mat();
+102      cv.add(srcA, srcB, dst);
+103      showFloat32Image('canvasTag', dst);
+104
+105      [srcA, srcB, maskA, maskB, dst].forEach(m => m.delete());
+106      videoElemA.requestVideoFrameCallback(perFrame);
+107    }
+108
+109     function videoBReady() {
+110      readyFlag |= 4;
+111      videoElemB.width = videoElemB.offsetWidth;
+112      videoElemB.height = videoElemB.offsetHeight;
+113      perFrame();
+114    }
+115
+116    function videoAReady() {
+117      readyFlag |= 2;
+118      videoElemA.width = videoElemA.offsetWidth;
+119      videoElemA.height = videoElemA.offsetHeight;
+120      perFrame();
+121    }
+122
+123    function opencvReady() {
+124      readyFlag |= 1;
+125      perFrame();
+126    }
+127
+128    videoElemA.addEventListener('loadeddata', videoAReady);
+129    videoElemB.addEventListener('loadeddata', videoBReady);
+130    var Module = {
+131      onRuntimeInitialized: opencvReady
+132    }
+133  </script>
+134
+135  </body>
+136  </html>
+```
+
+構造はこれまでと変わりません。非同期に読み込まれるリソースが3つ（OpenCV、先行ビデオ、後続ビデオ）あるので、フラグ（34、110、117、124行目）が７（`0111`<sub>2</sub>）になったときにフレーム処理を始めます（88行目）。OpenCVリソースはフレーム単位に解放しているので（105行目）、終了処理はとくにはありません。実行中、Windowsのタスクマネージャが「非常に高い」電力消費をずっと報告するので、環境にやさしいコーディングではないようです。
+
+#### 画像を32ビット浮動小数点数で扱う
+
+ビデオフレームはRGBAからRGBに変換してから、32ビット浮動小数点数の`cv.CV_32FC3`に型変換します。このフレーム整形の一連の作業はどちらのビデオでも共通なので、ビデオキャプチャオブジェクトの準備も含めて次のように関数化しています（78～85行目）。
+
+```javascript
+ 78    function readFrameAsFloat32(videoElem, size) {
+ 79      let cap = new cv.VideoCapture(videoElem);
+ 80      let src = new cv.Mat(size, cv.CV_8UC4);
+ 81      cap.read(src);
+ 82      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+ 83      src.convertTo(src, cv.CV_32FC3, 1/255);
+ 84      return src;
+ 85    }
+```
+
+浮動小数点数に変換するときに1/255倍することで、ピクセル値の範囲を0.0～1.0にスケーリングするところがポイントです。
+
+キャンバスに表示をするときは、反対に255倍してから8ビット符号なし整数`cv.CV_8UC3`に直します。これを関数化しています（71～76行目）。
+
+```javascript
+ 71    function showFloat32Image(canvasID, src) {
+ 72      let dst = new cv.Mat();
+ 73      src.convertTo(dst, cv.CV_8UC3, 255);
+ 74      cv.imshow(canvasID, dst);
+ 75      dst.delete();
+ 76    }
+```
+
 #### ディゾルブ
 
-#### 左右ワイプ
+トランジション用の変換行列は36～76行目の`makeMask()`関数で用意しています。関数は行列のサイズ（第1引数`size`）、トランジション開始時間（第2引数`startTime`）、トランジション期間（第3引数`period`）を引数から受け付け、先行ショット用行列`mask1`と後続ショット用`mask2`を配列に収容して返します。
+
+```javascript
+ 36    function makeMask(size, startTime=4, period=5) {
+ ︙
+ 68      return [mask1, mask2]; 
+ 69    } 
+```
+
+第2引数と第3引数は、13秒のビデオの時間長にあわせたタイミングをデフォルトにしています。この配分だと、最初の4秒が先行ショットのみ、4～9秒がトランジション中（合成画像）、9～13秒が後続ショットのみという構成になります。
+
+先行ビデオの`mask1`の初期状態は全面黒です（43行目）。これを時間経過にしたがって徐々に部分を白くしていきます。
+
+```javascript
+ 39      let color = new cv.Scalar(1, 1, 1);              // 白で埋める
+ ︙
+ 43      let mask1 = cv.Mat.zeros(size, cv.CV_32FC3);     // 初期状態は黒
+```
+
+どれだけ白くするかを決定するパラメータが40～41行目の`pos`です。この変数は、ビデオ時間が`startTime`以前なら0、トランジション中なら0～5、それ以降なら5のままの値を取ります。
+
+```javascript
+ 40      let pos = Math.max(0, time);
+ 41      pos = Math.min(pos, period);
+```
+
+ディゾルブでは、`mask1`のデータを値`(period - pos) / period`で埋めます（45行目）。この式なら、トランジション開始時点まで（`pos = 0`）では1.0です。時間が進むにつれ`pos`の値が大きくなるので、埋める値は1.0からゆっくりと小さくなります。終了時点、そしてそれ以降（`pos = period`）は0.0で埋めます。行列は32ビット浮動小数点数の`cv.Mat`なので、そのデータを指し示すプロパティは`Float32Array`配列の`cv.Mat.data32F`です（[4.1節](./04-mat.md#41-画像の構造を調べる "INTERNAL")）。配列なので、`fill()`関数からすべてを同じ値で埋められます。
+
+```javascript
+ 45        mask1.data32F.fill((period - pos) / period);
+```
+
+#### 水平ワイプ
+
+水平ワイプの実行例を次に示します。
 
 <img src="Images/Ch07/video-transition-2.png">
 
-#### 上下ワイプ
+画像を左右に割る垂直の線が時間経過ともに左から右へと走ります。この線の左側を黒、右側を白で埋めるには、初期状態では真っ黒な画像に、右端から垂線までを`cv.rectangle()`（[6.7節](./06-img.md#67-顔を検出する "INTERNAL")）を用いて白い長方形で埋めます。48行目の`videoElemA.width / period`が垂線の移動速度です。
+
+```javascript
+ 48        let w =  Math.floor(videoElemA.width * pos / period);
+ 49        cv.rectangle(mask1, new cv.Point(w, 0),
+ 50          new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+```
+
+長方形を塗りつぶすので、第5引数の`thickness`に負の値を示す`cv.FILLED`が指定してあるのがポイントです。
+
+#### 垂直ワイプ
+
+垂直ワイプの実行例を次に示します。
 
 <img src="Images/Ch07/video-transition-3.png">
 
+画像を上下に分割する水平線が時間経過ともに上から下へと走ります。この線の下側を白で埋めるのも、水平ワイプ同様`cv.rectangle()`（[6.7節](./06-img.md#67-顔を検出する "INTERNAL")）です。53行目のの`videoElemA.height / period`が水平線の移動速度です。
+
+```javascript
+ 53        let h = Math.floor(videoElemA.height * pos / period);
+ 54        cv.rectangle(mask1, new cv.Point(0, h),
+ 55          new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
+```
+
 #### 円形ワイプ
+
+円形ワイプの実行例を次に示します。
 
 <img src="Images/Ch07/video-transition-4.png">
 
+画像の中心を中心にした白い円の半径を次第に小さくしていきます。円の最大半径は画像長方形の対角線の半分です（58行目）。三角形の長辺と短辺から斜辺を求めるのには、JavaScript標準装備の`Math.hypot()`が使えます。
+
+```javascript
+ 58        let rMax = Math.hypot(size.width, size.height);
+ 59        let r = Math.floor(rMax * (period - pos) / period);
+ 60        cv.circle(mask1, new cv.Point(Math.floor(size.width/2),
+ 61          Math.floor(size.height/2)), r, color, cv.FILLED);
+```
+
+白い円を描くには`cv.circle()`関数です。関数定義を次に示します。
+
+<!-- FunctionDefinition cv.circle() 円を描く。 -->
+```Javascript
+cv.circle(                                  // 戻り値なし
+    cv.Mat img,                             // 描画対象の画像
+    cv.Point center,                        // 中心の座標
+    number radius,                          // 半径
+    cv.Scalar color,                        // 線色
+    number thickness = 1,                   // 線の太さ
+    number lineType = cv.LINE_8,            // 線の種類
+    number shift = 0                        // 小数部分のビット数
+);
+```
+
+円を規定するパラメータである中心座標と半径が第2引数`center`と第3引数`radius`に入っただけで、あとは他のグラフィックス描画関数と同じです。ここでも、第5引数`thickness`に塗りつぶしの`cv.FILLED`を指定しています。
+
+関数名のcが小文字であるところが注意点です。大文字の`cv.Circle`は円のパラメータを記述するオブジェクトのコンストラクタですです（[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")）。
+
+> オブジェクトの`cv.Circle`はOpenCV.jsの独自仕様なので、OpenCVリファレンスには記述されていません。
+
+
 
 ### 7.5 動いているものだけを抜き出す
+
+#### 目的
+
+ビデオから背景を抜き、動いている前景の物体だけを抜き出します。
+
+固定カメラで撮影されたビデオであることが条件です。画面の物体が静止していても、カメラ自体が動いていれば、それは画像処理上は動いているとみなされるからです。ライティングに変化が少ないのも条件です。静止した物体を固定カメラで撮影しても、光の加減で色合いや反射がが変わったり、影ができたりすると、その部分が動いたとみなされるからです。ターゲットとしては、サーベイランスカメラから撮像した街や道路で、抽出するのはそこを移動する歩行者や車両です。
+
+技術的には、複数のフレームの平均の計算です。時間的に変化するビデオフレームを何枚も加算してその枚数で除すと、平均的な画像が得られます。この平均画像には背景だけが表示されます。動かない背景のピクセル値は、何枚ものフレームの平均と一瞬一瞬のフレームとで変わりがないからです。反対に、移動物体は薄ぼんやりとしたイメージになります。移動している前景はフレームの特定の位置に一瞬しか存在しないため、平均するとピクセル値としては非常に小さくなるからです。そして、この平均画像＝背景画像をもとのフレームから差し引けば、物体だけが浮かび上がります。
+
+平均といいましたが、何百枚もの画像をメモリに保持しておくのは現実的ではありません。そこで、[6.8節](./06-img.md#68-画像を合成する "INTERNAL")で取り上げた`cv.addWeighted()`関数を用います。これまでの重ね合わせの画像 $I$ には大きなウェイトを置き、現在のフレームの $F$ には小さな重みをかけていけば、平均と似たような効果が得られます。これなら、保持しておくのは $I$ だけで済みます。重み係数には、ここでは0.99と0.01を使います。式にすると、次のようになります。
+
+$$ I = 0.99 I + 0.01 F $$
+
+小数点数をかけるので、計算対象には`cv.CV_32FC3`を用います。整数では丸め誤差が大きく、思ったように効果が得られないからです。
+
+画像の差分には`cv.subtract()`ではなく、その絶対値版の`cv.absDifff()`関数を使います。前者では暗いところから明るいところを引いたときにマイナス値になり、画像にしたときに0に飽和してしまうからです。その点、絶対値（abs）を取れば、背景と前景の明暗の差がどちらであっても、プラスのピクセル値が得られます。
+
+実行例を次の画面に示します。
+
+<img src="Images/Ch07/video-foreground-1.png">
+
+上段左が元ビデオで、右が前景の物体です。道路、その左右の木々や標識、左上の空などが削除されています。
+
+下段はこれを生成するために用意した画像です。左は`cv.addWeighted()`で順次フレームを加算していくことで得られた平均画像です。前景の車両が消えています。中央がその時点のフレーム（上段左のモノクロ版）から平均画像を引いた差分画像で、前景の車両だけが抽出されます。右は差分画像を`cv.treshold()`で2値化したマスク画像です。上段右は、この現在のフレームにマスク画像を適用しながら灰色の背景にコピーして得られています。
+
+この画面は60秒のビデオが終わりに至ったときのものなので、差分画像に車両が出ていません。しかし、始めてから間もないと、まだ平均画像に前景の車両が残ります。開始1秒後（毎秒25フレームなので、25フレームくらいからの平均）暗いの画面を次に示します（下段のみ）。
+
+<img src="Images/Ch07/video-foreground-2.png">
+
+差分画像はまだ薄い灰色で、よく見ると、道路上になめくじが通ったあとのような影があります。平均化されてもまだ残っている車の残像です。丘の頂上には車両と認識できる形も残っています。そのため、差分を取っても背景の林や道路脇の設備が残っています。
+
+#### コード
+
+コード`video-foreground.html`を次に示します。
+
+```html
+[File] video-foreground.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>動いているものだけを抜き出す</h1>
+ 11
+ 12  <div>
+ 13    <video id="videoTag" width="480" height="270" autoplay muted src="samples/motorway.mp4"></video>
+ 14    <canvas id="canvasTag" class="placeholder"></canvas>
+ 15  </div>
+ 16  <div>
+ 17    <canvas id="canvasTag1" class="placeholder"></canvas>
+ 18    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 19    <canvas id="canvasTag3" class="placeholder"></canvas>
+ 20  </div>
+ 21
+ 22  <script>
+ 23    let videoElem = document.getElementById('videoTag');
+ 24    let src, src32, src32gray, bg32gray, fg32gray, fg8mask, dst;
+ 25    let frameCallbackHandle;
+ 26    let readyFlag = 0;
+ 27
+ 28    function showImage(canvasID, src, half=false) {
+ 29      let mat = new cv.Mat();
+ 30      if (src.depth === cv.CV_32F)
+ 31        src.convertTo(mat, cv.CV_8UC3, 255);
+ 32      else
+ 33        mat = src.clone();
+ 34      if (half)
+ 35        cv.resize(mat, mat, new cv.Size(), 0.5, 0.5);
+ 36      cv.imshow(canvasID, mat);
+ 37      mat.delete();
+ 38    }
+ 39
+ 40    function perFrame() {
+ 41      if (readyFlag !== 3)
+ 42        return;
+ 43
+ 44      // 元フレームにはカラー版（src）とグレー版（srcGray）を用意する。どちらも cv.CV_32FC3
+ 45      let cap = new cv.VideoCapture(videoElem);
+ 46      cap.read(srcOrig);
+ 47      cv.cvtColor(srcOrig, src, cv.COLOR_RGBA2RGB);
+ 48      src.convertTo(src, cv.CV_32FC3, 1/255)
+ 49      cv.cvtColor(src, srcGray, cv.COLOR_RGB2GRAY);
+ 50
+ 51      // 背景画像と加算していくころで、前景抜きの画像を生成する
+ 52      cv.addWeighted(srcGray, 0.01, bgGray, 0.99, 0.0, bgGray);         // マニュアルには multichannel でもチャネル単位にやる と書いてあるが、32FC4 のままだとエラーになる。
+ 53      showImage('canvasTag1', bgGray, true);
+ 54
+ 55      // 差分を取ることで前景画像を生成する
+ 56      cv.absdiff(srcGray, bgGray, fgGray);
+ 57      showImage('canvasTag2', fgGray, true);
+ 58
+ 59      // 前景を 8UC1 に戻すことで、マスク画像にする
+ 60      fgGray.convertTo(mask, cv.CV_8UC1, 255);
+ 61      cv.threshold(mask, mask, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
+ 62      showImage('canvasTag3', mask, true);
+ 63
+ 64      // 現在のフレームの CV_8UC3版に前景マスクをかける
+ 65      dst.data32F.fill(0.8);
+ 66      src.copyTo(dst, mask);
+ 67      showImage('canvasTag', dst);
+ 68
+ 69      frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
+ 70    }
+ 71
+ 72
+ 73    function stop() {
+ 74      [srcOrig, src, srcGray, bgGray, fgGray, mask, dst].forEach(
+ 75        m => m.delete());
+ 76      videoElem.cancelVideoFrameCallback(frameCallbackHandle);
+ 77      videoElem.removeEventListener('pause', stop);
+ 78      videoElem.removeEventListener('ended', stop);
+ 79      readyFlag = 0;
+ 80    }
+ 81
+ 82    function init() {
+ 83      if (readyFlag != 3)
+ 84        return;
+ 85
+ 86      srcOrig = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+ 87      src = new cv.Mat();
+ 88      srcGray = new cv.Mat();
+ 89      bgGray = new cv.Mat(videoElem.height, videoElem.width, cv.CV_32FC1,
+ 90        new cv.Scalar(0.5));
+ 91      fgGray = new cv.Mat();
+ 92      mask = new cv.Mat();
+ 93      dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+ 94
+ 95      perFrame();
+ 96    }
+ 97
+ 98    function videoReady() {
+ 99      readyFlag |= 2;
+100      videoElem.width = videoElem.offsetWidth;
+101      videoElem.height = videoElem.offsetHeight;
+102      init();
+103    }
+104
+105    function opencvReady() {
+106      readyFlag |= 1;
+107      init();
+108    }
+109
+110    videoElem.addEventListener('loadeddata', videoReady);
+111    videoElem.addEventListener('pause', stop);
+112    videoElem.addEventListener('ended', stop);
+113    var Module = {
+114      onRuntimeInitialized: opencvReady
+115    }
+116  </script>
+117
+118  </body>
+119  </html>
+```
+
+フレーム処理で用いられる`cv.Mat`は初期化をつかさどる`init()`関数（82～96行目）でまとめて定義さしています。数が多いので、次の表にそれらのデータ型と用途をまとめて示します。
+
+変数 | データ型 | 画面上の位置 | 用途
+---|---|---|---
+`srcOrig` | `cv.CV_8UC4` | 上段左 | `<video>`から読み込んだ4チャネル8ビット符号なし整数行列。
+`src` | `cv.CV_32FC3` | -- | `srcOrig`を3チャネル32ビット浮動小数点数に変換した行列。
+`srcGray` | `cv.CV_32FC1` | -- | `src`を1チャネル32ビット浮動小数点数に変換した行列で、その時点のモノクロフレーム。これを使って平均画像を生成する。
+`bgGray` | `cv.CV_32FC1` | 下段左 | ここまでの平均画像（モノクロ背景画像）。初期値では中間のグレーの0.5で埋められている（89～90行目）。
+`fgGray` | `cv.CV_32FC1` | 下段中央 | `srcGray`から`bgGray`を引いた差分画像。
+`mask` | `cv.CV_8UC1` | 下段右 | `fgGray`を2値化した差分画像。
+`dst` | `cv.CV_32FC3` | 上段右 | 3チャネル版の元フレーム`src`を、マスク画像`mask`を使ってこの灰色画像にコピーすることで得られる最終結果。
+
+これらは、ビデオが末尾まで行った（`ended`イベント）、あるいはユーザが停止した（`pause`）ときに解放されます（74～75行目）。
+
+32ビット浮動小数点数を用いているので、`cv.CV_8UC3`に直してからキャンバスに表示します（28空8行目の`showImage()`関数）。前節と同じ手ですが、下段の画像はオリジナルの半分のサイズにするためのフラグ（34～35行目）が入っています。
+
+#### 平均（背景）画像の生成－cv.addWeighted
+
+#### 差分（前景）画像の生成－cv.absDiff
+
+#### 差分（前景）をもとにしたマスク画像の生成－cv.threshold
+
+#### 最終画像の合成－cv.Mat.copyTo
+
+#### 別解－cv2.BackgroundSubtractorMOG2
+
+連続したフレームを順次、重みづけ平均を取っていくことで背景画像を生成するという手段は、画像処理の理解にはもってこいですが、実用となると手数が多くて面倒です。現在では、これよりも洗練された手法が開発されており、OpenCVにもいくつかのアルゴリズムが実装されています。OpenCV.jsでは、そのうちの`cv2.BackgroundSubtractorMOG2()`関数が利用できます。
+
+用法は簡単です。最初に`cv2.createBackGroundSubjectMOG2`クラスのオブジェクトを用意し、読み込んだ映像フレームをその`apply()`メンバ関数で加えるだけです。型変換も必要ありません。
+
 
 ### 7.6 動きの方向を検出する
 

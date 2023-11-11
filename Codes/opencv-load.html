@@ -8,24 +8,27 @@
 </head>
 <body>
 
-<h1>OpenCV.js ローディングのタイミング・その2</h1>
+<h1>OpenCV.js ローディングのタイミング</h1>
 
 <script>
-  let startTime = new Date().getTime();
-
-  function showTime() {
-    let t = new Date().getTime();
-    return `${t} Δ${t-startTime}`
+  function showTime(message) {
+    let datatype = undefined;
+    try {
+      datatype = cv.CV_8UC1;
+    }
+    catch {};
+    console.log(`${message}: ${datatype} @ ${performance.now()}`);
   }
+  showTime('Script started');
 
   let scriptElem = document.getElementById('scriptTag');
-  scriptElem.addEventListener('load', function(evt) {
-    console.log(`onload: ${showTime()}`);
+  scriptElem.addEventListener('load', function() {
+    showTime('OpenCV loaded');
   });
 
   var Module = {
     onRuntimeInitialized: function() {
-      console.log(`onRuntimeInitialized: ${showTime()}`);
+      showTime('OpenCV ready');
     }
   };
 </script>

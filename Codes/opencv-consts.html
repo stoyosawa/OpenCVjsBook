@@ -7,15 +7,18 @@
 </head>
 <body>
 
-<h1>OpenCVの定数</h1>
+<h1>OpenCV.jsの定数を調べる</h1>
 
 <div>
   <select id="selectTag">
     <option value="noop" selected>定数を選択してください</option>
-    <option value="^CV_\d{1,2}[SUF]">データ型定数</option>
-    <option value="^COLOR_">色空間変換定数</option>
-    <option value="^THRESH_">閾値定数</option>
-    <option value="^INTER_">補間方式定数</option>
+    <option value="^CV_\d{1,2}[SUF]">データ型</option>
+    <option value="^COLOR_">色空間変換</option>
+    <option value="^THRESH_">閾値</option>
+    <option value="^INTER_">ピクセル値補間方法</option>
+    <option value="^BORDER_">画像端外挿方法</option>
+    <option value="^LINE_">描画線種</option>
+    <option value="^MORPH_">モルフォロジー演算タイプ</option>
   </select>
 </div>
 <div>
@@ -42,7 +45,6 @@
   }
 
   function opencvReady() {
-    console.log('OpenCV ready.');
     selectElem.addEventListener('change', showConst);
   }
 
