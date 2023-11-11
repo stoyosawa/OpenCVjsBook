@@ -268,7 +268,7 @@ cv.VideoCapture.read(                       // 戻り値なし
 
 #### 目的
 
-カメラ映像を鏡のように左右に反転します。停止は、`<video>`付属の操作パネル（`controls`）のボタンからです。
+カメラ映像を鏡のように左右に反転します。ミーティングアプリケーションでおなじみの機能です。停止は、`<video>`付属の操作パネル（`controls`）のボタンからです。
 
 技術的には、反転操作の`cv.flip()`関数を説明しますが、それ自体はいたって簡単です。カメラ映像を使うには`HTMLVideoElement`にカメラのストリームを取り付けなければなりませんが、いったん`navigator.mediaDevices.getUserMedia()`でセットが済めば、あとの操作はビデオファイルと変わりません（[1.8節](./01-html5.md#18-カメラ映像を流す "INTERNAL")）。フレーム取得の方法も同じで、前節の`cv.VideoCapture`オブジェクト経由です。本節の目的はカメラを使ったサンプルを示すところだけにあるので、新奇な話はあえて組み込んでいません。
 
@@ -687,7 +687,7 @@ ROIも`cv.Mat`なので、明示的に解放するのを忘れないように（
 
 #### 目的
 
-2本のビデオをトランジションを交えて切り替えます。
+2本のビデオをトランジションを交えて切り替えます。Webページで複数のビデオを効果的に表示したいときに便利です。
 
 2つのショットからひとつなぎの映像を作成するには、前のショットの末尾フレームと次のショットの先頭フレームをそのままつなぐのが基本です。しかし、前のショットの末尾数秒分と次のショットの先頭数秒分をオーバーラップさせることで、前後のショットを同一画面に同時に示す特殊なつなぎかたもあります。これがトランジションです。本節では、ディゾルブ、水平ワイプ、垂直ワイプ、円形ワイプの4種類のトランジションを実装します。
 
@@ -999,40 +999,37 @@ cv.circle(                                  // 戻り値なし
 
 #### 目的
 
-ビデオから背景を抜き、動いている前景の物体だけを抜き出します。
+ビデオから背景を抜き、動いている前景の物体だけを抜き出します。物体を抜き出せば、通行する歩行者や車両の数をカウントする、立ち入り禁止区域に入り込もうとしている人影を検出するといったアプリケーションを作成することができるようになります。
 
-固定カメラで撮影されたビデオであることが条件です。画面の物体が静止していても、カメラ自体が動いていれば、それは画像処理上は動いているとみなされるからです。ライティングに変化が少ないのも条件です。静止した物体を固定カメラで撮影しても、光の加減で色合いや反射がが変わったり、影ができたりすると、その部分が動いたとみなされるからです。ターゲットとしては、サーベイランスカメラから撮像した街や道路で、抽出するのはそこを移動する歩行者や車両です。
+技術的には、MOG（Mixture of Gaussians）と呼ばれる背景抜き（Background Subtraction）のアルゴリズムを実装した`cv.BackgroundSubtractorMOG2`クラスを使います。これは、ビデオフレーム中のピクセルが背景か前景のどちらに属するかを確率をベースに計算するアルゴリズムです。時間を経過しても変化のないピクセルが背景なはずですが、あるピクセルが背景である確率が80%、それ以外が20%のように確率的に分けているしているのは、車両や歩行者が通りかかれば、その位置のピクセルが変わってしまうからです。画像をぼかすときに登場したガウス（`cv.GaussianBlur()`）が出てくるのは、ピクセルデータの集まりがガウス分布に従う（正規分布）であると仮定されるからです。
 
-技術的には、複数のフレームの平均の計算です。時間的に変化するビデオフレームを何枚も加算してその枚数で除すと、平均的な画像が得られます。この平均画像には背景だけが表示されます。動かない背景のピクセル値は、何枚ものフレームの平均と一瞬一瞬のフレームとで変わりがないからです。反対に、移動物体は薄ぼんやりとしたイメージになります。移動している前景はフレームの特定の位置に一瞬しか存在しないため、平均するとピクセル値としては非常に小さくなるからです。そして、この平均画像＝背景画像をもとのフレームから差し引けば、物体だけが浮かび上がります。
+固定カメラで撮影されたビデオであることが条件です。画面の物体が静止していても、カメラ自体が動いていれば、それは映像的には動いているのと同じことだからです。ライティングに変化が少ないのも条件です。静止した物体を固定カメラで撮影しても、光の加減で色合いや反射が変わったり、影ができたりすると、その部分が動いたとみなされるからです。ターゲットとしては、サーベイランスカメラから撮像した街や道路で、抽出するのはそこを移動する歩行者や車両です。
 
-平均といいましたが、何百枚もの画像をメモリに保持しておくのは現実的ではありません。そこで、[6.8節](./06-img.md#68-画像を合成する "INTERNAL")で取り上げた`cv.addWeighted()`関数を用います。これまでの重ね合わせの画像 $I$ には大きなウェイトを置き、現在のフレームの $F$ には小さな重みをかけていけば、平均と似たような効果が得られます。これなら、保持しておくのは $I$ だけで済みます。重み係数には、ここでは0.99と0.01を使います。式にすると、次のようになります。
-
-$$ I = 0.99 I + 0.01 F $$
-
-小数点数をかけるので、計算対象には`cv.CV_32FC3`を用います。整数では丸め誤差が大きく、思ったように効果が得られないからです。
-
-画像の差分には`cv.subtract()`ではなく、その絶対値版の`cv.absDifff()`関数を使います。前者では暗いところから明るいところを引いたときにマイナス値になり、画像にしたときに0に飽和してしまうからです。その点、絶対値（abs）を取れば、背景と前景の明暗の差がどちらであっても、プラスのピクセル値が得られます。
+背景を抜き出すことができれば、前景のマスク画像が得られるので、もとのフレームから前景だけを抜き出した画像が生成できます。
 
 実行例を次の画面に示します。
 
-<img src="Images/Ch07/video-foreground-1.png">
+<img src="Images/Ch07/video-mog2-1.png">
 
-上段左が元ビデオで、右が前景の物体です。道路、その左右の木々や標識、左上の空などが削除されています。
+左が入力ビデオ、中央が`cv.BackgroundSubtractorMOG2`で得た前景背景フレームです。背景が黒、前景が白に色分けされています。右が背景前景フレームをマスク画像として、入力フレームを灰色の画像に貼り付けたものです。
 
-下段はこれを生成するために用意した画像です。左は`cv.addWeighted()`で順次フレームを加算していくことで得られた平均画像です。前景の車両が消えています。中央がその時点のフレーム（上段左のモノクロ版）から平均画像を引いた差分画像で、前景の車両だけが抽出されます。右は差分画像を`cv.treshold()`で2値化したマスク画像です。上段右は、この現在のフレームにマスク画像を適用しながら灰色の背景にコピーして得られています。
+`cv.BackgroundSubtractorMOG2`はGMM（Gaussian Moxture Model）というアルゴリズムをその基盤に用いています。基本的な話は次に示すURLのOpenCVチュートリアル「Background Subtraction」に書かれています。
 
-この画面は60秒のビデオが終わりに至ったときのものなので、差分画像に車両が出ていません。しかし、始めてから間もないと、まだ平均画像に前景の車両が残ります。開始1秒後（毎秒25フレームなので、25フレームくらいからの平均）暗いの画面を次に示します（下段のみ）。
+```https://docs.opencv.org/4.8.0/d8/d38/tutorial_bgsegm_bg_subtraction.html```
 
-<img src="Images/Ch07/video-foreground-2.png">
+もっとも、かなり概略的なので、細かい話はわかりません（詳しくは原著論文を読むように暗に勧めている）。次のYouTubeビデオが数学的な考え方を説明しているので、ご覧になることをお勧めします（コロンビア大学のもので時間長は15'55"）。
 
-差分画像はまだ薄い灰色で、よく見ると、道路上になめくじが通ったあとのような影があります。平均化されてもまだ残っている車の残像です。丘の頂上には車両と認識できる形も残っています。そのため、差分を取っても背景の林や道路脇の設備が残っています。
+<!-- https://www.youtube.com/watch?v=wT2yLNUfyoM （4'48"） ... 数式が充実 -->
+<!-- https://www.youtube.com/watch?v=kkAirywakmk （29'28"） ... わかりやすい -->
+
+```https://www.youtube.com/watch?v=0nz8JMyFF14```
 
 #### コード
 
-コード`video-foreground.html`を次に示します。
+コード`video-mog2.html`を次に示します。
 
 ```html
-[File] video-foreground.html
+[File] video-mog2.html
   1  <!DOCTYPE html>
   2  <html lang="ja-JP">
   3  <head>
@@ -1045,147 +1042,216 @@ $$ I = 0.99 I + 0.01 F $$
  10  <h1>動いているものだけを抜き出す</h1>
  11
  12  <div>
- 13    <video id="videoTag" width="480" height="270" autoplay muted src="samples/motorway.mp4"></video>
- 14    <canvas id="canvasTag" class="placeholder"></canvas>
- 15  </div>
- 16  <div>
- 17    <canvas id="canvasTag1" class="placeholder"></canvas>
- 18    <canvas id="canvasTag2" class="placeholder"></canvas>
- 19    <canvas id="canvasTag3" class="placeholder"></canvas>
- 20  </div>
- 21
- 22  <script>
- 23    let videoElem = document.getElementById('videoTag');
- 24    let src, src32, src32gray, bg32gray, fg32gray, fg8mask, dst;
- 25    let frameCallbackHandle;
- 26    let readyFlag = 0;
- 27
- 28    function showImage(canvasID, src, half=false) {
- 29      let mat = new cv.Mat();
- 30      if (src.depth === cv.CV_32F)
- 31        src.convertTo(mat, cv.CV_8UC3, 255);
- 32      else
- 33        mat = src.clone();
- 34      if (half)
- 35        cv.resize(mat, mat, new cv.Size(), 0.5, 0.5);
- 36      cv.imshow(canvasID, mat);
- 37      mat.delete();
- 38    }
- 39
- 40    function perFrame() {
- 41      if (readyFlag !== 3)
- 42        return;
- 43
- 44      // 元フレームにはカラー版（src）とグレー版（srcGray）を用意する。どちらも cv.CV_32FC3
- 45      let cap = new cv.VideoCapture(videoElem);
- 46      cap.read(srcOrig);
- 47      cv.cvtColor(srcOrig, src, cv.COLOR_RGBA2RGB);
- 48      src.convertTo(src, cv.CV_32FC3, 1/255)
- 49      cv.cvtColor(src, srcGray, cv.COLOR_RGB2GRAY);
- 50
- 51      // 背景画像と加算していくころで、前景抜きの画像を生成する
- 52      cv.addWeighted(srcGray, 0.01, bgGray, 0.99, 0.0, bgGray);         // マニュアルには multichannel でもチャネル単位にやる と書いてあるが、32FC4 のままだとエラーになる。
- 53      showImage('canvasTag1', bgGray, true);
- 54
- 55      // 差分を取ることで前景画像を生成する
- 56      cv.absdiff(srcGray, bgGray, fgGray);
- 57      showImage('canvasTag2', fgGray, true);
+ 13    <video id="videoTag" width="320" src="samples/motorway.mp4"></video>
+ 14    <canvas id="canvasTag1" class="placeholder"></canvas>
+ 15    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 16  </div>
+ 17
+ 18  <script>
+ 19    let videoElem = document.getElementById('videoTag');
+ 20    let src, fg, dst;
+ 21    let mog2;
+ 22    let frameCallbackHandle;
+ 23    let readyFlag;
+ 24
+ 25    function perFrame() {
+ 26      let cap = new cv.VideoCapture(videoElem);
+ 27      cap.read(src4);
+ 28      cv.cvtColor(src4, src3, cv.COLOR_RGBA2RGB);
+ 29      mog2.apply(src3, fg);
+ 30      cv.imshow('canvasTag1', fg);
+ 31      dst.data.fill(128);
+ 32      src3.copyTo(dst, fg);
+ 33      cv.imshow('canvasTag2', dst);
+ 34
+ 35      frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
+ 36    }
+ 37
+ 38    function stop() {
+ 39      [src4, src3, fg, dst, mog2].forEach(m => m.delete());
+ 40      videoElem.cancelVideoFrameCallback(frameCallbackHandle);
+ 41      videoElem.removeEventListener('pause', stop);
+ 42      videoElem.removeEventListener('ended', stop);
+ 43      readyFlag = 0;
+ 44    }
+ 45
+ 46    function init() {
+ 47      if (readyFlag != 3)
+ 48        return;
+ 49      src4 = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+ 50      src3 = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+ 51      fg = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC1);
+ 52      dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+ 53      mog2 = new cv.BackgroundSubtractorMOG2();
+ 54      videoElem.muted = true;
+ 55      videoElem.play();
+ 56      perFrame();
+ 57    }
  58
- 59      // 前景を 8UC1 に戻すことで、マスク画像にする
- 60      fgGray.convertTo(mask, cv.CV_8UC1, 255);
- 61      cv.threshold(mask, mask, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
- 62      showImage('canvasTag3', mask, true);
- 63
- 64      // 現在のフレームの CV_8UC3版に前景マスクをかける
- 65      dst.data32F.fill(0.8);
- 66      src.copyTo(dst, mask);
- 67      showImage('canvasTag', dst);
- 68
- 69      frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
- 70    }
- 71
- 72
- 73    function stop() {
- 74      [srcOrig, src, srcGray, bgGray, fgGray, mask, dst].forEach(
- 75        m => m.delete());
- 76      videoElem.cancelVideoFrameCallback(frameCallbackHandle);
- 77      videoElem.removeEventListener('pause', stop);
- 78      videoElem.removeEventListener('ended', stop);
- 79      readyFlag = 0;
- 80    }
- 81
- 82    function init() {
- 83      if (readyFlag != 3)
- 84        return;
- 85
- 86      srcOrig = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
- 87      src = new cv.Mat();
- 88      srcGray = new cv.Mat();
- 89      bgGray = new cv.Mat(videoElem.height, videoElem.width, cv.CV_32FC1,
- 90        new cv.Scalar(0.5));
- 91      fgGray = new cv.Mat();
- 92      mask = new cv.Mat();
- 93      dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
- 94
- 95      perFrame();
- 96    }
- 97
- 98    function videoReady() {
- 99      readyFlag |= 2;
-100      videoElem.width = videoElem.offsetWidth;
-101      videoElem.height = videoElem.offsetHeight;
-102      init();
-103    }
-104
-105    function opencvReady() {
-106      readyFlag |= 1;
-107      init();
-108    }
-109
-110    videoElem.addEventListener('loadeddata', videoReady);
-111    videoElem.addEventListener('pause', stop);
-112    videoElem.addEventListener('ended', stop);
-113    var Module = {
-114      onRuntimeInitialized: opencvReady
-115    }
-116  </script>
-117
-118  </body>
-119  </html>
+ 59    function videoReady() {
+ 60      readyFlag |= 2;
+ 61      videoElem.width = videoElem.offsetWidth;
+ 62      videoElem.height = videoElem.offsetHeight;
+ 63      init();
+ 64    }
+ 65
+ 66    function opencvReady() {
+ 67      readyFlag |= 1;
+ 68      init();
+ 69    }
+ 70
+ 71    videoElem.addEventListener('loadeddata', videoReady);
+ 72    videoElem.addEventListener('pause', stop);
+ 73    videoElem.addEventListener('ended', stop);
+ 74    var Module = {
+ 75      onRuntimeInitialized: opencvReady
+ 76    }
+ 77  </script>
+ 78
+ 79  </body>
+ 80  </html>
 ```
 
-フレーム処理で用いられる`cv.Mat`は初期化をつかさどる`init()`関数（82～96行目）でまとめて定義さしています。数が多いので、次の表にそれらのデータ型と用途をまとめて示します。
+#### MOG2オブジェクトの生成－cv.BackgroundSubtractorMOG2
 
-変数 | データ型 | 画面上の位置 | 用途
----|---|---|---
-`srcOrig` | `cv.CV_8UC4` | 上段左 | `<video>`から読み込んだ4チャネル8ビット符号なし整数行列。
-`src` | `cv.CV_32FC3` | -- | `srcOrig`を3チャネル32ビット浮動小数点数に変換した行列。
-`srcGray` | `cv.CV_32FC1` | -- | `src`を1チャネル32ビット浮動小数点数に変換した行列で、その時点のモノクロフレーム。これを使って平均画像を生成する。
-`bgGray` | `cv.CV_32FC1` | 下段左 | ここまでの平均画像（モノクロ背景画像）。初期値では中間のグレーの0.5で埋められている（89～90行目）。
-`fgGray` | `cv.CV_32FC1` | 下段中央 | `srcGray`から`bgGray`を引いた差分画像。
-`mask` | `cv.CV_8UC1` | 下段右 | `fgGray`を2値化した差分画像。
-`dst` | `cv.CV_32FC3` | 上段右 | 3チャネル版の元フレーム`src`を、マスク画像`mask`を使ってこの灰色画像にコピーすることで得られる最終結果。
+OpenCV.jsとビデオが準備できたら、リソースを用意します（46～57行目の`init()`関数）。
 
-これらは、ビデオが末尾まで行った（`ended`イベント）、あるいはユーザが停止した（`pause`）ときに解放されます（74～75行目）。
+```javasctript
+ 49      src4 = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+ 50      src3 = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+ 51      fg = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC1);
+ 52      dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+ 53      mog2 = new cv.BackgroundSubtractorMOG2();
+```
 
-32ビット浮動小数点数を用いているので、`cv.CV_8UC3`に直してからキャンバスに表示します（28空8行目の`showImage()`関数）。前節と同じ手ですが、下段の画像はオリジナルの半分のサイズにするためのフラグ（34～35行目）が入っています。
+`<video>`から読み込まれるフレーム用の`src4`のデータ型は4チャネルカラー（`cv.CV_8UC4`）なので（49行目）、計算用の`src3`はいらないアルファチャネルデータは落として3チャネル（`cv.CV_8UC3`）にします（50行目）。前景背景フレーム`fg`には`cv.CV_8UC1`の1チャネルを用います（51行目）。これで、そのままマスク画像として使えます。前景だけマスク抜きして張り付ける先の画像`dst`は、アルファチャネルがあると邪魔なので3チャネルの`cv.CV_8UC3`を指定します（52行目）。
 
-#### 平均（背景）画像の生成－cv.addWeighted
+MOG2オブジェクト`mog2`は`cv.BackgroundSubtractorMOG2`コンストラクタから生成します（53行目）。定義を次に示します。
 
-#### 差分（前景）画像の生成－cv.absDiff
+<!-- FunctionDefinition cv.BackgroundSubtractorMOG2d() 背景抜きアルゴリズムを実装したMOG2のコンストラクタ。 -->
+```Javascript
+cv.BackgroundSubtractorMOG2 = cv.BackgroundSubtractorMOG2(
+    number history = 500,
+    number varThreshold = 16,
+    boolean detectShadows = true
+  );
+```
 
-#### 差分（前景）をもとにしたマスク画像の生成－cv.threshold
+引数はいずれもオプションです。
 
-#### 最終画像の合成－cv.Mat.copyTo
+<!-- 引数は createBackgroundSubtractorMOG2() のほうを参照。-->
+第1引数`history`は過去何枚のフレームを使って確率計算をするかを指定します。デフォルトは500は、直近500枚を用いるという意味です。第2引数`varThreshold`はモデル（予測）と現在のピクセル値の間の分散の差（距離）がどれだけならば背景とみなすか否かを指定します。第3引数`detectShdaows`は移動物体の影も検出するから否かを指定します。デフォルトの`true`は検出指示ですが、これを選択すると「やや」計算が遅くなります。
 
-#### 別解－cv2.BackgroundSubtractorMOG2
+これらリソースはすべて、ビデオ停止時に解放します（38～44行目の`stop`関数）。
 
-連続したフレームを順次、重みづけ平均を取っていくことで背景画像を生成するという手段は、画像処理の理解にはもってこいですが、実用となると手数が多くて面倒です。現在では、これよりも洗練された手法が開発されており、OpenCVにもいくつかのアルゴリズムが実装されています。OpenCV.jsでは、そのうちの`cv2.BackgroundSubtractorMOG2()`関数が利用できます。
+```javascript
+ 38    function stop() {
+ 39      [src4, src3, fg, dst, mog2].forEach(m => m.delete());
+```
 
-用法は簡単です。最初に`cv2.createBackGroundSubjectMOG2`クラスのオブジェクトを用意し、読み込んだ映像フレームをその`apply()`メンバ関数で加えるだけです。型変換も必要ありません。
+#### 背景抜きの実行－cv.BackgroundSubtractorMOG2.apply
 
+リソースが準備できたら、ビデオからフレームを読み出し、3チャネルに直したうえで、順に`cv.BackgroundSubtractorMOG2`オブジェクトに投入します。これには`cv.BackgroundSubtractorMOG2.apply()`関数を使います（29行目）。
+
+```javascript
+ 27      cap.read(src4);
+ 28      cv.cvtColor(src4, src3, cv.COLOR_RGBA2RGB);
+ 29      mog2.apply(src3, fg);
+```
+
+関数定義を次に示します。
+
+<!-- FunctionDefinition cv.BackgroundSubtractorMOG2d.apply() 背景抜きを実行する。 -->
+```javascript
+cv.BackgroundSubtractorMOG2.apply(          // 戻り値なし
+    cv.Mat image,                           // 入力フレーム
+    cv.Mat fgmask,                          // 前景背景画像
+    number learningRate = -1                // 学習レート
+);
+```
+
+第1引数`image`は入力フレームです。入力のデータ型がなんであれ、浮動小数点数が使われます。スケーリングはされないので、値の範囲は0.0～255.0です。
+
+第2引数`fgmask`は前景背景画像で、8ビットの2値画像（`cv.CV_8UC1`）です。前景が白、背景が黒です。
+
+第3引数`learningRate`はどのくらい早く背景モデル（確率モデル）を学習させるかを指定するオプションのパラメータものです。デフォルトの-1（任意の負の値）は自動判定です。0の場合は、新たなフレームが投入されてもモデルを更新しません。1の場合は最後に入力されたフレームで完全にモデルが初期化されます。どのようなタイミングでモデルが再計算されるかは、上述のビデオを参照してください。
+
+あとは、得られた前景背景画像をマスクとして使い、`cv.Mat.copyTo()`関数で現在のフレームを灰色で埋めた画像にコピーします（32行目）。灰色で埋めるのは、`Uint8Array.fill()`を使ったデータバッファへの直接書き込みで行っています（31行目）。
+
+```javascript
+ 31      dst.data.fill(128);
+ 32      src3.copyTo(dst, fg);
+```
 
 ### 7.6 動きの方向を検出する
+
+#### 目的
+
+ビデオ内を動く物体の移動速度（大きさと方向）を検出します。
+
+オプティカルフローは物体の動きを検出する技術です。物体認識や自動運転など外界の認識、あるいはジェスチャーインタフェースで用いられています。
+物体の動きは、前フレームにあるピクセルとおなじものを次のフレームに見つけ出すことから推定します。たとえば次の図の目のように、物体の特定の1点が位置(x, y)から(x+⊿x, y+⊿y)に移動していれば、移動量を(⊿x, ⊿y)と算出します。これをフローベクトルといいます。
+
+図6.20●前後のフレームの対応点からフローベクトルを求める
+
+ある1点がどこに移動したのかを見つけるのはむずしい問題ですが、勾配法と呼ばれる方法では、短時間の移動ではその1点の輝度自体は変わらない、そして変化は滑らかに起こるという仮定のもとで対応点を探しています。これ以外にも各種のアルゴリズムが考案されていますが、本節ではFarnebackアルゴリズムを用います。詳細は付録Fの参考文献［FAR03］に示した原論文を参照してください。
+フローベクトルを視覚的に表現するときは、一般的には、矢印を表示します。矢印の向きが物体の移動方向を、大きさが移動量を示します。ただし、すべてのピクセルについてフローベクトルを描くと画面が矢印で埋まってしまうので、ある程度間引きます。
+矢印表現では、フローベクトルの平均を大きく描くこともあります。ここから、画像全体のおおまかな動きとらえることができます。ただし、単純な平均であるため、複数の物体のベクトルが相互に打ち消しあうと0近くになり、見た印象と一致しないこともあります。また、矢印の大きさはおなじようなベクトルの数に比例するので、大きい物体と小さい物体が互い違いにおなじ速度で移動していても、大きいほうの方向の矢印になります。このように、平均矢印は直感的な印象と異なることがあるため、注意が必要です。
+
+<img src="Images/Ch07/video-opticalflow-1.png">
+
+#### オプティカルフローの原理
+
+<!-- ODG に原画あり。336 x 166 -->
+<img src="Images/Ch07/video-opticalflow-vector.png" width="200">
+
+```https://docs.opencv.org/4.x/d4/dee/tutorial_optical_flow.html```
+
+#### オプティカルフローの計算
+
+
+<!-- FunctionDefinition cv.calcOpticalFlowFarneback() オプティカルフローを計算する。 -->
+```javascript
+cv.calcOpticalFlowFarneback(                // 戻り値なし
+    cv.Mat prev,                            // 前のフレーム
+    cv.Mat next,                            // 現在のフレーム
+    cv.Mat flow,                            // オプティカルフローデータ（出力）
+    number pyr_scale,                       // 画像ピラミッドの画像スケール
+    number levels,                          // ピラミッドの層数
+    number winsize,                         // ウィンドウサイズ
+    number iterations,                      // 反復回数
+    number poly_n,                          // 多項式展開をするときの近傍ピクセル数
+    number poly_sigma,                      // 多項式展開をするときの標準偏差
+    number flags                            // 操作フラグ
+);
+```
+
+prev
+事前画像。1チャンネルのnp.uint8型。
+next
+現在画像。1チャンネルのnp.uint8型。prevとおなじサイズ。
+flow（引数）
+取得したフローベクトルデータを返す。2チャンネルのnp.float32型で、prevと同サイズ。
+pyr_scale
+画像ピラミッドの画像スケール（1未満）。0.5だと、次の層が前の層の半分。
+levels
+最初の画像を含むピラミッドの層数。1だと層は作成されず元画像のみが使用される。
+winsize
+平均を取るウィンドウサイズ（2.7節参照）。サイズが大きいと滑らかになる。
+iterations
+各層における反復回数。
+poly_n
+多項式展開をするときの近傍ピクセル数。通常は5か7。
+poly_sigma
+多項式展開で使われるガウシアン平滑化の標準偏差。poly_n=5のときpoly_sigma=1.1、poly_n= 7のときpoly_sigma=1.5が適切。
+flags
+操作フラグ。cv2.OPTFLOW_USE_INITIAL_FLOWかcv2. OPTFLOW_FARNEBACK_GAUSSIAN。
+flow（戻り値）
+取得したフローベクトルデータを返す
+
+第1引数と第2引数には前後の画像をそれぞれ指定します。利用できるのは1チャンネルnp.uint8画像だけです。
+第4引数以降には、この関数が採用しているFarnebackアルゴリズムで必要なパラメータを指定します。それぞれの特性の説明は本書の範囲を超えた話題なので、ここではOpenCVのソースディストリビューションに同梱されているサンプルソースで用いられているパラメータ値をそのまま使用しています。いずれも必須引数です。
+戻り値は2チャンネルnp.float32のNumPy配列です。2チャンネルなのはオプティカルフローが2次元ベクトルで表現されているからです。画像の位置（x, y）を起点とするベクトルの（dx, dy）成分はそれぞれ第0チャンネルと第1チャンネルに収容されます。データ型がnp.float32なのは、方向によっては負の値もあるからです
 
 ### 7.7 物体を追いかける
 

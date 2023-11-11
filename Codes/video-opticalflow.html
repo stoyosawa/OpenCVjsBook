@@ -10,7 +10,7 @@
 <h1>動きの方向を検出する</h1>
 
 <div>
-  <video id="videoTag" width="480" height="270" src="samples/bicycle.mp4"></video>
+  <video id="videoTag" width="360" src="samples/bicycle.mp4"></video>
   <canvas id="canvasTag" class="placeholder"></canvas>
 </div>
 
@@ -20,12 +20,12 @@
   let flow;
   let readyFlag = 0;
   let frameCallbackHandle;
+  let sparse = 8;
 
   function drawFlow(img, flows, thresh=4) {
-    for(let y=0; y<flows.rows; y+=8) {
-      for(let x=0; x<flows.cols; x+=8) {
-        let dx = flow.floatAt(y, x * flow.channels() + 0);
-        let dy = flow.floatAt(y, x * flow.channels() + 1);
+    for(let y=0; y<flows.rows; y+=sparse) {
+      for(let x=0; x<flows.cols; x+=sparse) {
+        let [dx, dy] = flow.floatPtr(y, x);
         let l1 = Math.abs(dx) + Math.abs(dy);
         if (l1 > thresh) {
           cv.line(img,
@@ -41,13 +41,14 @@
     let centerX = img.cols / 2;
     let centerY = img.rows / 2;
     let arrowScale = 50;
-    cv.line(img, new cv.Point(centerX, centerY), new cv.Point(centerX+means[0]*arrowScale, centerY+means[1]*arrowScale), new cv.Scalar(255, 0, 255), 3);
+    cv.line(img,
+      new cv.Point(centerX, centerY),
+      new cv.Point(centerX+means[0]*arrowScale, centerY+means[1]*arrowScale),
+      new cv.Scalar(255, 0, 255), 3
+    );
   }
 
   function perFrame() {
-    if (readyFlag !== 3)
-      return;
-
     let cap = new cv.VideoCapture(videoElem);
     cap.read(currC4);
     cv.cvtColor(currC4, currC3, cv.COLOR_RGBA2RGB);
@@ -61,27 +62,19 @@
     frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);          // 1回発火したら、また登録
   }
 
-  function videoEnd() {
+  function stop() {
     console.log('video ended');
     [currC4, currC3, currU1, prevU1, flow].forEach(m => m.delete());
     videoElem.cancelVideoFrameCallback(frameCallbackHandle);
-    videoElem.removeEventListener('pause', videoEnd);
-    videoElem.removeEventListener('ended', videoEnd);
+    videoElem.removeEventListener('pause', stop);
+    videoElem.removeEventListener('ended', stop);
     readyFlag = 0;
   }
 
-  function videoReady() {
-    console.log('video ready');
-    videoElem.playbackRate = 0.4;
-    videoElem.muted = true;
-    videoElem.play();
+  function init() {
+    if (readyFlag != 3)
+      return;
 
-    readyFlag |= 1;
-    perFrame();
-  }
-
-  function opencvReady() {
-    console.log('opencv ready');
     let w = videoElem.width;
     let h = videoElem.height;
     currC4 = new cv.Mat(h, w, cv.CV_8UC4);
@@ -90,13 +83,27 @@
     prevU1 = new cv.Mat(h, w, cv.CV_8UC1, new cv.Scalar(255));
     flow = new cv.Mat(h, w, cv.CV_32FC2);            // vector なので 2チャネル（dx, dy）。第1の (x, y) が dx, 第2が dy。
 
-    readyFlag |= 2;
     perFrame();
   }
 
+  function videoReady() {
+    videoElem.width = videoElem.offsetWidth;
+    videoElem.height = videoElem.offsetHeight;
+    videoElem.playbackRate = 0.4;
+    videoElem.muted = true;
+    videoElem.play();
+    readyFlag |= 1;
+    init();
+  }
+
+  function opencvReady() {
+    readyFlag |= 2;
+    init();
+  }
+
   videoElem.addEventListener('loadeddata', videoReady);
-  videoElem.addEventListener('pause', videoEnd);
-  videoElem.addEventListener('ended', videoEnd);
+  videoElem.addEventListener('pause', stop);
+  videoElem.addEventListener('ended', stop);
   var Module = {
     onRuntimeInitialized: opencvReady
   }

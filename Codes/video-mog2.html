@@ -10,31 +10,33 @@
 <h1>動いているものだけを抜き出す</h1>
 
 <div>
-  <video id="videoTag" width="360" src="samples/motorway.mp4"></video>
-  <canvas id="canvasTag" class="placeholder"></canvas>
+  <video id="videoTag" width="320" src="samples/motorway.mp4"></video>
+  <canvas id="canvasTag1" class="placeholder"></canvas>
+  <canvas id="canvasTag2" class="placeholder"></canvas>
 </div>
 
 <script>
   let videoElem = document.getElementById('videoTag');
-  let src, dst;
+  let src4, src3, fg, dst;
   let mog2;
   let frameCallbackHandle;
   let readyFlag;
 
   function perFrame() {
     let cap = new cv.VideoCapture(videoElem);
-    cap.read(src);
-    mog2.apply(src, dst);
-    // 第1引数: history。int32。デフォルト 500
-    // 第2引数: threshold。float。デフォルト 16f。"# of mixture components" らしいがなんのこっちゃかわからない。
-    // 第3引数: shadowDetection。boolean。デフォルト true。影を除外するかを決める。遅いので、早いのが好きなら false。
-    // Tutorial はすべてデフォルトの (500, 16, true) を指定している。
-    cv.imshow('canvasTag', dst);
+    cap.read(src4);
+    cv.cvtColor(src4, src3, cv.COLOR_RGBA2RGB);
+    mog2.apply(src3, fg);
+    cv.imshow('canvasTag1', fg);
+    dst.data.fill(128);
+    src3.copyTo(dst, fg);
+    cv.imshow('canvasTag2', dst);
+
     frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
   }
 
   function stop() {
-    [src, dst, mog2].forEach(m => m.delete());
+    [src4, src3, fg, dst, mog2].forEach(m => m.delete());
     videoElem.cancelVideoFrameCallback(frameCallbackHandle);
     videoElem.removeEventListener('pause', stop);
     videoElem.removeEventListener('ended', stop);
@@ -44,8 +46,10 @@
   function init() {
     if (readyFlag != 3)
       return;
-    src = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
-    dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC1);
+    src4 = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC4);
+    src3 = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
+    fg = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC1);
+    dst = new cv.Mat(videoElem.height, videoElem.width, cv.CV_8UC3);
     mog2 = new cv.BackgroundSubtractorMOG2();
     videoElem.muted = true;
     videoElem.play();
@@ -56,8 +60,6 @@
     readyFlag |= 2;
     videoElem.width = videoElem.offsetWidth;
     videoElem.height = videoElem.offsetHeight;
-    videoElem.muted  = true;
-    videoElem.play();
     init();
   }
 

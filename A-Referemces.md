@@ -64,6 +64,9 @@ OpenCVのグラフィックス描画関数一覧（`cv.line()`、`cv.rectangle()
 - [OpenCVリファレンス「Operations on arrays」](https://docs.opencv.org/4.8.0/d2/de8/group__core__array.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d2/de8/group__core__array.html`  
 OpenCVの行列`cv.Mat`操作関数一覧（`cv.add()`、`cv.addWeighted()`など）。 
 
+- [OpenCVチュートリアル「Background Subtraction 」](https://docs.opencv.org/4.8.0/d8/d38/tutorial_bgsegm_bg_subtraction.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/d8/d38/tutorial_bgsegm_bg_subtraction.html`  
+OpenCVチュートリアルに掲載されている背景抜き（`cv.BackgroundSubtractor`クラス）のおおざっぱな説明。
+
 - [OpenCVチュートリアル「Canny Edge Detection」](https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html "LINK") 🇺🇸 `https://docs.opencv.org/4.8.0/da/d22/tutorial_py_canny.html`  
 OpenCVチュートリアルに掲載されているCannyフィルタの理論的解説と関数用法の説明。
 
@@ -120,6 +123,9 @@ HSV（HueーSaturationーValue）色空間の説明。類似の色空間にHSL�
 
 - [Wikipedia「ハフ変換」](https://ja.wikipedia.org/wiki/ハフ変換 "LINK") 🇯🇵 `https://ja.wikipedia.org/wiki/ハフ変換`  
 画像から直線や円などを検出するハフ変換の概説。
+
+- [YouTube, First Principles of Computer Vision「Gaussian Mixture Model | Object Tracking」(https://www.youtube.com/watch?v=0nz8JMyFF14 "LINK") 🇺🇸 `https://www.youtube.com/watch?v=0nz8JMyFF14`  
+コロンビア大学計算機科学部提供のGMMに関するビデオ。細かいところまで非常によく説明されていてわかりやすいです。
 
 - [原色大辞典](https://www.colordic.org/ "LINK") 🇯🇵 `https://www.colordic.org/`   
 Web色見本のサイトで、和色のまとまったリストが得られます。

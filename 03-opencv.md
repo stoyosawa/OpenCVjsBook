@@ -499,7 +499,6 @@ RegExp /^THRESH_/ extracted 8 keys.
 ︙
 ```
 
-
 #### コード
 
 コード`opencv-consts.html`を次に示します。
@@ -527,47 +526,47 @@ RegExp /^THRESH_/ extracted 8 keys.
  19      <option value="^BORDER_">画像端外挿方法</option>
  20      <option value="^LINE_">描画線種</option>
  21      <option value="^MORPH_">モルフォロジー演算タイプ</option>
- 22    </select>
- 23  </div>
- 24  <div>
- 25    <pre id="preTag">定数表</pre>
- 26  </div>
- 27
- 28  <script>
- 29    let selectElem = document.getElementById('selectTag');
- 30    let preElem = document.getElementById('preTag');
- 31
- 32    function showConst(evt) {
- 33      let re = new RegExp(evt.currentTarget.value);
- 34      let keys = Object.keys(cv);
- 35
- 36      let selected = keys.filter(function(elem) {
- 37        return re.test(elem);
- 38      }).sort();
- 39
- 40      preElem.innerHTML = selected.map(function(elem) {
- 41        return `${elem} ${cv[elem]}`;
- 42      }).join('\n');
- 43
- 44      console.log(`RegExp ${re} extracted ${selected.length} keys.`);
- 45    }
- 46
- 47    function opencvReady() {
- 48      selectElem.addEventListener('change', showConst);
- 49    }
- 50
- 51    var Module = {
- 52      onRuntimeInitialized: opencvReady
- 53    }
- 54  </script>
- 55
- 56  </body>
- 57  </html>
+ 22      <option value="^OPTFLOW_">オプティカルフロー操作タイプフラグ</option>
+ 23    </select>
+ 24  </div>
+ 25  <div>
+ 26    <pre id="preTag">定数表</pre>
+ 27  </div>
+ 28
+ 29  <script>
+ 30    let selectElem = document.getElementById('selectTag');
+ 31    let preElem = document.getElementById('preTag');
+ 32
+ 33    function showConst(evt) {
+ 34      let re = new RegExp(evt.currentTarget.value);
+ 35      let keys = Object.keys(cv);
+ 36
+ 37      let selected = keys.filter(function(elem) {
+ 38        return re.test(elem);
+ 39      }).sort();
+ 40
+ 41      preElem.innerHTML = selected.map(function(elem) {
+ 42        return `${elem} ${cv[elem]}`;
+ 43      }).join('\n');
+ 44
+ 45      console.log(`RegExp ${re} extracted ${selected.length} keys.`);
+ 46    }
+ 47
+ 48    function opencvReady() {
+ 49      selectElem.addEventListener('change', showConst);
+ 50    }
+ 51
+ 52    var Module = {
+ 53      onRuntimeInitialized: opencvReady
+ 54    }
+ 55  </script>
+ 56
+ 57  </body>
+ 58  </html>
 ```
 
-前節同様、OpenCV.jsの利用可能タイミングに注意します。OpenCV.jsが使えない間にプルダウンメニューのイベントが発生するとエラーになるので、イベント登録は準備完了後です（48行目）。
+前節同様、OpenCV.jsの利用可能タイミングに注意します。OpenCV.jsが使えない間にプルダウンメニューのイベントが発生するとエラーになるので、イベント登録は準備完了後です（49行目）。
 
-`showConst()`関数の構造は前節と同じです。`<option>`の`value`属性に定数値のパターンを記述した正規表現文字列を用意したので（14～21行目）、あとは選択された文字列（33行目の`evt.currentTarget.value`）を正規表現オブジェクトにし、`re.test()`でそのパターンが含まれているもののみ抽出するだけです（37行目）。
+`showConst()`関数の構造は前節と同じです。`<option>`の`value`属性に定数値のパターンを記述した正規表現文字列を用意したので（14～22行目）、あとは選択された文字列（34行目の`evt.currentTarget.value`）を正規表現オブジェクトにし、`re.test()`でそのパターンが含まれているもののみ抽出するだけです（38行目）。
 
 他に知りたい定数があれば、適宜`<select>`にその正規表現を加えてください。
-
