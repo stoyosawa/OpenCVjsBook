@@ -1,6 +1,8 @@
 ## 第7章 ビデオ処理
 
-ビデオからのフレーム取り込みは、[1.9節](./01-html5.md#19-ビデオをフレーム単位で取得する "INTERNAL")で3通りの方法を説明しました。本章のコードでは、ChromeやEdgeで利用できる`HTMLVideoElement.requestVideoFrameCallback()`を用います。新旧バージョンをよ問わず、どのブラウザでもフレーム操作をしたいのなら、`setInterval()`を用いた方法がよいでしょう。
+本章ではビデオを扱います。画像処理は静止した1枚の画像を対象とするのが基本ですが、連続したフレームでなければできないこともあります。たとえば、前後のフレームから映っている移動体を検出したり、その移動速度を計算するといったことは、ビデオでなければできません。本章では、ビデオおよびカメラ映像を対象としたOpenCV.jsスクリプティングを最初に説明してから、こうしたビデオ向けのアプリケーションを取り上げます。
+
+ビデオからのフレーム取り込みは、[1.9節](./01-html5.md#19-ビデオをフレーム単位で取得する "INTERNAL")で3通りの方法を説明しました。本章のコードでは、ChromeやEdgeで利用できる`HTMLVideoElement.requestVideoFrameCallback()`を用います。新旧バージョンを問わず、どのブラウザでもフレーム操作をしたいのなら、`setInterval()`を用いた方法がよいでしょう。
 
 
 
@@ -26,7 +28,7 @@
 
 #### コード
 
-コード`video-add.html`を次に示します。
+コード`video-add.html`は次の通りです。
 
 ```html
 [File] video-add.html
@@ -280,7 +282,7 @@ cv.VideoCapture.read(                       // 戻り値なし
 
 #### コード
 
-コード`video-flip.html`を次に示します。
+コード`video-flip.html`は次の通りです。
 
 ```html
 [File] video-flip.html
@@ -721,7 +723,7 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。Open
 
 #### コード
 
-コード`video-transition.html`を次に示します。
+コード`video-transition.html`は次の通りです。
 
 ```html
 [File] video-transition.html
@@ -1183,32 +1185,187 @@ cv.BackgroundSubtractorMOG2.apply(          // 戻り値なし
  32      src3.copyTo(dst, fg);
 ```
 
+
+
 ### 7.6 動きの方向を検出する
 
 #### 目的
 
-ビデオ内を動く物体の移動速度（大きさと方向）を検出します。
+ビデオ内の物体がどちらに向かって動いているかを判定します。
 
-オプティカルフローは物体の動きを検出する技術です。物体認識や自動運転など外界の認識、あるいはジェスチャーインタフェースで用いられています。
-物体の動きは、前フレームにあるピクセルとおなじものを次のフレームに見つけ出すことから推定します。たとえば次の図の目のように、物体の特定の1点が位置(x, y)から(x+⊿x, y+⊿y)に移動していれば、移動量を(⊿x, ⊿y)と算出します。これをフローベクトルといいます。
+得られた動き量を使って、手を左右に振ったらスワイプするといったジェスチャーインタフェースを構成できます。動いているカメラで撮影した静止している物体も移動する物体と認識されるので、手ブレの量を知ることもできます。そして、動き量がわかれば補正がかけられます。
 
-図6.20●前後のフレームの対応点からフローベクトルを求める
+技術的には、オプティカルフローと呼ばれる物体のフレーム間の分布を調べる方法を使います。画像中の物体はピクセルという光（オプティカル）の点で構成されていますが、それがどのように流れるか（フロー）を計算するので、この名が与えられています。OpenCVにはそのための関数が2つ用意されていますが、ここでは簡単に利用できる`cv.calcOpticalFlowFarneback()`を使います（C++/Python版にはもっとありますが、OpenCV.jsには2点のみです）。
 
-ある1点がどこに移動したのかを見つけるのはむずしい問題ですが、勾配法と呼ばれる方法では、短時間の移動ではその1点の輝度自体は変わらない、そして変化は滑らかに起こるという仮定のもとで対応点を探しています。これ以外にも各種のアルゴリズムが考案されていますが、本節ではFarnebackアルゴリズムを用います。詳細は付録Fの参考文献［FAR03］に示した原論文を参照してください。
-フローベクトルを視覚的に表現するときは、一般的には、矢印を表示します。矢印の向きが物体の移動方向を、大きさが移動量を示します。ただし、すべてのピクセルについてフローベクトルを描くと画面が矢印で埋まってしまうので、ある程度間引きます。
-矢印表現では、フローベクトルの平均を大きく描くこともあります。ここから、画像全体のおおまかな動きとらえることができます。ただし、単純な平均であるため、複数の物体のベクトルが相互に打ち消しあうと0近くになり、見た印象と一致しないこともあります。また、矢印の大きさはおなじようなベクトルの数に比例するので、大きい物体と小さい物体が互い違いにおなじ速度で移動していても、大きいほうの方向の矢印になります。このように、平均矢印は直感的な印象と異なることがあるため、注意が必要です。
+実行例を次の画面に示します。
 
 <img src="Images/Ch07/video-opticalflow-1.png">
 
+左が元ビデオ、右がその上にオプティカルフローを描いたフレームです。
+
+オプティカルフローは点の移動なので、ベクトル $\vec{P}(x, y)$ として表現できます。絵にすれば矢印線ですが、ここでは線分で描いています（OpenCV.jsには矢印描画の`cv.arrowedLine()`関数がない）。自転車の周りに蚊柱のように走っている細かい線がそれらです。計算上は画像上のすべての点のベクトルが得られますが、あまり密に描くと移動体のがまっくろなかたまりになってしまうので、縦横どちらも8ピクセルおきに描いています。
+
+画像中心から伸びる太めの線は、それぞれのベクトルの平均値です。これで移動物体のおおむねの移動方向と大きさ（早さ）がわかります。この画面では、自転車が中央から右に、ほぼ水平方向に移動していることがわかります。「ほぼ」なのは、乗り手が上半身を引き上げたり、前輪を持ち上げたりなど、上下方向の動きもあるからです。
+
+#### コード
+
+コート`video-opticalflow.html`は次の通りです。
+
+```html
+[File] video-opticalflow.html
+  1  <!DOCTYPE html>
+  2  <html lang="ja-JP">
+  3  <head>
+  4    <meta charset="UTF-8">
+  5    <link rel=stylesheet type="text/css" href="style.css">
+  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>動きの方向を検出する</h1>
+ 11
+ 12  <div>
+ 13    <video id="videoTag" width="360" src="samples/bicycle.mp4"></video>
+ 14    <canvas id="canvasTag" class="placeholder"></canvas>
+ 15  </div>
+ 16
+ 17  <script>
+ 18    let videoElem = document.getElementById('videoTag');
+ 19    let currC4, currC3, currU1, prevU1;
+ 20    let flow;
+ 21    let readyFlag = 0;
+ 22    let frameCallbackHandle;
+ 23    let sparse = 8;
+ 24
+ 25    function drawFlow(img, flows, thresh=4) {
+ 26      for(let y=0; y<flows.rows; y+=sparse) {
+ 27        for(let x=0; x<flows.cols; x+=sparse) {
+ 28          let [dx, dy] = flow.floatPtr(y, x);
+ 29          let l1 = Math.abs(dx) + Math.abs(dy);
+ 30          if (l1 > thresh) {
+ 31            cv.line(img,
+ 32              new cv.Point(x, y),
+ 33              new cv.Point(x+dx, y+dy),
+ 34              new cv.Scalar(10, 10, 10)
+ 35            );
+ 36          }
+ 37        }
+ 38      }
+ 39
+ 40      let means = cv.mean(flows);
+ 41      let centerX = img.cols / 2;
+ 42      let centerY = img.rows / 2;
+ 43      let arrowScale = 50;
+ 44      cv.line(img,
+ 45        new cv.Point(centerX, centerY),
+ 46        new cv.Point(centerX+means[0]*arrowScale, centerY+means[1]*arrowScale),
+ 47        new cv.Scalar(255, 0, 255), 3
+ 48      );
+ 49    }
+ 50
+ 51    function perFrame() {
+ 52      let cap = new cv.VideoCapture(videoElem);
+ 53      cap.read(currC4);
+ 54      cv.cvtColor(currC4, currC3, cv.COLOR_RGBA2RGB);
+ 55      cv.cvtColor(currC3, currU1, cv.COLOR_RGBA2GRAY);
+ 56      cv.calcOpticalFlowFarneback(prevU1, currU1,  flow, 0.5, 3, 15, 3, 5, 1.2, 0);
+ 57
+ 58      drawFlow(currC3, flow);
+ 59      cv.imshow('canvasTag', currC3);
+ 60      prevU1 = currU1.clone();
+ 61
+ 62      frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
+ 63    }
+ 64
+ 65    function stop() {
+ 66      console.log('video ended');
+ 67      [currC4, currC3, currU1, prevU1, flow].forEach(m => m.delete());
+ 68      videoElem.cancelVideoFrameCallback(frameCallbackHandle);
+ 69      videoElem.removeEventListener('pause', stop);
+ 70      videoElem.removeEventListener('ended', stop);
+ 71      readyFlag = 0;
+ 72    }
+ 73
+ 74    function init() {
+ 75      if (readyFlag != 3)
+ 76        return;
+ 77
+ 78      let w = videoElem.width;
+ 79      let h = videoElem.height;
+ 80      currC4 = new cv.Mat(h, w, cv.CV_8UC4);
+ 81      currC3 = new cv.Mat();
+ 82      currU1 = new cv.Mat()
+ 83      prevU1 = new cv.Mat(h, w, cv.CV_8UC1, new cv.Scalar(255));
+ 84      flow = new cv.Mat(h, w, cv.CV_32FC2);
+ 85
+ 86      perFrame();
+ 87    }
+ 88
+ 89    function videoReady() {
+ 90      videoElem.width = videoElem.offsetWidth;
+ 91      videoElem.height = videoElem.offsetHeight;
+ 92      videoElem.playbackRate = 0.4;
+ 93      videoElem.muted = true;
+ 94      videoElem.play();
+ 95      readyFlag |= 1;
+ 96      init();
+ 97    }
+ 98
+ 99    function opencvReady() {
+100      readyFlag |= 2;
+101      init();
+102    }
+103
+104    videoElem.addEventListener('loadeddata', videoReady);
+105    videoElem.addEventListener('pause', stop);
+106    videoElem.addEventListener('ended', stop);
+107    var Module = {
+108      onRuntimeInitialized: opencvReady
+109    }
+110  </script>
+111
+112  </body>
+113  </html>
+```
+
 #### オプティカルフローの原理
 
-<!-- ODG に原画あり。336 x 166 -->
-<img src="Images/Ch07/video-opticalflow-vector.png" width="200">
+オプティカルフローは、前のフレームのピクセル $P$ が次のフレームのどこに位置するかを見出すことで計算されます。次の図は、主翼の取り付けに位置する $P(x, y)$ が次フレームでは $P'(x', y')$ 移動していることから、その移動量は $v(x' - x, y' -y) = v(dx, dy)$ と計算できる様子を示しています。
 
-```https://docs.opencv.org/4.x/d4/dee/tutorial_optical_flow.html```
+<!-- ODG に原画あり。523 x 160 -->
+<img src="Images/Ch07/video-opticalflow-vector.png" width="350">
+
+ある1点がどこに移動したのかを見つけるのはむずしい問題で、いろいろなアプローチが考えられます。本節で取り上げる方法は次の過程を導入することでこの問題を解いています。
+
+- フレーム間のように短時間の移動では、その点の輝度は変わらないとします。そうならば、近くに同じような輝度のピクセルが移動後の場所です。
+- ある点の近隣の点は同じ物体に属するので、その点と同じ方向に動いていると仮定します。
+
+数式がほしい方は、次にURLを示すサイトのものがよいでしょう。もう一方の関数の`cv.calcOpticalFlowPyrLK()`との違いがよく書かれています。
+
+```https://learnopencv.com/optical-flow-in-opencv/```
+
+この方法は短距離の移動はよいのですが、大きな移動が検出できません。そこで、画像を縮小してみかけの移動距離を小さくします。そして、小さめから中くらい、中くらいから大きめ、大きめからもとのサイズのように段階的に画像サイズを変更することで、短中長距離のいずれの移動にも対応するようにします。この段階的なリサイズ画像を積み重ねると次の図のようにピラミッドのように見えるので、これを画像ピラミッドと呼びます。
+
+<!-- ODG に原画あり。280 x 280 -->
+<img src="Images/Ch07/video-opticalflow-pyramid.png" width="150">
 
 #### オプティカルフローの計算
 
+オプティカルフローの計算には、`cv.calcOpticalFlowFarneback()`関数を使います（56行目）。
+
+```javascript
+ 53      cap.read(currC4);
+ 54      cv.cvtColor(currC4, currC3, cv.COLOR_RGBA2RGB);
+ 55      cv.cvtColor(currC3, currU1, cv.COLOR_RGBA2GRAY);
+ 56      cv.calcOpticalFlowFarneback(prevU1, currU1,  flow, 0.5, 3, 15, 3, 5, 1.2, 0);
+ ︙
+ 60      prevU1 = currU1.clone();
+ ︙
+ 83      prevU1 = new cv.Mat(h, w, cv.CV_8UC1, new cv.Scalar(255)); 
+84      flow = new cv.Mat(h, w, cv.CV_32FC2);
+```
+
+関数の定義を次に示します。
 
 <!-- FunctionDefinition cv.calcOpticalFlowFarneback() オプティカルフローを計算する。 -->
 ```javascript
@@ -1226,34 +1383,55 @@ cv.calcOpticalFlowFarneback(                // 戻り値なし
 );
 ```
 
-prev
-事前画像。1チャンネルのnp.uint8型。
-next
-現在画像。1チャンネルのnp.uint8型。prevとおなじサイズ。
-flow（引数）
-取得したフローベクトルデータを返す。2チャンネルのnp.float32型で、prevと同サイズ。
-pyr_scale
-画像ピラミッドの画像スケール（1未満）。0.5だと、次の層が前の層の半分。
-levels
-最初の画像を含むピラミッドの層数。1だと層は作成されず元画像のみが使用される。
-winsize
-平均を取るウィンドウサイズ（2.7節参照）。サイズが大きいと滑らかになる。
-iterations
-各層における反復回数。
-poly_n
-多項式展開をするときの近傍ピクセル数。通常は5か7。
-poly_sigma
-多項式展開で使われるガウシアン平滑化の標準偏差。poly_n=5のときpoly_sigma=1.1、poly_n= 7のときpoly_sigma=1.5が適切。
-flags
-操作フラグ。cv2.OPTFLOW_USE_INITIAL_FLOWかcv2. OPTFLOW_FARNEBACK_GAUSSIAN。
-flow（戻り値）
-取得したフローベクトルデータを返す
+前後のフレームから計算するので、第1引数`prev`には前の、第2引数`next`には現在のフレームの`cv.Mat`をセットします。どちらも1チャネル8ビット符号なし整数（`cv.CV_8UC1`）を使うので、ビデオフレームは入力前にモノクロに変換します（55行目）。最初のフレームのときは前のフレーム（定数は`prev1`）が存在しないので、スクリプト初期化時に白で埋めた画像を用意しています（83行目）。以降は、現在のフレームを前のフレームとして使います（60行目）。第1引数と第2引数の`cv.Mat`は同サイズでなければなりません。
 
-第1引数と第2引数には前後の画像をそれぞれ指定します。利用できるのは1チャンネルnp.uint8画像だけです。
-第4引数以降には、この関数が採用しているFarnebackアルゴリズムで必要なパラメータを指定します。それぞれの特性の説明は本書の範囲を超えた話題なので、ここではOpenCVのソースディストリビューションに同梱されているサンプルソースで用いられているパラメータ値をそのまま使用しています。いずれも必須引数です。
-戻り値は2チャンネルnp.float32のNumPy配列です。2チャンネルなのはオプティカルフローが2次元ベクトルで表現されているからです。画像の位置（x, y）を起点とするベクトルの（dx, dy）成分はそれぞれ第0チャンネルと第1チャンネルに収容されます。データ型がnp.float32なのは、方向によっては負の値もあるからです
+第3引数`flow`が結果を受け取る`cv.Mat`です。84行目で定義しているように、これは`cv.CV_32FC2`、つまり2チャネル32ビット浮動小数点数型です。2チャネルなのは、オプティカルフローのベクトル $v(dx, dy)$ のx側をチャネル0に、y側をチャネル1に収容するようになっているからです。サイズは入力フレームと同じです。
 
-### 7.7 物体を追いかける
+第4引数`pyr_scale`は前出の画像ピラミッドの構造を規定するパラメータで、段階を上げるにつれ、画像を何倍にリサイズするかを指定します。56行目で指定している0.5はその倍率で縮小、つまり半分のサイズにするという意味です。値は0.0より大きく、1未満でなければなりません。
 
-<TBD>
-.
+第5引数`levels`も画像ピラミッドの段数で、ここで指定している3だと3段です。第4引数と合わせると、ピラミッドは全サイズ、半サイズ、四半分サイズの3つが重なって構成されます。1を指定すると、画像ピラミッドは用いられません。
+
+第6引数`winsize`はノイズ削減のための平滑化フィルタのサイズです（[6.2節](./06-img.md#62-画像をぼかす "INTERNAL")）。大きな値を取れば、それだけ光の局所的な反射や陰影といったノイズに強くなりますが、うごきにキレがなくなります。
+
+第7引数`iterations`は画像ピラミッド各層における計算の反復回数です。
+
+第7引数`poly_n`は多項式展開（2つの条件をもとに計算をするときに出てくる）をするときの近傍ピクセルの数です。大きくするとより頑強になりますが、そのぶんブレます。普通は5か7を指定します。
+
+第8引数`poly_sigma`は第7引数と同じく多項式展開のときに出てくるガウス平滑化の標準偏差です。`poly_n=5`のときは1.1を、`poly_n=7`のときは1.5を指定するのが妥当だとリファレンスは述べています。
+
+第9引数`flags`はどのような方法を使うかの指定フラグです。第8引数に関係するオプションなのでとくに設定する必要はありません。
+
+いろいろな調整パラメータがありますが、56行目はOpenCVチュートリアルの「Optical Flow」で使われている値をそのまま使っています。
+
+#### ベクトルの情報
+
+第3引数`flow`で得られるデータの型は`cv.CV_32FC2`です。入力フレームと同じサイズで、その画像上の点の移動ベクトル $v(dx, dy)$ が収容されています。これらすべてのベクトルを描くと詰まってしまうので、8ピクセル単位で描いています（23～38行目）。
+
+```javasctipt
+ 23    let sparse = 8;
+ 24
+ 25    function drawFlow(img, flows, thresh=4) {
+ 26      for(let y=0; y<flows.rows; y+=sparse) {
+ 27        for(let x=0; x<flows.cols; x+=sparse) {
+ 28          let [dx, dy] = flow.floatPtr(y, x);
+ 29          let l1 = Math.abs(dx) + Math.abs(dy);
+ 30          if (l1 > thresh) {
+ 31            cv.line(img,
+ 32              new cv.Point(x, y),
+ 33              new cv.Point(x+dx, y+dy),
+ 34              new cv.Scalar(10, 10, 10)
+ 35            );
+ 36          }
+ 37        }
+ 38      }
+```
+
+画像上の座標(x, y)から(dx, dy)を得るには、`cv.Mat.floatPtr()`を使います（28行目）。行列スタイルの(y, x)の順に指定しなければならないのが、間違えやすいところです。
+
+短いベクトルを大量に描いても見にくい黒点が大量に散らばるだけです。そこで、ここではL1ノルム（[6.3節](./06-img.md#63-画像から線画を起こす "INTERNAL")）がある程度の大きさでないと描かないようにしています。4ピクセルをここでは使っていますが、経験値であって、これにすればどんなパターンにも使えるというわけではありません。試行錯誤が必要です。L1を選択したのは、厳密さは必要でなく、計算が簡単だからという理由からです（L2が好みなら`Math.hypot()`で置き換えてください）。
+
+画像中央から走る平均移動ベクトルの計算は簡単です。データはもともと`cv.Mat`なので、`cv.mean()`関数が使えます（40行目）。この用例では平均値がさほど大きくなかったので、50倍して太線で描画しています（43行目）。
+
+```javascript
+ 40      let means = cv.mean(flows);
+```

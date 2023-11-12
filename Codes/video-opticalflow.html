@@ -53,13 +53,13 @@
     cap.read(currC4);
     cv.cvtColor(currC4, currC3, cv.COLOR_RGBA2RGB);
     cv.cvtColor(currC3, currU1, cv.COLOR_RGBA2GRAY);
-    cv.calcOpticalFlowFarneback(prevU1, currU1,  flow, 0.5, 3, 15, 3, 5, 1.2, 0);
+    cv.calcOpticalFlowFarneback(prevU1, currU1,  flow, 0.5, 3, 13, 3, 5, 1.2, 0);
 
     drawFlow(currC3, flow);
     cv.imshow('canvasTag', currC3);
     prevU1 = currU1.clone();
 
-    frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);          // 1回発火したら、また登録
+    frameCallbackHandle = videoElem.requestVideoFrameCallback(perFrame);
   }
 
   function stop() {
@@ -81,7 +81,7 @@
     currC3 = new cv.Mat();
     currU1 = new cv.Mat()
     prevU1 = new cv.Mat(h, w, cv.CV_8UC1, new cv.Scalar(255));
-    flow = new cv.Mat(h, w, cv.CV_32FC2);            // vector なので 2チャネル（dx, dy）。第1の (x, y) が dx, 第2が dy。
+    flow = new cv.Mat(h, w, cv.CV_32FC2);
 
     perFrame();
   }

@@ -30,6 +30,9 @@ OpenCVのオフィシャルGithubに置かれたHarrカスケード分類器の�
 - [IANA「Language Subtag Registry」](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) 🇺🇸 `https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry`  
 現在登録されている言語タグをすべて収容したリスト。言語タグは`<track>`の`srclang`属性で指定できるja（日本語）などの文字列です。蛇足ですが、日本語にはjpx（琉球語も含む日本語族）、ojp（日本の古語）、jsl（日本語の手話）といった言語タグも定義されています。さらに蛇足ですが、クリンゴン語はtlhです。
 
+- [LearnOpenCV「Optical Flow in OpenCV (C++/Python)」](https://learnopencv.com/optical-flow-in-opencv/ "INTERNAL") 🇺🇸 `https://learnopencv.com/optical-flow-in-opencv/`  
+オプティカルフローのメジャーな（古典的な）方法であるルーカス＝カナデ方式と、本書で取り上げたファーンバック方式の違いを数式を含めてわかりやすく解説した記事。
+
 - [MDN「Code values for keyboard events」](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values "LINK") 🇺🇸 `https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values`  
 `keydown`や`keyup`イベントで取得されるキーボードのキーコード（`code`プロパティ）の値のリスト。
 
