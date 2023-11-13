@@ -45,7 +45,7 @@ OpenCV.jsでピクセルを収容するデータオブジェクトは`cv.Mat`で
  10  <h1>画像の構造を調べる</h1>
  11
  12  <div>
- 13    <img id="imageTag" width="360" src="samples/pike-street.jpg"/>
+ 13    <img id="imageTag" width="320" src="samples/pike-street.jpg"/>
  14    <canvas id="canvasTag" class="placeholder"></canvas>
  15  </div>
  16
@@ -93,7 +93,7 @@ OpenCV.jsでピクセルを収容するデータオブジェクトは`cv.Mat`で
 OpenCV.jsで画像処理を行うには、`<img>`で読み込んだ画像を`cv.imread()`関数で`cv.Mat`オブジェクトに読み込まなければなりません（21行目）。
 
 ```javascript
- 13    <img id="imageTag" width="360" src="samples/pike-street.jpg"/>
+ 13    <img id="imageTag" width="320" src="samples/pike-street.jpg"/>
  ︙
  18    let imgElem = document.getElementById('imageTag');
  ︙
@@ -111,7 +111,7 @@ cv.Mat = cv.imread(                         // cv.Matを返す
 );
 ```
 
-`cv.imread()`は`<img>`に描かれている画像の寸法そのままをコピーします。実行例の最初のコンソール出力に示したように、読み込んだ画像の表示上のサイズは360×267で、もともとの寸法は1280×949です（`narutralWidth`×`naturalHeight`）。21行目の`cv.Mat`のサイズは描かれている側のものです。
+`cv.imread()`は`<img>`に描かれている画像の寸法そのままをコピーします。実行例の最初のコンソール出力に示したように、読み込んだ画像の表示上のサイズは320×2377で、もともとの寸法は1280×949です（`narutralWidth`×`naturalHeight`）。21行目の`cv.Mat`のサイズは描かれている側のものです。
 
 この点、もともとの画像を扱える描画コンテクスト`CanvasRenderingContext2D`の`drawImage()`と異なります。したがって、縮小表示した画像を`cv.Mat`に読み込んだら、それを原寸大に戻すと画質が劣化します。もともとのサイズが必要なら、そのように`<img>`に貼り付けなければなりません。表示は縮小したいが、データとしてはオリジナルが必要という場合は、後者はCSSで不可視にしておくとよいでしょう（この手は[6.6節](./06-img.md#66-書類の傾きを補正する "INTERNAL")で使います）。
 
@@ -140,10 +140,10 @@ cv.imshow(                                  // 戻り値なし
 <!-- mat.dims は実装されていない模様 -->
 プロパティ／関数 | 戻り値の型 | 実行画面での値 | 内容
 ---|---|---|---
-`rows` | `number` | 267 | 行数（水北方向のピクセル数）
-`cols` | `number` | 360 | 列数（水平方向のピクセル数）
-`size()` | `cv.Size` | {width: 360, height: 267} | 画像サイズを収容したオブジェクト
-`total()` | `number` | 96120 | 全ピクセル数（360×267）
+`rows` | `number` | 237 | 行数（水北方向のピクセル数）
+`cols` | `number` | 320 | 列数（水平方向のピクセル数）
+`size()` | `cv.Size` | {width: 320, height: 237} | 画像サイズを収容したオブジェクト
+`total()` | `number` | 75840 | 全ピクセル数（320×237）
 `channels()` | `number` | 4 | チャネル数
 `type()` | `number` | 24 | ピクセルのデータ型を示す定数
 `depth()` | `number` | 0 | `cv.Mat`1要素あたりのビット数を示す定数
@@ -151,7 +151,7 @@ cv.imshow(                                  // 戻り値なし
 
 #### cv.Matの縦横の順番
 
-画像サイズを示すのに`rows`（行）と`cols`（列）という用語を用いています（30行目）。`cv.Mat`が、2次元に広がるデータの集まりを（数学の）行列として表現しているからです。そして、行列のその名の通り、行と列の値を列挙するときは行、列の順です。実行例で267×360と表示しているのは、それに準じているからです。
+画像サイズを示すのに`rows`（行）と`cols`（列）という用語を用いています（30行目）。`cv.Mat`が、2次元に広がるデータの集まりを（数学の）行列として表現しているからです。そして、行列のその名の通り、行と列の値を列挙するときは行、列の順です。実行例で237×320と表示しているのは、それに準じているからです。
 
 これには注意が必要です。画像のサイズおよびその中のピクセル位置は、一般的には(横, 縦)で指定しますが、行列である`cv.Mat`では逆に(縦, 横)の順になるからです。次の図に`cv.Mat`の構造を示します。
 
@@ -754,7 +754,7 @@ HTML5画像がRGBAなので、`cv.Mat`のデータ型は`cv.CV_8UC4`です。し
  27    }
  28
  29    function imgProc() {
- 30      let size = new cv.Size(360, 240);
+ 30      let size = new cv.Size(320, 240);
  31      let mat = new cv.Mat(size, cv.CV_8UC1);
  32      console.log('Size: ', size);
  33
@@ -832,19 +832,19 @@ cv.Size = cv.Size(                          // cv.Sizeを返す
 これもコンストラクタなので`new`を付けてインスタンス化すると、`cv.Size`オブジェクトが戻ってきます（29行目）。
 
 ```javascript
- 30      let size = new cv.Size(360, 240);
+ 30      let size = new cv.Size(320, 240);
 ```
 
 `cv.Size`はJavaScriptのオブジェクトです。実際、中身をコンソールから調べると、至極普通の`{}`でくくられたオブジェクトです。したがって、`size.width`あるいは`size.height`からプロパティ値にアクセスできます。
 
 ```javascript
-> size = new cv.Size(360, 240)
-< Size {width: 360, height: 240}
+> size = new cv.Size(320, 240)
+< Size {width: 320, height: 240}
     height: 240
-    width: 360
+    width: 320
     [[Prototype]]: Object
 > size.width
-< 360
+< 320
 ```
 
 #### cv.Pointオブジェクト
@@ -1002,7 +1002,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
  32    }
  33
  34    function imgProc() {
- 35      let width = 360;
+ 35      let width = 320;
  36      let height = 240;
  37      let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(0.5));
  38      // mat.setTo(new cv.Scalar(0.7));
@@ -1124,7 +1124,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
  12  <p><kbd>Ctlr</kbd>を押下しながキャンバス上に点が描かれます。<kbd>Alt</kbd>を押下して少し動かすとcv.Matが解放され、お絵描きが終了します。ペン色はプルダウンメニューの7色から選べます。</p>
  13
  14  <div>
- 15    <canvas id="canvasTag" width="360" height="240" class="placeholder"></canvas>
+ 15    <canvas id="canvasTag" width="320" height="240" class="placeholder"></canvas>
  16  </div>
  17  <div>
  18    <select id="selectTag"></select>
@@ -1262,7 +1262,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
 
 <img src="Images/Ch04/mat-roi-1.png">
 
-実行例の左側が`<img>`上の原画で、オリジナルより縮小されて表示されるので320×240です。領域指定に[2.7節](./02-ui.md#27-マウス操作で部分領域を切り取る "INTERNAL")で作成した`RegionSelect`クラスを使っているので、そこで見た白い点線枠が画像上に出ています。選択が完了すれば、コンソールに矩形の情報が表示されます。ここでは左上頂点が(79, 58)でサイズが143×99です。
+実行例の左側が`<img>`上の原画で、オリジナルより縮小されて表示されるので320×240です。領域指定に[2.7節](./02-ui.md#27-マウス操作で部分領域を切り取る "INTERNAL")で作成した`RegionSelect`クラスを使っているので、そこで見た白い点線枠が画像上に出ています。選択が完了すれば、コンソールに矩形の情報が表示されます。ここでは左上頂点が(70, 46)でサイズが142×95です。
 
 中央では選択領域（ROI）をそのまま画像として表示しています。右側が元画像中のROIの部分だけをボケさせたものです。
 
@@ -1287,7 +1287,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
  11  <h1>部分領域だけ処理する</h2>
  12
  13  <div>
- 14    <img id="imageTag" width="360" src="samples/pike-st-fish.jpg"/>
+ 14    <img id="imageTag" width="320" src="samples/pike-st-fish.jpg"/>
  15    <canvas id="canvasTag1" class="placeholder"></canvas>
  16    <canvas id="canvasTag2" class="placeholder"></canvas>
  17  </div>
@@ -1410,7 +1410,7 @@ cv.Mat.roi(                                 // 戻り値なし
 
 ROIの設定は融通が利かないので、画像範囲外を指定しようとすると「ROI Overrun」というエラーが発生します。
 
-得られたROIはあたかも別の`cv.Mat`であるかのように扱うことができます。そうした用法が54行目で、ROIを中央のキャンバスに直接に貼り付けています。本節冒頭の実行例でROIのサイズが143×99だったので、キャンバスサイズもそれと同じです。
+得られたROIはあたかも別の`cv.Mat`であるかのように扱うことができます。そうした用法が54行目で、ROIを中央のキャンバスに直接に貼り付けています。本節冒頭の実行例でROIのサイズが142×95だったので、キャンバスサイズもそれと同じです。
 
 ```javascript
  54      cv.imshow('canvasTag1', roi);

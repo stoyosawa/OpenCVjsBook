@@ -10,7 +10,7 @@
 <h1>セピア調にする（およびその他の線形フィルタ）</h1>
 
 <div>
-  <img id="imageTag" width="360" src="samples/wiener-rathaus.jpg"/>
+  <img id="imageTag" width="320" src="samples/wiener-rathaus.jpg"/>
   <canvas id="canvasTag" class="placeholder"></canvas>
 </div>
 
@@ -26,7 +26,7 @@
   }
 
   function imgProc() {
-    let filter = filters.reduction;
+    let filter = filters.sepia;
     let matrix = cv.matFromArray(3, 3, cv.CV_32FC1, filter);
 
     let src = cv.imread(imgElem);

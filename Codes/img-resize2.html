@@ -11,10 +11,10 @@
 <h1>一部領域をモザイク化する</h1>
 
 <div>
-  <img id="imageTag" width="360" src="samples/blackcat.jpg"/>
+  <img id="imageTag" width="320" src="samples/blackcat.jpg"/>
   <canvas id="canvasTagRoi" width="100" class="placeholder"></canvas>
   <canvas id="canvasTagMosaic" width="100" class="placeholder"></canvas>
-  <canvas id="canvasTag" width="360" class="placeholder"></canvas>
+  <canvas id="canvasTag" width="320" class="placeholder"></canvas>
 </div>
 <div>
   縮小率（2～30） <input type="range" id="rangeTag" min="2" value="10" max="30"/>
@@ -23,7 +23,7 @@
 <script>
   let imgElem = document.getElementById('imageTag');
   let rangeElem = document.getElementById('rangeTag');
-  let region = [167, 56, 117, 102];
+  let region = [142, 41, 116, 104];
   let readyFlag = 0;
 
   function imgProc(evt) {

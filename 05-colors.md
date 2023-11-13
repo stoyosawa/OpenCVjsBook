@@ -286,7 +286,7 @@ cv.bitwise_not(                             // 戻り値なし
  10  <h1>セピア調にする（およびその他の線形フィルタ）</h1>
  11
  12  <div>
- 13    <img id="imageTag" width="360" src="samples/wiener-rathaus.jpg"/>
+ 13    <img id="imageTag" width="320" src="samples/wiener-rathaus.jpg"/>
  14    <canvas id="canvasTag" class="placeholder"></canvas>
  15  </div>
  16
@@ -329,7 +329,7 @@ cv.bitwise_not(                             // 戻り値なし
 
 画像処理の基本は、あるピクセル $P(r, g, b)$ を別の $P'(r', g' b')$ に置き換える操作です（アルファチャネルはここでは除外して考えます）。
 
-$$p(r, g, b) \Rightarrow P'(r', g', b')$$
+$$P(r, g, b) \Rightarrow P'(r', g', b')$$
 
 いろいろな変換操作が考えられますが、もっとも簡単なのは線形変換です。カラー画像のピクセルのRGBの値は、3要素のべクトル $\vec{P}(r, g, b)$ とみなすことができます。線形変換とは、次の図に示すようにこのベクトルに3×3の行列 $M$ を掛けることで、新しい3要素のベクトル $\vec{P'}(r',g', b')$を得る操作です。高校数学で出てくるあれです。
 
@@ -352,7 +352,7 @@ $$\begin{pmatrix}
   0.272 & 0.534 & 0.131
 \end{pmatrix}$$
 
-1行目（$r'$の計算）だけに着目すれば、上記は次のように書けます。
+1行目（ $r'$ の計算）だけに着目すれば、上記は次のように書けます。
 
 $$r' = 0.393 r + 0.769 g  + 0.189 b$$
 
@@ -703,7 +703,7 @@ cv.mean(src).reduce((a, b) => a + b, 0) / 3)
  15  </div>
  16
  17  <script>
- 18    let width = 360;
+ 18    let width = 320;
  19    let height = 180;
  20
  21    function cssDraw() {
@@ -766,10 +766,10 @@ cv.mean(src).reduce((a, b) => a + b, 0) / 3)
 
 色だけに着目するときは、たいてい彩度と明度を最大にして描画します。つまり(角度, 255, 255)です。
 
-OpenCVを用いて色相図を描いているのは、36～52行目の`imgProc()`関数です。ここでは、180行360列の`cv.Mat`（画像にして360×180）を用意し、そこに行の位置と角度を一致させて色相図を描いています。
+OpenCVを用いて色相図を描いているのは、36～52行目の`imgProc()`関数です。ここでは、180行320列の`cv.Mat`（画像にして320×180）を用意し、そこに行の位置と角度を一致させて色相図を描いています。
 
 ```javascript
- 18    let width = 360;
+ 18    let width = 320;
  19    let height = 180;
  ︙
  38      let arr = [];
@@ -792,7 +792,7 @@ OpenCVを用いて色相図を描いているのは、36～52行目の`imgProc()
 
 絵は[4.3節](./04-mat.md#43-ピクセルの色名を判定する "INTERNAL")のものと実は変わりません。枠内のr、g、bの文字をh、s、vに置き換えただけです。つまり、`cv.Mat.data`の形式はRGBと変わらず`Uint8Array`で、並び具合も要素の数も同じです。単に、収容されたものをなにとみなすかが違うだけです。
 
-#### HSV―RGB変換
+#### HSV－RGB変換
 
 HSVのつもりで生成した行列をそのままキャンバスに貼り付けると、たいていはサイケデリックな色合いになります。HTML5が、値の並びをRGBと解釈するからです。このコードの場合、ピクセル値は(deg, 255, 255)なので、シアン系の色がだんだんと白んでいくグラデーションになります。
 
@@ -867,7 +867,7 @@ OpenCVでもHLSが扱えますが、HSLというSとLの順番が入れ替わっ
  10  <h1>ポスター化する</h1>
  11
  12  <div>
- 13    <img id="imageTag" width="360" src="samples/raspberry.jpg"/>
+ 13    <img id="imageTag" width="320" src="samples/raspberry.jpg"/>
  14    <canvas id="canvasTag" class="placeholder"></canvas>
  15  </div>
  16  <div>

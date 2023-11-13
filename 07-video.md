@@ -45,7 +45,7 @@
  11
  12  <div>
  13    <img id="imageTag" src="samples/comet.png" class="hide"/>
- 14    <video width="360" id="videoTag" controls autoplay muted
+ 14    <video width="320" id="videoTag" controls autoplay muted
  15      src="samples/night-sky.mp4"></video>
  16    <canvas id="canvasTag" class="placeholder"></canvas>
  17  </div>
@@ -309,7 +309,7 @@ cv.VideoCapture.read(                       // 戻り値なし
  21
  22    let constraints = {
  23      audio: false,
- 24      video: { width: 360, height: 270 }
+ 24      video: { width: 320, height: 240 }
  25    };
  26
  27    navigator.mediaDevices.getUserMedia(constraints)
@@ -375,7 +375,7 @@ cv.VideoCapture.read(                       // 戻り値なし
 ```javascript
  22    let constraints = {
  23      audio: false,
- 24      video: { width: 360, height: 270 }
+ 24      video: { width: 320, height: 240 }
  25    };
  26
  27    navigator.mediaDevices.getUserMedia(constraints)
@@ -481,7 +481,7 @@ cv.flip(                                    // 戻り値なし
  10  <h1>実写をミニチュア風にする</h1>
  11
  12  <div>
- 13    <video id="videoTag" width="380" controls muted autoplay loop
+ 13    <video id="videoTag" width="320" controls muted autoplay loop
  14      src="samples/traffic.mp4"></video>
  15    <canvas id="canvasTag" class="placeholder"></canvas>
  16  </div>
@@ -608,7 +608,7 @@ OpenCVとビデオが準備できたところで初期化を行いますが（96
 
 #### 彩度と明度を上げる
 
-彩度と明度を定数倍するのが、41～60行目の`brighter()`関数です。関数は受け取ったRGB画像をHSVに変換、処理が終わればもとのRGBに戻します。このなRGB→HSV→RGBのサンドイッチ構成は[5.6節](./05-colors.md#56-ポスター化する "INTERNAL")と同じです。
+彩度と明度を定数倍するのが、41～60行目の`brighter()`関数です。関数は受け取ったRGB画像をHSVに変換、処理が終わればもとのRGBに戻します。このRGB→HSV→RGBのサンドイッチ構成は[5.6節](./05-colors.md#56-ポスター化する "INTERNAL")と同じです。
 
 ```javascript
  41    function brighter(src, scales=[1, 1, 1]) {
@@ -739,9 +739,9 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。Open
  10  <h1>ショットをトランジションでつなぐ</h1>
  11
  12  <div>
- 13    <video width="320" id="videoTagA" autoplay muted loop
+ 13    <video id="videoTagA" width="320" autoplay muted loop
  14      src="samples/ny.mp4"></video>
- 15    <video width="320" id="videoTagB" autoplay muted loop
+ 15    <video id="videoTagB" width="320" autoplay muted loop
  16      src="samples/ny-subway.mp4"></video>
  17  </div>
  18  <div>
@@ -945,6 +945,14 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。Open
 
 長方形を塗りつぶすので、第5引数の`thickness`に負の値を示す`cv.FILLED`が指定してあるのがポイントです。
 
+長方形を描くだけだと、両者の間がくっきりと分かれます。そういう編集もありでしょうが、ここでは間をややぼけさせることで、ゆるやかに混じるようにしています。これをやっているのが63行目の`cv.blur()`です。
+
+```javascript
+ 63      cv.blur(mask1, mask1, new cv.Size(17, 17));
+```
+
+この処理はディゾルブのマスク画像にも適用されますが、画像全体が均質に埋まっているので、変化はありません。
+
 #### 垂直ワイプ
 
 垂直ワイプの実行例を次に示します。
@@ -1130,7 +1138,7 @@ OpenCV.jsとビデオが準備できたら、リソースを用意します（46
 
 MOG2オブジェクト`mog2`は`cv.BackgroundSubtractorMOG2`コンストラクタから生成します（53行目）。定義を次に示します。
 
-<!-- FunctionDefinition cv.BackgroundSubtractorMOG2d() 背景抜きアルゴリズムを実装したMOG2のコンストラクタ。 -->
+<!-- FunctionDefinition cv.BackgroundSubtractorMOG2() 背景抜きアルゴリズムを実装したMOG2のコンストラクタ。 -->
 ```Javascript
 cv.BackgroundSubtractorMOG2 = cv.BackgroundSubtractorMOG2(
     number history = 500,
@@ -1163,7 +1171,7 @@ cv.BackgroundSubtractorMOG2 = cv.BackgroundSubtractorMOG2(
 
 関数定義を次に示します。
 
-<!-- FunctionDefinition cv.BackgroundSubtractorMOG2d.apply() 背景抜きを実行する。 -->
+<!-- FunctionDefinition cv.BackgroundSubtractorMOG2.apply() 背景抜きを実行する。 -->
 ```javascript
 cv.BackgroundSubtractorMOG2.apply(          // 戻り値なし
     cv.Mat image,                           // 入力フレーム
@@ -1205,7 +1213,7 @@ cv.BackgroundSubtractorMOG2.apply(          // 戻り値なし
 
 オプティカルフローは点の移動なので、ベクトル $\vec{P}(x, y)$ として表現できます。絵にすれば矢印線ですが、ここでは線分で描いています（OpenCV.jsには矢印描画の`cv.arrowedLine()`関数がない）。自転車の周りに蚊柱のように走っている細かい線がそれらです。計算上は画像上のすべての点のベクトルが得られますが、あまり密に描くと移動体のがまっくろなかたまりになってしまうので、縦横どちらも8ピクセルおきに描いています。
 
-画像中心から伸びる太めの線は、それぞれのベクトルの平均値です。これで移動物体のおおむねの移動方向と大きさ（早さ）がわかります。この画面では、自転車が中央から右に、ほぼ水平方向に移動していることがわかります。「ほぼ」なのは、乗り手が上半身を引き上げたり、前輪を持ち上げたりなど、上下方向の動きもあるからです。
+画像中心から伸びる太めの線は、それぞれのベクトルの平均値です。これで移動物体のおおむねの移動方向と大きさ（早さ）がわかります。この画面では、自転車が中央から右に、ほぼ水平方向に移動していることがわかります。「ほぼ」なのは、乗り手が上半身を引き上げたり、前輪を持ち上げたりなど、上下方向の動きもあるからです。画面でも、平均の線はやや下を向いています。
 
 #### コード
 
@@ -1225,7 +1233,7 @@ cv.BackgroundSubtractorMOG2.apply(          // 戻り値なし
  10  <h1>動きの方向を検出する</h1>
  11
  12  <div>
- 13    <video id="videoTag" width="360" src="samples/bicycle.mp4"></video>
+ 13    <video id="videoTag" width="320" src="samples/bicycle.mp4"></video>
  14    <canvas id="canvasTag" class="placeholder"></canvas>
  15  </div>
  16

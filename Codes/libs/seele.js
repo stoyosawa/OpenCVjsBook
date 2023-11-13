@@ -4,7 +4,7 @@
  * @param {number} fontSize - フォントのサイズ（px）
  * @returns {string} DataURL（Base64）
  */
-function soundOnly(w=480, h=360, fontSize=64) {
+function soundOnly(w=320, h=240, fontSize=48) {
   let canvasElem = document.createElement('canvas');
   canvasElem.width = w;
   canvasElem.height = h;

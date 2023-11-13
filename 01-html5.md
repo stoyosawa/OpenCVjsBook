@@ -1,8 +1,8 @@
 ## 第1章 HTML5の画像・ビデオ・カメラの入出力
 
-C/C++やPythonのバージョンと異なり、OpenCV.jpには画像の読み込みや表示といった入出力機能がありません。HTML5がすでに提供しているからです。カメラも同様です。
+C/C++やPythonのものとは異なり、OpenCV.jpには画像の読み込みや表示といった入出力機能がありません。HTML5がすでに提供しているからです。カメラも同様です。
 
-本章では、HTML5における画像・ビデオ・カメラのハンドリング方法を説明します。具体的には`<img>`、`<video>`、`<canvas>`の要素と関連するイベントです。HTML5の機能だけを用いるので、OpenCV.jsは用いません。
+本章では、HTML5における画像・ビデオ・カメラのハンドリング方法を説明します。具体的には`<img>`、`<video>`、`<canvas>`の要素と関連するイベントです。
 
 CSSは少しだけ用いますが、主として見栄えの調整のためなので、画像処理の本質には直接影響しません。使用するCSSファイル（`style.css`）は[付録D](./D-css.md "INTERNAL")に掲載してあります。
 
@@ -17,9 +17,9 @@ WebページでのOpenCVの画像処理の流れを次図から示します。
 
 OpenCV.jsが提供するのは中央の画像処理のメカニズムだけです。左右の画像やビデオの入出力にはHTML5の機能を用います。
 
-①入力。画像は`<img src>`で読み込みます。ビデオあるいはカメラなら`<video>`です。画像処理では、ビデオであっても静止画（フレーム）を対象とします。入力のステップにはビデオをフレーム単位に分解する処理も含まれます。
+①入力。画像は`<img src>`で読み込みます。ビデオあるいはカメラなら`<video>`です。入力のステップにはビデオをフレーム単位に分解する処理も含まれます。
 
-②処理。得られた画像は`<script>`内のOpenCVスクリプトで処理します。本章ではなにもしないので、入力はそのまま次のステップに引き渡します。画像処理は[第3章](./03-opencv.js "INTERNAL")以降で説明します。
+②処理。得られた画像は`<script>`内のOpenCVスクリプトで処理します。本章ではなにもしないので、入力はそのまま次のステップに引き渡します。画像処理は[第3章](./03-opencv.md "INTERNAL")以降で説明します。
 
 ③処理が完了したら、結果の画像を`<canvas>`に貼り付けます。
 
@@ -31,9 +31,9 @@ OpenCV.jsが提供するのは中央の画像処理のメカニズムだけで�
 
 #### 目的
 
-本節では、読み込んだ画像を無処理のままキャンバスに貼り付けます。
+読み込んだ画像を無処理のままキャンバスに貼り付けます。
 
-技術的には、`<img>`に読み込んだ画像をページに表示したそのままに`<canvas>`に貼り付けるHTML5の方法を説明します。加えて、複数ある画像サイズのプロパティの違いを説明します。
+技術的には、`<img>`に読み込んだ画像をそのまま`<canvas>`に貼り付けるHTML5の方法を説明します。加えて、複数ある画像サイズのプロパティの違いを説明します。
 
 実行例を次の画面に示します。
 
@@ -41,7 +41,7 @@ OpenCV.jsが提供するのは中央の画像処理のメカニズムだけで�
 
 左が読み込んだ画像を表示する`<img>`で、右がそのコピーを貼り付けた`<canvas>`です。キャンバスにはその領域が目視できるように点線の枠を付けてありますが、これはCSSによる見栄えの調整なだけで、本質とは無関係です（枠線のスタイルは`outline: 2px gray dotted;`です）。
 
-画像ファイルはコードの中にじか書きしてあります。変更には、コードそのものを編集します（12行目）。ローカルファイルから選択するユーザインタフェースは[2.1節](./02-ui.md#21-ローカルファイルを選択する "INTERNAL")で説明します。
+画像ファイル名はハードコードしてあるので、好みの画像に変更してください（12行目）。ローカルファイルから選択するユーザインタフェースは[2.1節](./02-ui.md#21-ローカルファイルを選択する "INTERNAL")で説明します。
 
 #### コード
 
@@ -191,7 +191,7 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
 img.width: 320, canvas.width: 300
 img.height: 221, canvas.height: 150
 img.clientWidth: 360, canvas.clientWidth: 300
-img.clientHeight: 261, canvas.clientHeight: 150
+img.clientHeight: 261 canvas.clientHeight: 150
 img.offsetWidth: 380, canvas.offsetWidth: 300
 img.offsetHeight: 281, canvas.offsetHeight: 150
 img.naturalWidth: 1280, canvas.naturalWidth: undefined
@@ -396,7 +396,7 @@ drawImage(
   9  <h1>ビデオを表示する</h1>
  10
  11  <div>
- 12    <video id="videoTag" width="480" controls src="samples/cat.mp4"
+ 12    <video id="videoTag" width="320" controls src="samples/cat.mp4"
  13      type="video/mp4">
  14    </video>
  15  </div>
@@ -443,7 +443,7 @@ drawImage(
 `<video>`の属性で必須なものは`src`だけです。あと、この要素を識別する`id`はスクリプトをするうえで必要です。
 
 ```html
- 12    <video id="videoTag" width="480" controls src="samples/cat.mp4"
+ 12    <video id="videoTag" width="320" controls src="samples/cat.mp4"
  13      type="video/mp4">
  14    </video> 
 ```
@@ -499,8 +499,8 @@ drawImage(
 ```
 2. event: loadedmetadata           // loadmetada以降に取得可
 Video properties:
-      Size offset:    480 x 270    // offsetWidth、offsetHeight
-      Size (element): 480 x 0      // width、height
+      Size offset:    320 x 180    // offsetWidth、offsetHeight
+      Size (element): 420 x 0      // width、height
       Size video:     640 x 360    // videoWidth、videoHeight
       Duration:       9.217542s    // duration
       CurrentTime:    0s           // currentTime
@@ -619,7 +619,7 @@ Video properties:
   9  <h1>ビデオをランダムにシャッフルする</h1>
  10
  11  <div>
- 12    <video id="videoTag" width="480" src="samples/cat.mp4"></video>
+ 12    <video id="videoTag" width="320" src="samples/cat.mp4"></video>
  13  </div>
  14
  15  <script>
@@ -737,7 +737,7 @@ Video properties:
   9  <h1>ビデオサムネールを作成する</h1>
  10
  11  <div>
- 12    <video id="videoTag" width="480" src="samples/cat.mp4"></video>
+ 12    <video id="videoTag" width="320" src="samples/cat.mp4"></video>
  13    <canvas id="canvasTag" class="placeholder"></canvas>
  14  </div>
  15
@@ -934,7 +934,7 @@ Video properties:
   9  <h1>ビデオに字幕を加える</h1>
  10
  11  <div>
- 12    <video id="videoTag" width="480" controls>
+ 12    <video id="videoTag" width="320" controls>
  13      <source src="samples/cat.mp4" type="video/mp4"/>
  14      <track id="trackTag" kind="captions" srclang="ja" default src="samples/cat.vtt"/>
  15    </video>
@@ -966,7 +966,7 @@ Video properties:
 ビデオに字幕を加えるには、`<video></video>`の間に<track`>要素を挟みます（15～16行目）。HTMLの仕様はビデオ（あるいはオーディオ）の特定の時間範囲内に付随するデータ全般をテキストトラックと総称しますが、ここでは字幕と呼びます。
 
 ```html
- 13    <video id="videoTag" width="480" controls autoplay muted>
+ 13    <video id="videoTag" width="320" controls autoplay muted>
  14      <source src="samples/cat.mp4" type="video/mp4"/>
  15      <track id="trackTag" kind="captions" srclang="ja" default
  16        src="samples/cat.vtt"/>
@@ -1117,8 +1117,8 @@ Video properties:
  18    let cameraSettings = {
  19      audio: false,
  20      video: {
- 21        width: 480,
- 22        height: 360,
+ 21        width: 320,
+ 22        height: 240,
  23        facingMode: 'environment'
  24      }
  25    };
@@ -1192,8 +1192,8 @@ Video properties:
  18    let cameraSettings = {
  19      audio: false,
  20      video: {
- 21        width: 480,
- 22        height: 360,
+ 21        width: 320,
+ 22        height: 240,
  23        facingMode: 'environment'
  24      }
  25    };
@@ -1259,8 +1259,8 @@ Chromeでは右上の［︙］から［設定］>［プライバシーとセキ�
 ```
 Camera sizes:
         width, height:       0x0
-        offsetWidth, Height: 480x360
-        videoWidth, Height:  480x360
+        offsetWidth, Height: 320x240
+        videoWidth, Height:  320x240
 ```
 
 `HTMLVideoElement`プロパティの`width`と`height`がどちらも0であるところに注意してください。`videoWidth`と`videoHeight`はカメラ設定で指定した通りになっているので、フレームをキャンバスにコピーするなど寸法が必要なときはこちらを使います。
@@ -1333,7 +1333,7 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
   8  <h1>ビデオをフレーム単位で取得する（Chrome、Edge…）</h1>
   9
  10  <div>
- 11    <video id="videoTag" width="480" controls src="samples/cat.mp4"></video>
+ 11    <video id="videoTag" width="320" controls src="samples/cat.mp4"></video>
  12    <canvas id="canvasTag" class="placeholder"></canvas>
  13  </div>
  14
@@ -1435,7 +1435,7 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
   9  <h1>ビデオをフレーム単位で取得する（Firefox）</h1>
  10
  11  <div>
- 12    <video id="videoTag" width="480" controls src="samples/cat.mp4"></video>
+ 12    <video id="videoTag" width="320" controls src="samples/cat.mp4"></video>
  13    <canvas id="canvasTag" class="placeholder"></canvas>
  14  </div>
  15
@@ -1519,7 +1519,7 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
   9  <h1>ビデオをフレーム単位で取得する（タイマー使用）</h1>
  10
  11  <div>
- 12    <video id="videoTag" width="480" controls src="samples/cat.mp4"></video>
+ 12    <video id="videoTag" width="320" controls src="samples/cat.mp4"></video>
  13    <canvas id="canvasTag" class="placeholder"></canvas>
  14  </div>
  15

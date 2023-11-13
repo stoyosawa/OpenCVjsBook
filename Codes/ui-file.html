@@ -8,7 +8,7 @@
 <h1>ローカルファイルを選択する &lt;input type="file"&gt;</h1>
 
 <div>
-  <img id="imageTag" width="360" height="240" class="placeholder"/>
+  <img id="imageTag" width="320" height="240" class="placeholder"/>
 </div>
 <div>
   <input type="file" id="fileTag"/>
@@ -19,15 +19,15 @@
   let fileElem = document.getElementById('fileTag');
 
   function loadImage() {
-    console.log(Date.now());
+    console.log(performance.now());
     let file = fileElem.files[0];
     console.log(`${file.name} Size: ${file.size}, Type: ${file.type}`);
     imgElem.src = URL.createObjectURL(file);
-    console.log(Date.now());
+    console.log(performance.now());
   }
 
   function changeSize() {
-    console.log(Date.now());
+    console.log(performance.now());
     let aspect = imgElem.naturalHeight / imgElem.naturalWidth;
     imgElem.height = Math.floor(imgElem.width * aspect);
   } 

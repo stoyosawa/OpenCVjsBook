@@ -1,5 +1,5 @@
 <!-- The file is automatically generated. -->
-### 付録C OpenCV関数リスト
+## 付録C OpenCV関数リスト
 本書で取り上げたOpenCVの関数およびクラスコンストラクタを名称順に示します。
 
 関数名 | 本書の節 | 説明

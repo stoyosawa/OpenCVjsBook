@@ -50,7 +50,7 @@ OpenCVには多様な機能が満載なので、かぎられた紙面では取�
  10  <h1>一部領域をモザイク化する（補間方法）</h1>
  11
  12  <div>
- 13    <img id="imageTag" width="36" src="samples/blackcat.jpg"/>
+ 13    <img id="imageTag" width="320" src="samples/blackcat.jpg"/>
  14    <canvas id="canvasTag" class="placeholder"></canvas>
  15  </div>
  16  <div>
@@ -195,10 +195,10 @@ cv.resize(                                  // 戻り値なし
  11  <h1>一部領域をモザイク化する</h1>
  12
  13  <div>
- 14    <img id="imageTag" width="360" src="samples/blackcat.jpg"/>
+ 14    <img id="imageTag" width="320" src="samples/blackcat.jpg"/>
  15    <canvas id="canvasTagRoi" width="100" class="placeholder"></canvas>
  16    <canvas id="canvasTagMosaic" width="100" class="placeholder"></canvas>
- 17    <canvas id="canvasTag" width="360" class="placeholder"></canvas>
+ 17    <canvas id="canvasTag" width="320" class="placeholder"></canvas>
  18  </div>
  19  <div>
  20    縮小率（2～30） <input type="range" id="rangeTag" min="2" value="10" max="30"/>
@@ -207,7 +207,7 @@ cv.resize(                                  // 戻り値なし
  23  <script>
  24    let imgElem = document.getElementById('imageTag');
  25    let rangeElem = document.getElementById('rangeTag');
- 26    let region = [167, 56, 117, 102];
+ 26    let region = [142, 41, 116, 104];
  27    let readyFlag = 0;
  28
  29    function imgProc(evt) {
@@ -334,7 +334,7 @@ cv.resize(                                  // 戻り値なし
  10  <h1>画像をぼかす</h1>
  11
  12  <div>
- 13    <img width="360" id="imageTag" src="samples/ducks-and-dog.jpg"/>
+ 13    <img width="320" id="imageTag" src="samples/ducks-and-dog.jpg"/>
  14    <canvas id="canvasTag" class="placeholder"></canvas>
  15  </div>
  16  <div>
@@ -1299,58 +1299,60 @@ OpenCVの多角形や直線の描画関数では、次の表に示す3つの線�
  17    </select>
  18  </div>
  19  <div>
- 20    <img width="360" id="imageTag" src="samples/power-pole.jpg"/>
+ 20    <img width="320" id="imageTag" src="samples/power-pole.jpg"/>
  21    <canvas id="canvasTag1" class="placeholder"></canvas>
- 22    <canvas id="canvasTag2" class="placeholder"></canvas>
- 23    <canvas id="canvasTag3" class="placeholder"></canvas>
- 24  </div>
- 25
- 26
- 27  <script>
- 28    let imgElem = document.getElementById('imageTag');
- 29    let selectElem = document.getElementById('selectTag');
- 30
- 31    function imgProc() {
- 32      let src = cv.imread(imgElem);
- 33
- 34      let kernelArray = selectElem.value.split('').map(i => Number(i));
- 35      let kernel = cv.matFromArray(3, 3, cv.CV_8UC1, kernelArray);
- 36
- 37      let morph = new cv.Mat();
- 38      let anchor = new cv.Point(-1, -1);
- 39      cv.morphologyEx(src, morph, cv.MORPH_CLOSE, kernel, anchor, 1);
- 40      cv.imshow('canvasTag1', morph);
- 41
- 42      let mask = new cv.Mat();
- 43      cv.cvtColor(morph, mask, cv.COLOR_RGBA2GRAY);
- 44      cv.threshold(mask, mask, 128, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
- 45      cv.imshow('canvasTag2', mask);
- 46
- 47      src.copyTo(morph, mask);
- 48      cv.imshow('canvasTag3', morph);
- 49
- 50      [src, kernel, morph, mask].forEach(m => m.delete());
- 51    }
- 52
- 53    function opencvReady() {
- 54      selectElem.addEventListener('change', imgProc);
- 55      imgProc();
- 56    }
- 57
- 58    var Module = {
- 59      onRuntimeInitialized: opencvReady
- 60    }
- 61  </script>
- 62
- 63  </body>
- 64  </html>
+ 22  </div>
+ 23  <div>
+ 24    <canvas id="canvasTag2" class="placeholder"></canvas>
+ 25    <canvas id="canvasTag3" class="placeholder"></canvas>
+ 26  </div>
+ 27
+ 28
+ 29  <script>
+ 30    let imgElem = document.getElementById('imageTag');
+ 31    let selectElem = document.getElementById('selectTag');
+ 32
+ 33    function imgProc() {
+ 34      let src = cv.imread(imgElem);
+ 35
+ 36      let kernelArray = selectElem.value.split('').map(i => Number(i));
+ 37      let kernel = cv.matFromArray(3, 3, cv.CV_8UC1, kernelArray);
+ 38
+ 39      let morph = new cv.Mat();
+ 40      let anchor = new cv.Point(-1, -1);
+ 41      cv.morphologyEx(src, morph, cv.MORPH_CLOSE, kernel, anchor, 1);
+ 42      cv.imshow('canvasTag1', morph);
+ 43
+ 44      let mask = new cv.Mat();
+ 45      cv.cvtColor(morph, mask, cv.COLOR_RGBA2GRAY);
+ 46      cv.threshold(mask, mask, 128, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+ 47      cv.imshow('canvasTag2', mask);
+ 48
+ 49      src.copyTo(morph, mask);
+ 50      cv.imshow('canvasTag3', morph);
+ 51
+ 52      [src, kernel, morph, mask].forEach(m => m.delete());
+ 53    }
+ 54
+ 55    function opencvReady() {
+ 56      selectElem.addEventListener('change', imgProc);
+ 57      imgProc();
+ 58    }
+ 59
+ 60    var Module = {
+ 61      onRuntimeInitialized: opencvReady
+ 62    }
+ 63  </script>
+ 64
+ 65  </body>
+ 66  </html>
 ```
 
-`<select>`オプションの値は、モルフォロジー演算で用いるカーネルを9つの0または1で表現しています（14～16行目）。これらは1文字ずつに分解して数値の配列に直し、`cv.matFromArray()`から3×3で`cv.CV_8UC1`の`cv.Mat`に変換します（35行目）。
+`<select>`オプションの値は、モルフォロジー演算で用いるカーネルを9つの0または1で表現しています（14～16行目）。これらは1文字ずつに分解して数値の配列に直し、`cv.matFromArray()`から3×3で`cv.CV_8UC1`の`cv.Mat`に変換します（37行目）。
 
 ```javascript
- 34      let kernelArray = selectElem.value.split('').map(i => Number(i));
- 35      let kernel = cv.matFromArray(3, 3, cv.CV_8UC1, kernelArray);
+ 36      let kernelArray = selectElem.value.split('').map(i => Number(i));
+ 37      let kernel = cv.matFromArray(3, 3, cv.CV_8UC1, kernelArray);
 ```
 
 #### モルフォロジー演算
@@ -1429,10 +1431,10 @@ $$ K_{縦線} \begin{pmatrix}
 コードでモルフォロジー演算のクロージング操作をしているのは39行目の`cv.morphologyEx()`関数です。
 
 ```javascript
- 37      let morph = new cv.Mat();
- 38      let anchor = new cv.Point(-1, -1);
- 39      cv.morphologyEx(src, morph, cv.MORPH_CLOSE, kernel, anchor, 1);
- 40      cv.imshow('canvasTag1', morph);
+ 39      let morph = new cv.Mat();
+ 40      let anchor = new cv.Point(-1, -1);
+ 41      cv.morphologyEx(src, morph, cv.MORPH_CLOSE, kernel, anchor, 1);
+ 42      cv.imshow('canvasTag1', morph);
 ```
 
 関数定義を次に示します。
@@ -1453,7 +1455,7 @@ cv.morphologyEx(                            // 戻り値なし
 
 第1引数`src`には入力の、第2引数`dst`には出力の`cv.Mat`を指定します。入力画像にチャネル数の制約はありません。複数チャネルならば、それぞれのチャネルにモルフォロジー演算が施されます。出力のサイズとデータ型は入力にあわせられます。
 
-第3引数`op`には、操作タイプを次の表に示すOpenCVの定数から指定します。39行目では`cv.MORPH_CLOSE`を用いています。
+第3引数`op`には、操作タイプを次の表に示すOpenCVの定数から指定します。41行目では`cv.MORPH_CLOSE`を用いています。
 
 タイプ | 演算内容
 ---|---
@@ -2141,7 +2143,7 @@ cv.Mat cv.getRotationMatrix2D(              // cv.Matを返す。
  35      cv.equalizeHist(gray, gray);
 ```
 
-関数は、その名の示す通り輝度分布を均等化することでコントラストを高めます。均等化すれば、最大輝度と最小輝度の差が大きくなる、つまりコントラストが高くなるからです。
+関数は、その名の示す通り輝度分布を均等化することでコントラストを高めます。均等化すれば、最大輝度と最小輝度の差が大きくなる、つまりコントラストが高くなります。
 
 次の画面に、ヒトの実行例のサンプル画像のヒストグラムを示します。左が元画像（をモノクロ化したときの輝度）の、右がヒストグラム均等化後のものです。
 
@@ -2229,9 +2231,9 @@ cv.equalizeHist(                            // 戻り値なし
 ```
 
 <!-- Emscripten 参照。https://emscripten.org/docs/api_reference/advanced-apis.html -->
-先頭に`cv`があるのでOpenCVの関数ですが、C++/Python版のOpenCVには存在しません（公式リファレンスにも記載はありません）。このファイル操作のメカニズムは下位で用いられているemscriptenが提供しているものだからです。関数の定義を次に示します。
+先頭に`cv`があるのでOpenCV.jsの関数ですが、C++/Python版のOpenCVには存在しません（公式リファレンスにも記載はありません）。このファイル操作のメカニズムは下位で用いられているemscriptenが提供しているものだからです。関数の定義を次に示します。
 
-<!-- FunctionDefinition cv.FS_createDataFile() データから仮想ファイルを作成します。 -->
+<!-- FunctionDefinition cv.FS_createDataFile() データから仮想ファイルを作成する。 -->
 ```Javascript
 cv.FS_createDataFile(                       // 戻り値なし
     string parenet,                         // 親ディレクトリ名
@@ -2611,6 +2613,6 @@ cv.addWeighted(                             // 戻り値なし
 
 計算式は $P' = \alpha P_1 + \beta P_2 + \gamma$ です。それ以外は他と同じです。冒頭で述べたように、たいていは $\alpha + \beta = 1$ となるように係数を選びます。
 
-`cv.Mat`同士の演算には四則演算以外にもビット演算（ANDやOR)、べき乗、最大最小値などいろいろな関数がで定義されているので、それらでどんな絵が得られるかを試すのも楽しいでしょう。次のURLに示すOpenCVリファレンスの「Operations on arrays」にまとめて掲載されていますので、詳細はそちらを参照してください。
+`cv.Mat`同士の演算には四則演算以外にもビット演算（ANDやOR）、べき乗、最大最小値などいろいろな関数がで定義されているので、それらでどんな絵が得られるかを試すのも楽しいでしょう。次のURLに示すOpenCVリファレンスの「Operations on arrays」にまとめて掲載されていますので、詳細はそちらを参照してください。
 
 ```https://docs.opencv.org/4.8.0/d2/de8/group__core__array.html```
