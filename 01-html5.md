@@ -4,7 +4,7 @@ C/C++やPythonのものとは異なり、OpenCV.jpには画像の読み込みや
 
 本章では、HTML5における画像・ビデオ・カメラのハンドリング方法を説明します。具体的には`<img>`、`<video>`、`<canvas>`の要素と関連するイベントです。
 
-CSSは少しだけ用いますが、主として見栄えの調整のためなので、画像処理の本質には直接影響しません。使用するCSSファイル（`style.css`）は[付録D](./D-css.md "INTERNAL")に掲載してあります。
+CSSは少しだけ用いますが、主として見栄えの調整のためなので、画像処理の本質には直接影響しません。使用するCSSファイル（`style.css`）は[付録D](./D-css.md "INTERNAL")に掲載しました。
 
 
 
@@ -17,9 +17,9 @@ WebページでのOpenCVの画像処理の流れを次図から示します。
 
 OpenCV.jsが提供するのは中央の画像処理のメカニズムだけです。左右の画像やビデオの入出力にはHTML5の機能を用います。
 
-①入力。画像は`<img src>`で読み込みます。ビデオあるいはカメラなら`<video>`です。入力のステップにはビデオをフレーム単位に分解する処理も含まれます。
+①入力。画像は`<img src>`で読み込みます。ビデオあるいはカメラなら`<video src>`です。入力のステップにはビデオをフレーム単位に分解する処理も含まれます。フレーム処理の方法は[1.9節](#19-ビデオをフレーム単位で取得する "INTERNAL")で説明します。
 
-②処理。得られた画像は`<script>`内のOpenCVスクリプトで処理します。本章ではなにもしないので、入力はそのまま次のステップに引き渡します。画像処理は[第3章](./03-opencv.md "INTERNAL")以降で説明します。
+②処理。入力画像は`<script>`内のOpenCVスクリプトで処理します。本章のコードは入力画像を未処理のまま次のステップに引き渡します。画像処理は[第3章](./03-opencv.md "INTERNAL")以降で説明します。
 
 ③処理が完了したら、結果の画像を`<canvas>`に貼り付けます。
 
@@ -31,9 +31,9 @@ OpenCV.jsが提供するのは中央の画像処理のメカニズムだけで�
 
 #### 目的
 
-読み込んだ画像を無処理のままキャンバスに貼り付けます。
+読み込んだ画像をそのままキャンバスに貼り付けます。
 
-技術的には、`<img>`に読み込んだ画像をそのまま`<canvas>`に貼り付けるHTML5の方法を説明します。加えて、複数ある画像サイズのプロパティの違いを説明します。
+技術的には、`<img>`に読み込んだ画像をそのまま`<canvas>`に貼り付ける`CanvasRenderingContext2D.drawImage()`の用法を示します。画像にはそのサイズを示すプロパティがいくつかありますが、その違いについても説明します。
 
 実行例を次の画面に示します。
 
@@ -41,7 +41,7 @@ OpenCV.jsが提供するのは中央の画像処理のメカニズムだけで�
 
 左が読み込んだ画像を表示する`<img>`で、右がそのコピーを貼り付けた`<canvas>`です。キャンバスにはその領域が目視できるように点線の枠を付けてありますが、これはCSSによる見栄えの調整なだけで、本質とは無関係です（枠線のスタイルは`outline: 2px gray dotted;`です）。
 
-画像ファイル名はハードコードしてあるので、好みの画像に変更してください（12行目）。ローカルファイルから選択するユーザインタフェースは[2.1節](./02-ui.md#21-ローカルファイルを選択する "INTERNAL")で説明します。
+画像ファイル名はハードコードしてあるので、好みの画像に変更してください（12行目）。［ファイルを開く］ダイアログボックスからローカルファイルから選択するユーザインタフェースは[2.1節](./02-ui.md#21-ローカルファイルを選択する "INTERNAL")で説明します。
 
 #### コード
 
@@ -74,7 +74,7 @@ OpenCV.jsが提供するのは中央の画像処理のメカニズムだけで�
  22      ['width', 'height',
  23       'clientWidth', 'clientHeight',
  24       'offsetWidth', 'offsetHeight',
- 25       'naturalWidth', , 'naturalHeight'].forEach(function(d) {
+ 25       'naturalWidth', 'naturalHeight'].forEach(function(d) {
  26        console.log(`img.${d}: ${imgElem[d]}, canvas.${d}: ${canvasElem[d]}`);
  27      });
  28      canvasElem.width = imgElem.width;
@@ -99,13 +99,13 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
 17    let imgElem = document.getElementById('imageTag');
 ```
 
-`src`以外の属性は仕様上オプションです。ここでは`width`属性に320ピクセルを指定していますが、動作確認時に邪魔にならない程度に縮小表示したいからです。`height`は未指定ですが、高さは元画像のアスペクト比に準じて自動的に調整されます。ここでの用例では、元画像のサイズが1280×885なので、高さは1/4の221ピクセルに縮小されます。
+`src`以外の属性はオプションです。ここでは、画像横幅を`width`属性から320ピクセルに設定しています。高さ指定の`height`は未指定ですが、もともとの画像のアスペクト比に準じて調整されます。この実行例では、もともとの画像のサイズが1280×885なので、高さは1/4の221ピクセルに縮小されます。
 
-スクリプティングで必須なのは、`<img>`要素を特定する`id`属性です。対応するDOMオブジェクトは、この`id`属性を介して`document.getElementById()`関数から取得できます（17行目）。
+スクリプティングで必須なのは、`<img>`要素を特定する`id`属性です。対応するDOMオブジェクト（`HTMLImageElement`）は、この`id`属性を介して`document.getElementById()`関数から取得できます（17行目）。
 
 #### HTMLImageElementのイベント
 
-画像が読み込まれれば`load`イベントが発生します。読み込まれるまでは画像に関連した処理はできないので、イベントの発生を契機に処理を開始するようにします。この段取りをしているのが、33行目の`addEventListener()`です。
+画像が読み込まれれば`load`イベントが発生します。読み込みが完了するまでは、画像に関連した処理はできません。たとえば、画像を収容するOpenCVの`cv.Mat`オブジェクトを画像と同じサイズで生成するとき、読み込み完了以前ではサイズが不明なため、エラーが発生します。そこで、`load`イベントの発生を契機に処理を開始するようにします。この段取りをしているのが、33行目の`addEventListener()`です。
 
 ```javascript
  17    let imgElem = document.getElementById('imageTag');
@@ -132,7 +132,7 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
 #### 描画コンテクスト
 <!-- Wikipedia は「コンテキスト」のほうが多いと言っているが、あたしは自然には「コンテクスト」と打つので、そちらを採用。無理に「キ」にすると、揺れが多すぎる。-->
 
-キャンバスに対する操作は、キャンバスの描画コンテクストを介して行います。「コンテクスト」（文脈）ではやや意味不明瞭ですが、仮想的なキャンバスと考えてください。この仮想的なキャンバスに対して画像貼り付けやグラフィック描画を行うと、`<canvas>`というビューファインダーからそれらが見えるようになるという塩梅です。
+キャンバスに対する操作は、キャンバスの描画コンテクストを介して行います。「コンテクスト」（文脈）はやや意味不明瞭ですが、仮想的なキャンバスと考えてください。ここに画像を貼り付けたりグラフィックスを描画したりすると、`<canvas>`というビューファインダーからそれらが見えるようになるという塩梅です。
 
 描画コンテクストは、`HTMLCanvasElement`の`getContext()`関数から取得します（19行目）。
 
@@ -150,11 +150,21 @@ HTMLページに画像ファイルを取り込むには`<img>`要素を使いま
  30      ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height);
 ```
 
-第1引数には、コピー元の画像オブジェクトを指定します。
+第1引数には、コピー元の画像オブジェクトを指定します。ここでは`HTMLImageElement`オブジェクトです。
 
 第2引数と第3引数には、その画像を貼り付けるキャンバス内での(x, y)座標を指定します。ここでは(0, 0)を指定しているので、キャンバスと画像の左上の位置は一致します。
 
-第4引数と第5引数には、貼り付けるサイズを指定します。ここでは、ページ上での`<img>`と同じサイズ（`width`属性で指定した320×221）を用いたいので、`imgElem.width`と`imgElem.height`を指定しています。
+第4引数と第5引数には、貼り付けるサイズを指定します。ここでは、ページ上での`<img>`と同じサイズを用いたいので、`imgElem.width`と`imgElem.height`を指定しています。
+
+ここでは5変数のタイプを使いましたが、関数には3引数版と9引数番の者もあります。次に5引数版も含めて書式を示します。
+
+```javascript
+drawImage(image, dx, dy)
+drawImage(image, dx, dy, dWidth, dHeight)
+drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+```
+
+`dx`、`dy`、`dWidth`、`dHeight`が`<canvas>`上の座標とサイズ（`d`はコピー先のdestinationの略）、`sx`、`sy`、`sWidth`、`sHeight`が`<img>`上の座標とサイズです（`s`はコピー元のsource）。9引数版からコピー元情報を`<img>`全体としたものが5引数版、そこからさらにコピー先情報のサイズをキャンバスサイズとしたものが3引数版です。9引数版は[1.3節](#13-部分領域をキャンバスに表示する "INTERNAL")で扱います。
 
 #### いろいろなサイズ
 
@@ -198,9 +208,11 @@ img.naturalWidth: 1280, canvas.naturalWidth: undefined
 img.naturalHeight: 885, canvas.naturalHeight: undefined
 ```
 
-client付きはパディングが上下左右に加わるので、40ピクセル増えます。offset付きはさらに枠線が加わるので、そこから20ピクセル増えます。natural付きは上述のように読み込んだもともとの画像のサイズで、ここから、`<img>`のものは縮小表示されていることがわかります。なお、`<canvas>`には`natural`付きは定義されていないので、`undefined`になります。
+client付きはパディングが上下左右に加わるので、40ピクセル増えます（320→360）。offset付きはさらに枠線の幅が加わるので、そこから20ピクセル増えます（→380）。HTML要素取り囲む余白にはマージン（`margin`）もありますが、これは要素の外側なので画像サイズには寄与しません。
 
-`<canvas>`にはサイズ属性を設定してなかったので、値はデフォルトの300×150です。このまま`<img>`を`<canvas>`にコピーするとは320×221だった画像が左上を揃えたうえで300×150で切り取られるので、下部の71ピクセルと右の20ピクセルが、次の画面のようにクリッピングされます。
+natural付きは読み込んだもともとの画像のサイズです。出力結果から、`<img>`に表示されたものは1/4に縮小されていることがわかります。なお、`<canvas>`には`natural`付きは定義されていないので、`undefined`になります。
+
+`<canvas>`にはサイズ属性を設定してなかったので、値はデフォルトの300×150です。このデフォルト状態のまま`<img>`を`<canvas>`にコピーすると、は320×221だった画像が左上を揃えたうえでキャンバスサイズで切り取られます。このため、下部の71ピクセルと右の20ピクセルが、次の画面のようにクリッピングされます。
 
 <img src="Images/Ch01/html-image-3.png">
 
@@ -211,19 +223,18 @@ client付きはパディングが上下左右に加わるので、40ピクセル
  26      canvasElem.height = imgElem.height;
 ```
 
-13行目で次のように`width="320" height="221"`と記述してもかまいません。
+13行目の`<canvas>`属性に、次のように`width="320" height="221"`と記述してもかまいません。
 
 ```html
- 13    <canvas id="canvasTag" width="320" height="221" class="placeholder"></canvas>
+ 13    <canvas id="canvasTag" width="320" height="221" class="placeholder">
+   </canvas>
 ```
 
-横縦両方指定しているところに注意してください。`<img>`と異なり、未指定側は自動調節されないので、値はデフォルトのままです。`width="320"`単体での指定はつまり320×150となるので、下部分が次の画面のようにクリッピングされます。前の300×150の画面とは微妙にしか違いませんが、横幅が同じなので、右端の稜線や湖手前の樹が20ピクセルぶん多く含まれます。
+横縦両方指定するところに注意してください。`<img>`と異なり、未指定側は自動調節されないので、値はデフォルトのままです。`width="320"`単体での指定はつまり320×150となるので、下部分が次の画面のようにクリッピングされます。前の300×150の画面とは微妙にしか違いませんが、横幅が同じなので、右端の稜線や湖手前の樹が20ピクセルぶん多く含まれます。
 
 <img src="Images/Ch01/html-image-4.png">
 
-`<canvas>`の属性値をじか書きするのはわかりやすいかもしれませんが、画像を変えるたびに、アスペクト比をあわせて高さを計算しなければなりません。スクリプトで処理したほうが面倒がなくてよいでしょう。
-
-ビデオフレームは、画像と異なり`height`が自動計算されません。したがって、高さには`clientHeight`あるいは`offsetHeight`を使うか、フレームのアスペクト比から計算しなければなりません（[1.4節](#14-ビデオを表示する "INTERNAL")参照）。本書ではビデオにはパディングや枠線を加えていないので、しばしば`offsetHeight`利用します。
+`<video>`では`height`プロパティが自動計算されません。したがって、高さには`clientHeight`あるいは`offsetHeight`を使うか、フレームのアスペクト比から計算しなければなりません（[1.4節](#14-ビデオを表示する "INTERNAL")参照）。
 
 
 
@@ -231,16 +242,16 @@ client付きはパディングが上下左右に加わるので、40ピクセル
 
 #### 目的
 
-本節では`<img>`から部分領域を切り取り、`<canvas>`にリサイズして貼り付けます。
+`<img>`から部分領域を切り取り、`<canvas>`にリサイズして貼り付けます。
 
-技術的には、描画コンテクストの`drawImage()`関数が対象とするのは読み込んだ画像のオリジナルのサイズであり、`<canvas>`にはそれが拡大縮小、あるいは部分的にくりっっピングされて貼り付けられることを示します。
+技術的には、描画コンテクストの`drawImage()`関数が話題という点では前節と同じ内容ですが、先ほど軽く触れた変数の扱いによっては、`<canvas>`に貼り付けられる部分領域が（見かけ上）拡大縮小されたり、部分的にクリッピングされることを示します。
 
 実行例を次の画面に示します。
 
 <!-- 枠なし版あり -->
 <img src="Images/Ch01/html-partial-1.png">
 
-左が`<img>`です。`<img widht="320">`と属性からサイズ指定しているので、読み込んだ画像が1/4に縮小されています。中央の`<canvas>`は、元画像で白枠でくくった部分を縮小前のサイズで示しています。右の`<canvas>`では縮小前の1/2（`<img>`の倍）で同じ枠内の部分画像を表示しています。
+読み込んだもともとの画像のサイズは1280x854です。左の`<img>`では`widht="320"`からサイズ指定をしているので、1/4に縮小されて表示されます。中央の`<canvas>`は、元画像で白枠でくくった部分を縮小前のサイズで示しています。右の`<canvas>`では縮小前の1/2（`<img>`の倍）で同じ枠内の部分画像を表示しています。
 
 #### コード
 
@@ -259,7 +270,7 @@ client付きはパディングが上下左右に加わるので、40ピクセル
   9  <h1>部分領域をキャンバスに表示する</h1>
  10
  11  <div>
- 12    <img id="imageTag" width="320" src="samples/sheep.jpg"/>
+ 12    <img id="imageTag" width="320" src="samples/cows.jpg"/>
  13    <canvas id="canvasTag1" class="placeholder"></canvas>
  14    <canvas id="canvasTag2" class="placeholder"></canvas>
  15  </div>
@@ -271,7 +282,7 @@ client付きはパディングが上下左右に加わるので、40ピクセル
  21    let canvasElem2 = document.getElementById('canvasTag2');
  22    let ctx2 = canvasElem2.getContext('2d');
  23
- 24    let [x_img, y_img, w_img, h_img] = [65, 549, 415, 315];
+ 24    let [x_img, y_img, w_img, h_img] = [389, 418, 316, 255];
  25
  26    function showImage() {
  27      canvasElem1.width = w_img;
@@ -300,68 +311,47 @@ client付きはパディングが上下左右に加わるので、40ピクセル
 
 #### 部分領域の切り出し
 
-前節では、`CanvasRenderingContext2D.drawImage()`関数に引数を5つ指定しました。最初のものはコピー元の`HTMLImageElement`オブジェクトで、続く4つは貼り付け先のキャンバス上の位置とサイズでした。
+前節の`CanvasRenderingContext2D.drawImage()`関数では5引数版を用いましたが、ここでは9引数版を用いています。中央のキャンバス（`canvasElem1`と`ctx1`）から説明します。
 
 ```javascript
- // html-image.html より         コピー先のキャンバスの位置とサイズ
- 27      ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height);
+ 24    let [x_img, y_img, w_img, h_img] = [389, 418, 316, 255];
+ ︙ 
+ 29      ctx1.drawImage(imgElem,
+ 30        x_img, y_img, w_img, h_img,      // コピー元での左上の頂点の座標とそのサイズ
+ 31        0, 0, w_img, h_img               // コピー先での左上の頂点の座標とそのサイズ
+ 32      );
 ```
 
-関数にコピー元から部分領域を切り出すによう指示するには、オブジェクトとコピー先の情報の間に、切り出す領域を指示する4つの引数を加えます。次にこの9つ引数版の書式を示します。
+これは、24行目で指定した位置とサイズで`<img>`上の画像を切り出し、サイズはそのままでキャンバスに貼り付けるという指示です。このとき、30行目のコピー元の位置とサイズの座標系は、読み込まれた「もともと」のものです。24行目が`<img>`画像の見かけのサイズである320×213をはみ出た位置を指定しているのに、内部の部分が切り出されているところに注目のポイントです。
 
-```
-drawImage(
-  image,                       // コピー元
-  sx, sy, sWidth, sHeight,     // コピー元（source）での左上の頂点の座標とそのサイズ
-  dx, dy, dWidth, dHeight      // コピー先（destination）での左上の頂点の座標とそのサイズ
-)
-```
+これはつまり、5引数版の`drawImage()`では、省かれたコピー元の情報がデフォルトで`0, 0, image.naturalWidth, image.naturalHeight`となるという意味です。そのため、5引数版を不用意に使うと、部分しかキャンバスに貼り付けれない事態が起こります。
 
-コピー元の情報がなければ、デフォルトでコピー元画像全体が用いられます。コピー元の座標系は読み込まれた「おおもと」のものなので、`0, 0, image.naturalWidth, image.naturalHeight`が指示されているのと等価です。ここでは、`0, 0, 1280, 885`です。`<img>`に表示された`0, 0, 320, 221`ではないところに注意してください。
-
-切り出すときにも「おおもと」の画像の座標系を用います。ここでは、24行目に用意した4要素の配列（x座標、y座標、横幅、高さ）です。
-
-```javascript
- 24    let [x_img, y_img, w_img, h_img] = [65, 549, 415, 315];
-```
-
-中央のキャンバス（13、19～20行目）のサイズは、上記のサイズの画像をぴったり収容できるように変更します（27～28行目）。サイズが合わなければ、前節で見たようにクリッピングされたり空き領域が残ったりします。
+31行目のコピー先のサイズと座標は、30行目で切り出した部分画像がぴったりと収まるように指定されています。しかし、これだけだとキャンバスサイズがデフォルトの300×150のままなので、貼り付け後はクリッピングされます。これを避けるには、キャンバスサイズを事前にそのサイズにセットする必要があります（27～28行目）。
 
 ```javascript
  27      canvasElem1.width = w_img;
  28      canvasElem1.height = h_img;
 ```
 
-貼り付けの`drawImage()`では、コピー元から24行目の位置とサイズで部分領域を切り出し、コピー先にぴったり貼り付けます（29～32行目）。
-
-```javascript
- 29      ctx1.drawImage(imgElem,
- 30        x_img, y_img, w_img, h_img,   // 「おおもと」の画像からの切り出し位置とサイズ
- 31        0, 0, w_img, h_img            // キャンバスへの貼り付け位置とサイズ
- 32      );
-```
-
-これで、`<img>`のおおもとの画像のサイズのまま、キャンバスにその一部をコピーできました。
-
 #### リサイズして貼り付け
 
-右側のキャンバス2（`canvasElem2`と`ctx2`）では、「もともと」の寸法の半分にした部分領域を貼り付けるため、キャンバスサイズもそれに合わせて設定します（34～35行目）。
+右側のキャンバス（`canvasElem2`と`ctx2`）では、「もともと」の寸法の半分にした部分領域を貼り付けるため、キャンバスサイズもそれに合わせて設定します（34～35行目）。
 
 ```javascript
  34      canvasElem2.width = Math.floor(w_img * 0.5);
  35      canvasElem2.height = Math.floor(h_img * 0.5);
 ```
 
-あとは`drawImage()`で張り付けるだけです（36～39行目）。
+あとは9引数版の`drawImage()`で張り付けるだけです（36～39行目）。
 
 ```javascript
  36      ctx2.drawImage(imgElem,
- 37        x_img, y_img, w_img, h_img,
- 38        0, 0, canvasElem2.width, canvasElem2.height
+ 37        x_img, y_img, w_img, h_img,                   // コピー元
+ 38        0, 0, canvasElem2.width, canvasElem2.height   // コピー先
  39      );
 ```
 
-37行目のコピー元の切り出し情報は中央のキャンバスと変わりません。変わったのは38行目で、キャンバスサイズが半分になっています。これはつまり、その寸法にリサイズせよ、という指示にもなっています。前節の5個引数の`drawImage()`でも同じことをしていますが、あれは「このサイズとなるようおおもとの画像をリサイズせよ」という指定だったのです。
+37行目のコピー元の切り出し情報は中央のキャンバスと変わりません。変わったのは38行目で、もともと画像の半分のキャンバスサイズにリサイズして貼り付けと、という指示になっています。前節の5個引数の`drawImage()`でも同じ書き方をしていますが、あれは「このサイズとなるようもともとの画像をリサイズせよ」という指定だったのです。
 
 
 
@@ -369,15 +359,15 @@ drawImage(
 
 #### 目的
 
-本節では、ビデオを表示します。
+ビデオファイルを表示します。
 
-技術的には`<video>`要素の主要な属性、そしてそれと対になるとDOMオブジェクトの`HTMLVideoElement`のプロパティとイベントを説明します。また、フレームサイズの取得とビデオローディングのタイミングでの注意点を示します。
+技術的には、`<video>`要素とそのDOMオブジェクト`HTMLVideoElement`、プロパティ、イベントを説明します。また、フレームサイズの取得とビデオ読み込みタイミングでの注意点を示します。
 
 実行例を次の画面に示します。  
 
 <img src="Images/Ch01/html-video-1.png">
 
-画面には再生・停止や再生位置を示すトラックバーなどのユーザインタフェースが用意されていますが、これは`<video>`要素が自動で用意したものです。ブラウザによって見栄えが異なりますが、機能的には同等のものがどれにも備わっています。
+画面に示したように、`<video>`要素には再生・停止や再生位置を示すトラックバーなどのユーザインタフェースがあらかじめ用意されています。
 
 #### コード
 
@@ -419,8 +409,8 @@ drawImage(
  32    }
  33
  34    let events = [
- 35      'ended', 'error', 'loadeddata', 'loadedmetadata', 'loadstart', 'pause', 'play',
- 36      'seeked', 'seeking', 'suspend', 'volumechange'
+ 35      'ended', 'error', 'loadeddata', 'loadedmetadata', 'loadstart', 'pause',
+ 36       'play', 'seeked', 'seeking', 'suspend', 'volumechange'
  37    ];
  38    events.forEach(function(evt) {
  39      videoElem.addEventListener(evt, function() {
@@ -448,7 +438,7 @@ drawImage(
  14    </video> 
 ```
 
-`src`のメディアタイプを示す`type`属性は、複数のビデオファイルから選択できるようにしているときは、あったほうがよいでしょう。ブラウザが、表示可能なものをこの情報から判断してピックアップできるからです。ビデオファイルを複数指定するときは`<video>`の子要素である`<source>`を指定します。次にサンプルを示します。
+`src`のメディアタイプを示す`type`属性は、子要素の`<source>`から複数のビデオファイルを指定するほうがようでしょう。ブラウザが、表示可能なものをこの情報から判断できるからです。次にサンプルを示します。
 
 ```html
 <video id="videoTag">
@@ -457,25 +447,23 @@ drawImage(
 </video>
 ```
 
-`type`がなければ、最初に記述されたMOVファイルがダウンロードされます。しかし、このフォーマットはSafari以外ではたいていサポートされていません。なので、これは廃棄され、次がダウンロードされます。
+`type`がなければ、最初に記述されたMOVファイルがダウンロードされます。しかし、このフォーマットはSafari以外ではたいていサポートされていません。したがって、これは廃棄され、次がダウンロードされます。`type`が指定してあれば、MOVが読めないブラウザは最初のファイルをスキップしてMP4をゲットします。ダウンロード1回分お得です。
 
-ビデオ操作のための属性のなかでもよく用いるものを次の表に示します。
+`<video>`の属性のなかでもよく用いるものを次の表に示します。
 
 属性 | デフォルト値 | 意味 
 ---|---|---
 `autoplay` | `false` | この属性が記述されていると、ビデオが自動再生される。
-`controls` | `false` | この属性が記述されていると、再生ボタンなどの操作パネルが表示される。
+`controls` | `false` | この属性が記述されていると、再生ボタンなどの操作パネルが表示される。初期状態で表示されなくても、たいていは左マウスクリックで引き出せる。
 `loop` | `false` | この属性が記述されていると、末尾まで再生するとまた先頭に戻る。デフォルトでは1回だけ再生。
 `muted` | `false` | この属性が記述されていると、オーディオがオフ（ミュート）される。
 `poster` | なし | URLを指定すると、ビデオの先頭フレームがダウンロードされるまで、その画像が表示される（[2.3節](./02-ui.md#23-カメラにオンオフボタンを加える "INTERNAL")で取り上げます）。
-
-スクリプトで再生を完全にコントロールするのでなければ、たいていは`controls`を加えます。もっとも、初期状態で表示されなくても、たいていは左マウスクリックで引き出せるので、操作に困ることはありません。
 
 起動時に自動再生をする`autoplay`とサウンドをミュートにする`muted`はたいていペアで指定します。ページアクセスと同時に大音量でビデオが始めると、職場や学校で恥ずかしい思いをするからです。
 
 #### HTMLVideoElementのプロパティ
 
-コードの21～32行目に定義した`showMetadata()`関数は、ビデオのメタデータをコンソールに表示します。この関数は、45行目から後述する`loadedmetadata`イベントを契機に起動するよう登録してあります。
+21～32行目に定義した`showMetadata()`関数は、ビデオのメタデータをコンソールに表示します。この関数は、`loadedmetadata`イベントを契機に起動するよう登録してあります（45行目）。
 
 ```javascript
  21    function showMetadata(evt) {
@@ -494,30 +482,30 @@ drawImage(
  45    videoElem.addEventListener('loadedmetadata', showMetadata);
 ```
 
-出力を、直前のイベントも含めて次に示します。後付けのコメントにプロパティ名を示しました。
+出力を、直前のイベントも含めて次に示します。コメントに後付けで示したのは、それぞれのプロパティ名です。
 
 ```
-2. event: loadedmetadata           // loadmetada以降に取得可
+2. event: loadedmetadata                    // loadmetada以降に取得可
 Video properties:
-      Size offset:    320 x 180    // offsetWidth、offsetHeight
-      Size (element): 420 x 0      // width、height
-      Size video:     640 x 360    // videoWidth、videoHeight
-      Duration:       9.217542s    // duration
-      CurrentTime:    0s           // currentTime
-      Volume:         1 [0, 1]     // volume
-      Play rate:      1            // playbackRate
-      Loop:           false        // loop
+      Size offset:    320 x 180             // offsetWidth、offsetHeight
+      Size (element): 420 x 0               // width、height
+      Size video:     640 x 360             // videoWidth、videoHeight
+      Duration:       9.217542s             // duration
+      CurrentTime:    0s                    // currentTime
+      Volume:         1 [0, 1]              // volume
+      Play rate:      1                     // playbackRate
+      Loop:           false                 // loop
 ```
 
-`videoElem.height`が0なところに注目してください。`<video>`要素の横幅が`width`属性で設定してあっても、`height`は指定していないないからです。`<img>`ではアスペクト比から未指定の辺の長さを自動で設定してくれましたが、`<video>`ではそうではないところが注意点です。
-
-そのため、キャンバスサイズの調整にはこれらプロパティは使えません。そこで、代替として`offsetWidth`と`offsetHeight`を使うことになります（[2.2節](./02-ui.md#22-ビデオをキャプチャする "INTERNAL")参照）。これらプロパティは実際に画面上にレンダリングされたときのサイズなので、あれば境界線、パディング、スクロールバーのぶんも含まれ、正確にはフレームサイズと異なることもあります。
+`videoElem.height`が0なところに注目してください。`<video>`要素内で`width`属性が設定してあっても、`height`は指定していないないからです。`<img>`ではアスペクト比から未指定の辺の長さを自動で設定してくれましたが、`<video>`ではそうではないところが注意点です。
 
 ビデオオリジナルのサイズは`videoWidth`と`videoHeight`プロパティに主要されています。キャンバスサイズを`width`あるいは`height`をもとに計算するときは、これらから得られるアスペクト比を用います。
 
-ビデオの時間長を示す`duration`と現在時刻の`currentTime`の単位は秒で、浮動小数点数です。メタデータにはビデオの総フレーム数やフレームレート（秒間に再生するフレームの枚数）がたいていは備わっていますが、HTML5では取得できません（オリジナルのOpenCVではできますが、OpenCV.jsはサポートしていません）。
+ビデオの時間長を示す`duration`と現在時刻の`currentTime`の単位は秒で、浮動小数点数です。メタデータにはビデオの総フレーム数やフレームレート（秒間に再生するフレームの枚数）がたいていは備わっていますが、HTML5では取得できません。
 
-`volume`は音量で0.0から1.0の浮動小数点数です。0.0が無音、1.0が最大を示します。デフォルトは1.0です。このプロパティには対応するHTML属性がないので、`<video>`要素で音量を指定するときは、次のようにイベントリスナーを介してオブジェクトプロパティから設定します。
+> C++/Python版のOpenCVでは`VideoCapture.get()`からメタデータにアクセスできますが、OpenCV.jsはこの機能をサポートしていません。
+
+`volume`は音量で、0.0～1.0の浮動小数点数です。0.0が無音、1.0が最大を示します。デフォルトは1.0です。このプロパティには対応するHTML属性がないので、`<video>`要素で音量を指定するときは、次のようにイベントリスナーを介してオブジェクトプロパティから設定します。
 
 ```html
 <video id="videoTag" src="samples/cat.mp4" onloadedmetadata="this.volume=0.4;">
@@ -529,14 +517,14 @@ Video properties:
 
 #### HTMLVideoElementのイベント
 
-`HTMLVideoElement`には一般的なものに加えて、たくさんのイベントが用意されています。どのタイミングでこれらが発生するかを確認できるよう、コードの34～43行目で代表的なものを12点登録しています。発生時点がわかりやすいよう、イベント名とともにスクリプト起動時（18行目）からの時間差（40行目）もコンソールに表示します。
+`HTMLVideoElement`には数多くのイベントが用意されています。どのタイミングでこれらが発生するかを確認できるよう、34～43行目で代表的なものを12点登録しています。発生時点がわかりやすいよう、イベント名とともにスクリプト起動時（18行目）からの時間差（40行目）もコンソールに表示します。
 
 ```javascript
  18    let startTime = Date.now();
  ︙
  34    let events = [
- 35      'ended', 'error', 'loadeddata', 'loadedmetadata', 'loadstart', 'pause', 'play',
- 36      'seeked', 'seeking', 'suspend', 'volumechange'
+ 35      'ended', 'error', 'loadeddata', 'loadedmetadata', 'loadstart', 'pause',
+ 36       'play', 'seeked', 'seeking', 'suspend', 'volumechange'
  37    ];
  38    events.forEach(function(evt) {
  39      videoElem.addEventListener(evt, function() {
@@ -559,9 +547,10 @@ Video properties:
 `seeked` | （操作パネルなどから）先送りや後戻りの操作が完了したとき。
 `seeking` | （操作パネルなどから）先送りや後戻りの操作が開始したとき。`seeked`よりも先。
 `suspend` | データ読み込みが中断されたとき。たいていは`pause`の前。
+`timeupdate` | ビデオ時間（`currentTime`プロパティ）が更新されたとき。
 `volumechange` | 音量が変更されたとき。
 
-45行目で用いた`loadeddata`と`loadedmetadata`は微妙にタイミングが異なります。`loadedmetadata`はビデオのサイズや時間長など、ビデオのメタデータが読み込まれたときに上がってきます。以降、サイズなどのプロパティ値にアクセスすることができます。しかし、まだフレームは読み込まれていないので、フレームをコピーするなどの画像操作はできません。最初のフレームが読み込まれたタイミングで発火するのが`loadeddata`です。
+`loadeddata`と`loadedmetadata`は微妙にタイミングが異なります。`loadedmetadata`はビデオのサイズや時間長など、ビデオのメタデータが読み込まれたときに上がってきます。以降、サイズなどのプロパティ値にアクセスできます。しかし、まだフレームは読み込まれていないので、フレームをコピーするなどの画像操作はできません。最初のフレームが読み込まれたタイミングで発火するのが`loadeddata`です。
 
 出力例を次に示します。左の数値がスクリプト開始時（8行目）からのミリ秒を示します。右のコメントは筆者の操作です。
 
@@ -590,7 +579,7 @@ Video properties:
 
 #### 目的
 
-本節では、ビデオシャッフリングを実装します。
+ビデオシャッフリングを実装します。
 
 そういう用語は存在しませんが、アナログレコードをこすって効果を出すスクラッチのビデオ版です。ここでは、一定間隔でビデオの再生ポイントをランダムに移動することで、ビデオ中を行ったり来たりさせます。ほっておくとずっと再生していますが、操作パネルから再生停止すれば終了します。停止後は、普通に視聴できます。
 
@@ -600,7 +589,7 @@ Video properties:
 
 <img src="Images/Ch01/html-shuffle-1.png">
 
-と、いっても、画面キャプチャでは動くところはわかりません。どこにジャンプしたかはコンソールから確認してください。
+もっとも、画面キャプチャでは動くところはわかりません。どこにジャンプしたかはコンソールから確認してください。
 
 #### コード
 
@@ -653,7 +642,7 @@ Video properties:
 
 #### HTMLVideoElementのプロパティ設定
 
-`<video>`の属性は12行目ではなく、プロパティから設定しています（20～23行目）。この設定は、画像が読み込まれてからでなければ意味がないので、`loadeddata`以降に実行しています（36行目）。
+ここでは、`<video>`の属性はプロパティから設定しています（20～23行目）。
 
 ```javascript
  19    function ready() {
@@ -665,9 +654,7 @@ Video properties:
  36    videoElem.addEventListener('loadeddata', ready);
 ```
 
-別のやり方があることを示すためにやっているだけで、属性から設定してもかまいません。
-
-ただし、`autoplay`には注意が必要です。この属性／プロパティは自動的に再生を開始するか否かを示すだけであって、実際に再生をするわけではありません。そのため、あとからスクリプトで`true`をセットしても再生はスタートとしません。スクリプト側から再生開始をさせるには、`HTMLVideoElement.play()`関数を用います（23行目）。
+`autoplay`プロパティに`true`をセットすることで自動再生がオンになるかは、ブラウザに依ります。スクリプト側から確実に再生開始をさせるなら、`HTMLVideoElement.play()`関数を用います（23行目）。
 
 `HTMLVideoElement`にはこの他にも、一時停止などビデオ操作の関数がいろいろ用意されています。詳細は、次にURLを示すMDNの`HTMLMediaElement`のAPIドキュメントを参照してください（`HTMLVideoElement`のほとんどのプロパティや関数は、この親クラスから継承しています）。
 
@@ -689,7 +676,7 @@ Video properties:
 
 飛び先は先頭から末尾（`duration`プロパティ）までの間のランダムな位置です。この値を`currentTime`プロパティに代入すればそのままジャンプします。
 
-ほっておくとシャッフリングは永遠に繰り返されます。そこで、操作パネルからて一時停止をすれば、シャッフリングを停止するようにします。これには、`HTMLVideoElement`に上がってくる`pause`イベントを契機に（37行目）、`clearInterval()`関数でタイマをクリアします（32行目）。
+ほっておくとシャッフリングは永遠に繰り返されます。そこで、操作パネルから一時停止をすれば、シャッフリングを停止するようにします。これには、`HTMLVideoElement`に上がってくる`pause`イベントを契機に（37行目）、タイマを`clearInterval()`関数でクリアします（32行目）。
 
 ```javascript
  31    function stopInterval() {
@@ -708,11 +695,13 @@ Video properties:
 
 #### 目的
 
-本節では、一定間隔で抜き出したフレームを格子状に並べたビデオサムネールを作成します。
+一定間隔で抜き出したフレームを格子状に並べたビデオサムネールを作成します。
 
 サムネールは、縮小した見本画像を並べた画像です。親指の爪（thumbのnail）サイズだから、サムネールです。ネガフィルム（銀塩）写真の時代にはべた焼き、あるいはコンタクトシートと呼ばれました。
 
-技術的には[1.3節](#13-部分領域をキャンバスに表示する "INTERNAL")の部分画像の取得の応用ですが、一定間隔でフレームを取り出すのに`timeupdate`というイベントを用います。ビデオは最初から最後まで流し、指定のタイミングで取り出して貼り付けるので、長いビデオだと時間がかかります。フレームが徐々にキャンバスを埋めていくのがアニメーション風で楽しいので、あえてそのような実装にしています。指定の時間ポイントにジャンプすることで時間短縮を図るなら、`timeupdate`は使わず、[1.5節](#15-ビデオをランダムにシャッフルする "INTERNAL")の`currentTime`プロパティを用います。
+技術的には[1.3節](#13-部分領域をキャンバスに表示する "INTERNAL")の部分画像の取得の応用ですが、一定間隔でフレームを取り出すのに`timeupdate`イベントを用います。イベントが発生するたびに時刻をチェックし、キャプチャするタイミングならそうして、そうでなければ処理をスキップします。
+
+ビデオは最初から最後まで流すので、長いビデオだと時間がかかります。フレームが徐々にキャンバスを埋めていくのがアニメーション風で楽しいので、あえてそのような実装にしています。指定の時間ポイントにジャンプすることで時間短縮を図るなら、`timeupdate`は使わず、[1.5節](#15-ビデオをランダムにシャッフルする "INTERNAL")の`currentTime`プロパティを用います。
 
 実行例を次の画面に示します。 
 
@@ -780,7 +769,7 @@ Video properties:
  52      }
  53    }
  54
- 55    videoElem.addEventListener('loadeddata', prepare);
+ 55    videoElem.addEventListener('loadedmetadata', prepare);
  56    videoElem.addEventListener('timeupdate', timeUpdated);
  57  </script>
  58
@@ -792,21 +781,18 @@ Video properties:
 
 27～39行目の`prepare()`関数は初期設定のためのものです。ここで、サムネールを貼り付ける台紙（キャンバス）のサイズや縮小画像の貼り付け位置を設計します。また、どのタイミングでフレームをゲットするのかも決めます。
 
-関数は、ビデオの最初のフレームが用意できたとき（`loadeddata`イベント）に呼び出します(55行目）。
+関数は、ビデオのメタデータが読み込まれたとき（`loadedmetadata`イベント）に呼び出します(55行目）。
 
 ```javascript
  27    function prepare() {
  ︙
- 39    }
- ︙
- 55    videoElem.addEventListener('loadeddata', prepare);
+ 55    videoElem.addEventListener('loadedmetadata', prepare);
 ```
 
 関数では、まずサムネールの枚数とサイズを決めます（17～18行目）。キャンバスに格子状に配置するので、枚数は縦横の格子の数で記述します。ここでは4×3の合計12枚です。
 
 ```javascript
  17    let sheetSize = {width: 4, height: 3};
- 18    let imgWidth = 128;
 ```
 
 レイアウト図に起こすと、次のようになります。
@@ -814,14 +800,14 @@ Video properties:
 <!-- 888x387 ODG ファイルに原画あり -->
 <img src="Images/Ch01/html-thumbnail-layout.png" width="500">
 
-格子の左上の0～11の数値がサムネールの番号です。
-
-中央の括弧は格子の横縦の位置を示しています。これらはサムネール番号から計算されます）（図右の計算式）。横はサムネール番号を横の格子数（4）で割った時の余りから得られます。縦は、同じく番号を横の格子数で割って小数点以下を切り捨てた値です。
+格子の左上の0～11の数値がサムネールの番号です。中央の括弧が格子の横縦の位置を示します。これらはサムネール番号から計算されます（図右の計算式）。横はサムネール番号を横の格子数（4）で割った時の余りから得られます。縦は、同じく番号を横の格子数で割って小数点以下を切り捨てた値です。
 
 格子の横幅は18行目で指定していますが、高さは未指定です。これは、ビデオサイズから得られるアスペクト比から計算します（28～29行目）。実行例で用いているビデオフレームのサイズは640×360なので、サムネールは128×72になります。
 
 <!-- canvas.width に float を代入すると、自動的に int に変換される。でも、この場合は sheetSize を掛けると丸め誤差は出るので、先に int にしたほうがよい。-->
 ```javascript
+ 18    let imgWidth = 128;
+ ︙
  28      let aspect = videoElem.videoHeight / videoElem.videoWidth;
  29      imgHeight = Math.floor(imgWidth * aspect);
 ```
@@ -848,9 +834,9 @@ Video properties:
  35      timeSeries = [...Array(number).keys()].map(i => i * interval);
 ```
 
-1行にまとめているので、ぱっと見にはわかりにくいかもしれません。まず、`Array()`関数で12個の要素の配列を作成します（`Array(number)`）。今度はそのインデックス番号からなる配列を生成します（`.keys()`）。これで[0, 1, ..., 11]が得られます。あとは、`map()`を使ってそれぞれに0.77を掛けます（`map(i => i * interval)`）。
+1行にまとめているので、ぱっと見にはわかりにくいかもしれません。まず、`Array()`コンストラクタで12個の要素の配列を作成します（`Array(number)`）。今度はそのインデックス番号からなる配列を生成します（`.keys()`）。これで[0, 1, ..., 11]が得られます。あとは、`map()`を使ってそれぞれに0.77を掛けます（`map(i => i * interval)`）。
 
-`prepare()`関数は最後に、ビデオオーディオをミュートにし（37行目）、再生を開始させています（38行目）。
+`prepare()`関数は最後にオーディオをミュートにし（37行目）、再生を開始させています（38行目）。
 
 ```javascript
  37      videoElem.muted = true;
@@ -905,9 +891,9 @@ Video properties:
 
 #### 目的
 
-本節では、字幕をビデオに表示します。
+ビデオに字幕を表示します。
 
-技術的には字幕のタイミングと表示文字列を収容したWebVTTというファイルを用意し、`<video>`要素の間に挟むだけです。HTML5の機能のひとつなので、自力でキャンバスに文字を描くなどする必要はありません。ここでは、このWebVTTのフォーマットを説明するとともに、対応するDOMオブジェクトの`HTMLTrackElement`から字幕情報を抽出する方法、そして字幕（キュー）に変更のあったときに発せられる`cuechange`イベントの使い方を示します。
+技術的には、字幕のタイミングと表示文字列を収容したWebVTTというファイルを用意し、`<video>`要素の間に挟むだけです。HTML5の機能のひとつなので、自力でキャンバスに文字を描くなどの必要はありません。本節ではこのWebVTTのフォーマットを説明するとともに、対応するDOMオブジェクトの`HTMLTrackElement`から字幕情報を抽出する方法、そして字幕（キュー）に変更のあったときに発せられる`cuechange`イベントの使い方を示します。
 
 実行例を次の画面に示します。 
 
@@ -915,7 +901,7 @@ Video properties:
 
 字幕は（とくに設定がなければ）自動で配置されます。上の画面では操作パネルが表示されているのでその上に置かれますが、パネルがなければ画面下端に配置されます。
 
-> 注意：字幕ファイルをローカル（`file:///...`）から読み込むと、クロスサイトリソース共有（CORS）制約に抵触し、エラーが上がります。CORSについては[3.2節](./03-opencv.md#32-CrossOrgignの問題を回避する "INTERNAL")で説明します。
+> 字幕ファイルをローカル（`file:///...`）から読み込むと、クロスサイトリソース共有（CORS）制約に抵触し、エラーが上がります。CORSについては[3.2節](./03-opencv.md#32-CrossOrgignの問題を回避する "INTERNAL")で説明します。
 
 #### コード
 
@@ -936,41 +922,43 @@ Video properties:
  11  <div>
  12    <video id="videoTag" width="320" controls>
  13      <source src="samples/cat.mp4" type="video/mp4"/>
- 14      <track id="trackTag" kind="captions" srclang="ja" default src="samples/cat.vtt"/>
- 15    </video>
- 16  </div>
- 17
- 18  <script>
- 19    let videoElem = document.getElementById('videoTag');
- 20    let trackElem = document.getElementById('trackTag');
- 21
- 22    function showCue(evt) {
- 23      let cueList = evt.target.track.activeCues;
- 24      if (cueList.length > 0)
- 25        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
- 26      else
- 27        console.log(`${videoElem.currentTime} Cue changed but no cue`);
- 28    }
- 29
- 30    trackElem.addEventListener('cuechange', showCue);
- 31  </script>
- 32
- 33  </body>
- 34  </html>
+ 14      <track id="trackTag" kind="captions" srclang="ja" default
+ 15        src="samples/cat.vtt"/>
+ 16    </video>
+ 17  </div>
+ 18
+ 19  <script>
+ 20    let videoElem = document.getElementById('videoTag');
+ 21    let trackElem = document.getElementById('trackTag');
+ 22
+ 23    function showCue(evt) {
+ 24      let trackObject = evt.target.track;
+ 25      let cueList = trackObject.activeCues;
+ 26      if (cueList.length > 0)
+ 27        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
+ 28      else
+ 29        console.log(`${videoElem.currentTime} Cue changed but no cue`);
+ 30    }
+ 31
+ 32    trackElem.addEventListener('cuechange', showCue);
+ 33  </script>
+ 34
+ 35  </body>
+ 36  </html>
 ```
 
-字幕を加えるだけなら、字幕ファイルと12～15行目のHTML要素だけで片が付きます。スクリプト部分（18～31行目）は字幕テキストにスクリプトからアクセスする方法を示すために加えたものです。
+字幕を加えるだけなら、字幕ファイルと12～16行目のHTML要素だけで片が付きます。スクリプト部分（19～32行目）は、字幕テキストにスクリプトからアクセスする方法を示すために加えたものです。
 
 #### track要素
 
-ビデオに字幕を加えるには、`<video></video>`の間に<track`>要素を挟みます（15～16行目）。HTMLの仕様はビデオ（あるいはオーディオ）の特定の時間範囲内に付随するデータ全般をテキストトラックと総称しますが、ここでは字幕と呼びます。
+ビデオに字幕を加えるには、`<video></video>`の間に`<track`>要素を挟みます（14～15行目）。HTMLの仕様はビデオ（あるいはオーディオ）の特定の時間範囲内に付随するデータ全般をテキストトラックと総称しますが、ここでは字幕と呼びます。
 
 ```html
- 13    <video id="videoTag" width="320" controls autoplay muted>
- 14      <source src="samples/cat.mp4" type="video/mp4"/>
- 15      <track id="trackTag" kind="captions" srclang="ja" default
- 16        src="samples/cat.vtt"/>
- 17    </video>
+ 12    <video id="videoTag" width="320" controls>
+ 13      <source src="samples/cat.mp4" type="video/mp4"/>
+ 14      <track id="trackTag" kind="captions" srclang="ja" default
+ 15        src="samples/cat.vtt"/>
+ 16    </video>
 ```
 
 英日独仏など各国語の字幕に対応できるよう、`<track>`は複数挟むことができます。`default`属性は、その中でもどれをデフォルトに用いるかを指定するものです。上記のコードでは1つしかないので不必要な気もしますが、`default`指定がなければ、操作パネルから能動的に選択しなければ字幕は表示されません。
@@ -1008,22 +996,22 @@ Video properties:
 
 ファイル先頭には、文字列でWEBVTTと示します。同じ行に、スペースを挟んで好みの文字を書き込んでもよいので、たいていは中身を短く説明する文を入れます。
 
-先頭行から2つ以上空行を入れます。WebVTTの改行はLF（`0A`）だけ、CR（`0D`）だけ、CRLF（`0D0A`）のいずれでもよいことになっていますが、CRLFがよいでしょう。
+先頭行から2つ以上空行を入れます。WebVTTの改行はLF（`0A`）だけ、CR（`0D`）だけ、CRLF（`0D0A`）のいずれでもよいことになっていますが、Windowsとの相互運用性を考えると、CRLFがよいでしょう。
 
 字幕を出すタイミングとその文章のかたまりを、仕様ではキュー（cue）と呼びます。キューの間には空行を1つ以上入れます。上記ではキューは2つあります。
 
-キューの先頭は表示タイミングで、時:分:秒.ミリ秒で記述します（仕様ではcue timingと呼びます）。上記の例のように、時は0なら省いてもかまいません。表示タイミングは開始と終了からなり、その間にはスペースと「-->」（ハイフン2つと大なり記号）とスペースを挟みます。
+キューの先頭は表示タイミングで、時:分:秒.ミリ秒で記述します（仕様ではcue timingと呼びます）。上記の例のように、時は0なら省いてもかまいません。表示タイミングは開始と終了からなり、その間にはスペースと`-->`（ハイフン2つと大なり記号）とスペースを挟みます。
 
 表示タイミングに続けて、表示する文を書きます（cue payload）。複数行でもかまいません。
 
-表示タイミングは必ずしも連続している必要はありません。上記の例では、最初のキューは3.5秒のタイミングで消え、次は4.0秒で登場します。3.5～4.0の間は字幕が表示されないだけです。
+表示タイミングは必ずしも連続している必要はありません。上記の例では、最初のキューは3.5秒のタイミングで消え、次は4.0秒で登場します。3.5～4.0の間は字幕なし区間です。
 
 #### HTMLTrackElementオブジェクト
 
-字幕情報は、`<track>`オブジェクトの`HTMLTrackElement`（20行目）からアクセスできます。
+字幕情報は、`<track>`オブジェクトの`HTMLTrackElement`（21行目）からアクセスできます。
 
 ```javascript
-20    let trackElem = document.getElementById('trackTag');
+21    let trackElem = document.getElementById('trackTag');
 ```
 
 ただ、字幕テキストなど実際的な情報を取得するには、オブジェクトをかなり遡ります。これらオブジェクトの連携を次の図に模式的に示します。
@@ -1031,37 +1019,39 @@ Video properties:
 <!-- 847x275 ODG ファイルに原画あり -->
 <img src="Images/Ch01/html-caption-objects.png" width="500">
 
-字幕情報は、`HTMLTrackElement`の`track`プロパティに収容されています。20行目の変数を使えば`trackElem.track`です。ここでは、イベントリスナーの`showCue()`関数で字幕情報処理をしており、その引数にはイベントオブジェクトが引き渡されるので（22行目の`evt`）、`evt.target.track`と書いています（23行目）。
+字幕情報は、`HTMLTrackElement`の`track`プロパティに収容されています。ここでは、イベントリスナーの`showCue()`関数で字幕情報処理をしており、その引数にはイベントオブジェクトが引き渡されるので（23行目の`evt`）、`evt.target.track`と書いています（24行目）。
 
 ```javascript
- 22    function showCue(evt) {
- 23      let cueList = evt.target.track.activeCues;
+ 23    function showCue(evt) {
+ 24      let trackObject = evt.target.track;
 ```
 
-`HTMLTrackElement.track`は`TextTrack`というオブジェクトです。この中には`activeCues`という、現在使用中のキューを収容したプロパティが用意されています。複数形であることからわかるように、これは配列のような列挙型オブジェクトです（`TextTrackList`）。23行目では、これをいったん変数`cueList`に格納しています。
+`HTMLTrackElement.track`は`TextTrack`というオブジェクトです。この中には`activeCues`という、現在使用中のキューを収容したプロパティが用意されています。複数形であることからわかるように、これは配列のような列挙型オブジェクトです（`TextTrackCueList`）。23行目では、これをいったん変数`cueList`に格納しています。
+
+```javascript
+ 25      let cueList = trackObject.activeCues;
+```
 
 その時点で字幕が表示されていれば、そこに複数のキューが収容されています。その数は`length`から知ることができます（24行目）。字幕が表示されていなければ、この値は0です。
 
 ```javascript
- 24      if (cueList.length > 0)
- 25        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
- 26      else
- 27        console.log(`${videoElem.currentTime} Cue changed but no cue`);
+ 26      if (cueList.length > 0)
+ 27        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
+ 28      else
+ 29        console.log(`${videoElem.currentTime} Cue changed but no cue`);
 ```
 
-どのタイミングでも、ここの用例のWebVTTファイルにはキューは1つしかないので、`TextTrackList`の0番目の要素にアクセスします（25行目の`cueList[0]`）。これは`TextTrackCue`というオブジェクトで、その中には（いろいろありますが）`text`という字幕文字列を収容したプロパティがあります。25行目で表示しているのはこれです。
+どのタイミングでも、ここの用例のWebVTTファイルにはキューは1つしかないので、`TextTrackList`の0番目の要素にアクセスします。これは`TextTrackCue`というオブジェクトで、その中には（いろいろありますが）`text`という字幕文字列を収容したプロパティがあります。27行目で表示しているのはこれです。
 
 #### cuechangeイベント
 
-`HTMLTrackElement`オブジェクトには`cuechange`というイベントが用意されています。その名の通り、字幕に変更があったときに上がってくるものです。変更なので、字幕が表示されたときだけでなく、消えたときにも発生します。
-
-本コードでは、上記で節召し下処理関数`showCue()`（22～28行目）を登録しています（30行目）。
+`HTMLTrackElement`オブジェクトには`cuechange`というイベントが用意されています。その名の通り、字幕に変更があったときに上がってくるものです。変更なので、字幕が表示されたときだけでなく、消えたときにも発生します。ここでは、32行目で処理関数の`showCue()`（22～28行目）を登録しています。
 
 ```javascript
-30    trackElem.addEventListener('cuechange', showCue);
+32    trackElem.addEventListener('cuechange', showCue);
 ```
 
-25、27行目のコンソール出力を次に示します。左に示す時間は`HTMLVideoElement.currentTime`プロパティのものなので、必ずしもWebVTTファイルで指定した時間と一致するわけではありません。
+27、29行目のコンソール出力を次に示します。左に示す時間は`HTMLVideoElement.currentTime`プロパティのものなので、必ずしもWebVTTファイルで指定した時間と一致するわけではありません。
 
 ```
 0.004612 あ、まんまくれるのかにゃ。
@@ -1071,25 +1061,23 @@ Video properties:
 9.014032 Cue changed but no cue
 ```
 
-ファイルでは、第1と第2のキューの間にギャップがあります。第1キューが消えたことも`cuechange`が検知していることは、3.5秒タイミングのメッセージからわかります。
-
 
 
 ### 1.8 カメラ映像を流す
 
 #### 目的
 
-本節では、カメラからの映像を`<video>`に流します。
+カメラからの映像を`<video>`に流します。
 
 技術的にはブラウザに組み込まれた外部デバイスの取得、それにより得られたビデオストリームのハンドリング、そしてデバイスの解放の方法を示します。デバイスの取得は非同期的な処理なので、`Promise`が用いられます。
 
-実行例を次の画面に示します。ノートPC搭載のフロントカメラからの机上の映像です（下端の黒いところはPCの手前部分です）。
+実行例を次の画面に示します。
 
 <img src="Images/Ch01/html-camera-1.png">
 
-カメラは自動的にスタートします。停止するには操作パネルの停止ボタンを押します。停止（`pause`イベント）は一時停止ではなくカメラの解放と解釈するようにスクリプトは書かれているので、再度ボタンを押しても再生は再開しません。再度カメラをスタートしたいときは、ページをリロードします。
+カメラは自動的にスタートします。停止するには操作パネルの停止ボタンを押します。停止（`pause`イベント）と同時にカメラを解放するようにスクリプトが書かれているので、再度ボタンを押しても再生は再開しません。カメラを再スタートしたいときは、ページをリロードします。
 
-やや不親切な設計ですが、カメラを占有することで他のアプリケーションが利用できなくなるのを防ぐためです。なお、ブラウザのタブを閉じることでもカメラを解放できます。タブ移動だけでは解放されないので注意が必要です。ボタンからオンオフをコントロールする方法は[2.3節](./02-ui.md#23-カメラにオンオフボタンを加える "INTERNAL")で扱います。
+やや不親切な設計ですが、占有し続けて、他のアプリケーションがカメラを利用できなくなるのを防ぐためです。なお、ブラウザのタブを閉じることでもカメラを解放できます。タブ移動だけでは解放されないので注意が必要です。ボタンからオンオフをコントロールする方法は[2.3節](./02-ui.md#23-カメラにオンオフボタンを加える "INTERNAL")で扱います。
 
 #### コード
 
@@ -1142,9 +1130,9 @@ Video properties:
  43
  44    function cameraReady() {
  45      console.log(`Camera sizes:
- 46        width, height:       ${videoElem.width}x${videoElem.height}
- 47        offsetWidth, Height: ${videoElem.offsetWidth}x${videoElem.offsetHeight}
- 48        videoWidth, Height:  ${videoElem.videoWidth}x${videoElem.videoHeight}`);
+ 46        width/height:       ${videoElem.width}x${videoElem.height}
+ 47        offsetWidth/Height: ${videoElem.offsetWidth}x${videoElem.offsetHeight}
+ 48        videoWidth/Height:  ${videoElem.videoWidth}x${videoElem.videoHeight}`);
  49    }
  50
  51    cameraStart();
@@ -1176,7 +1164,7 @@ Video properties:
  52    cameraStart(); 
 ```
 
-`MediaStream`オブジェクトは、ブラウザそのものを表現する`navigator`のプロパティである`mediaDevices`の、`getUserMedia()`関数から取得します（28行目）。ただ、この関数は`Promise`を返す非同期的なものです。この`Promise`が解決されると（29行目の`then`）、`MediaStream`オブジェクトが得られます（29行目の無名関数`function()`の引数の`mediaStream`）。`Promise`の用法に不慣れなら、次の「プロミスの使用」と題されたMDNのJavaScriptガイドを参照してください。
+`MediaStream`オブジェクトは、ブラウザそのものを表現する`navigator`のプロパティである`mediaDevices`の、`getUserMedia()`関数から取得します（28行目）。この関数は非同期的で、`Promise`を返します。この`Promise`が解決されると（29行目の`then`）、`MediaStream`オブジェクトが得られます（29行目の無名関数`function()`の引数の`mediaStream`）。`Promise`の用法に不慣れなら、次の「プロミスの使用」と題されたMDNのJavaScriptガイドを参照してください。
 
 ```https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Using_promises```
 
@@ -1225,7 +1213,7 @@ Uncaught (in promise) DOMException: Could not start video source
 <!-- 枠なし版あり -->
 <img src="Images/Ch01/camera-inuse-firefox.png">
 
-カメラ脇のLEDが点灯しているかから確認することができることもあります。
+内蔵カメラなら、レンズ脇のLEDが点灯しているかからも確認できます。
 
 #### カメラの使用許可
 
@@ -1246,9 +1234,9 @@ Chromeでは右上の［︙］から［設定］>［プライバシーとセキ�
 ```javascript
  44    function cameraReady() {
  45      console.log(`Camera sizes:
- 46        width, height:       ${videoElem.width}x${videoElem.height}
- 47        offsetWidth, Height: ${videoElem.offsetWidth}x${videoElem.offsetHeight}
- 48        videoWidth, Height:  ${videoElem.videoWidth}x${videoElem.videoHeight}`);
+ 46        width/height:       ${videoElem.width}x${videoElem.height}
+ 47        offsetWidth/Height: ${videoElem.offsetWidth}x${videoElem.offsetHeight}
+ 48        videoWidth/Height:  ${videoElem.videoWidth}x${videoElem.videoHeight}`);
  49    }
  ︙
  52    videoElem.addEventListener('loadeddata', cameraReady); 
@@ -1267,7 +1255,7 @@ Camera sizes:
 
 #### カメラの解放
 
-利用が終わったらカメラは解放します。ここでは、操作パネルの停止ボタン（`pause`イベント）を契機に解放するようにしています（53行目で登録）。解放操作は`cameraStop()`関数（35～42行目）に記述してあります。
+利用が終わったらカメラは解放します。ここでは、操作パネルの停止ボタン（`pause`イベント）を契機に解放するようにしています（53行目で登録）。解放操作は`cameraStop()`関数に記述してあります（35～42行目）。
 
 ```javascript
  35    function cameraStop() {
@@ -1284,9 +1272,9 @@ Camera sizes:
 
 解放操作はいくつかのステップからなっています。
 
-まず、`HTMLVideoElement`の側、`pause()`関数で映像再生を停止します（36行目）。操作ボタンで止まっているはずですが、念のためです。
+まず、`HTMLVideoElement.pause()`関数で映像再生を停止します（36行目）。操作ボタンですでに止まっていますが、停止命令が2度あっても困りはしません。
 
-続いて、映像を構成するトラックを`MediaStream`オブジェクト側から停止します。これが37～40行目です。まず、`MediaStream`の`getVideoTracks()`からトラックオブジェクトの`MediaStreamTrack`配列を取得します（37行目）。映像メディアは複数のトラックを持つこともあるため、戻り値が配列なところが注意点です。次いで、個々の`MediaStreamTrack`を、その関数である`stop()`からトラックを停止します（39行目）。
+続いて、映像を構成するトラックを`MediaStream`オブジェクトから停止します（37～40行目）。まず、`MediaStream`の`getVideoTracks()`からトラックオブジェクトの`MediaStreamTrack`配列を取得します（37行目）。映像メディアは複数のトラックを持つこともあるため、戻り値が配列なところが注意点です。次いで、個々の`MediaStreamTrack`を、その関数である`stop()`からトラックを停止します（39行目）。
 
 トラックは通常ひとつだけなので、37～40行目は`videoElem.srcObject.getVideoTracks()[0].stop()`と1行で書いてもたいていは問題ありません。
 
@@ -1299,27 +1287,25 @@ Camera sizes:
 
 #### 目的
 
-本節ではビデオをフレーム単位で操作する方法を示します。
+ビデオをフレーム単位に分解して操作します。
 
-フレーム操作は、基本的に画像単位で処理をする画像処理の技術に必須です。技術的にはフレーム操作のAPIの説明ですが、HTML5のフレーム処理の標準仕様がまだ固まっていないため、ブラウザごとに異なるメカニズムを用います。本節では次の3つの方法を示します。
+フレーム操作は、静止画像を対象とする画像処理技術に必須です。技術的にはフレーム操作のHTML5 APIの説明ですが、標準仕様がまだ固まっていないため、ブラウザごとに異なるメカニズムを用いられています。本節では次の3つの方法を示します。
 
-①`HTMLVideoElement.requestVideoFrameCallback()` ... フレームが用意できると、指定のコールバック関数を呼び出す関数です。Firefox以外のブラウザならたいていは利用できるようです。筆者はChromeとEdgeで動作確認をしました（どちらも本書執筆時点では最新版）。この関数はまだ標準化されていないので、用法は将来変わる可能性があります。
+①`HTMLVideoElement.requestVideoFrameCallback()`...フレームが用意できると、指定のコールバック関数を呼び出す関数です。Firefox以外のブラウザならたいていは利用できるようです。筆者はChromeとEdgeで動作確認をしました（どちらも本書執筆時点では最新版）。
 
-②`HTMLVideoElement.seekToNextFrame()` ... ビデオ本来の再生を無視して、スクリプトが能動的にフレーム送りを指示する関数です。`play()`と`pause()`を連続的に繰り返すようなイメージです。Firefoxで採用されていますが、MDNは非推奨扱いにしています。
+②`HTMLVideoElement.seekToNextFrame()`...ビデオ本来の再生を無視して、スクリプトが能動的にフレーム送りを指示する関数です。`play()`と`pause()`を連続的に繰り返すようなイメージです。Firefoxで採用されていますが、MDNは非推奨扱いにしています。
 
-③`setInterval()` ... 一般的なビデオが毎秒30フレーム（1コマの提示時間にして33ミリ秒）であることを踏まえ、33.3ミリ秒単位でフレームを取得する方法。必ずしもフレーム送りとインターバルタイマーのタイミングが一致するとはかぎりませんが、標準仕様だけで実装できるというメリットがあります。
+③`setInterval()` ... 一般的なビデオが毎秒30フレーム（1コマの提示時間にして33ミリ秒）であることを踏まえ、33.3ミリ秒単位でフレームを取得します。必ずしもフレーム送りとインターバルタイマーのタイミングが一致するとはかぎりませんが、標準仕様だけで実装できるというメリットがあります。
 
-コードは左にビデオ（`<video>`）、右にフレームを貼り付けたキャンバス（`<canvas>`）を示します。キャンバスには`HTMLVideoElement.currentTime`の示す時間を描き込みます。
-
-実行例を次の画面に示します。
+実行例を次の画面に示します。どの方法でも、画面の様子は同じです。 
 
 <img src="Images/Ch01/html-frame-1.png">
 
-画面の様子はどの方法でも同じです。 
+左側が`<video>`の流すビデオ、右側がフレームを貼り付けた`<canvas>`です。キャンバス左上の数値は`HTMLVideoElement.currentTime`の示すビデオ時間です。
 
 #### コード①
 
-Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVideoFrameCallback()`関数使います。コード`html-frame-chrome.html`を次に示します。
+`HTMLVideoElement.requestVideoFrameCallback()`関数を用いたコード①`html-frame-chrome.html`を次に示します。
 
 ```html
 [File] html-frame-chrome.html
@@ -1352,7 +1338,7 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
  27    function perFrame(now, metadata) {
  28      canvasElem.width = videoElem.offsetWidth;
  29      canvasElem.height = videoElem.offsetHeight;
- 30      ctx.drawImage(videoElem, 0, 0, videoElem.offsetWidth, videoElem.offsetHeight);
+ 30      ctx.drawImage(videoElem, 0, 0, canvasElem.width, canvasElem.height);
  31      ctx.font = '16px sans-serif';
  32      ctx.fillText(videoElem.currentTime, 10, 30);
  33      videoElem.requestVideoFrameCallback(perFrame);
@@ -1367,9 +1353,9 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
 
 キャンバスへの文字列の描画は描画コンテクストの`fillText()`関数から行っています（31～32行目）。
 
-#### requestVideoFrameCallbackは利用可能か？
+#### 関数は利用可能か？
 
-関数が`HTMLVideoElement.prototype`プロパティに含まれていれ利用可能です。そうでなければこのコードではフレーム単位の処理ができないので、`Error`を上げてスクリプトを強制終了します（16～21行目）。
+`HTMLVideoElement.prototype`プロパティに関数が含まれていれば利用可能です。そうでなければ、このコードではフレーム単位の処理ができないので、`Error`を上げてスクリプトを強制終了します（16～21行目）。
 
 ```javascript
  16    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
@@ -1380,7 +1366,7 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
  21    }
 ```
 
-この関数を持たないFirefoxで実行したときの画面を次に示します。20行目のエラーメッセージがコンソールに出力されているのがわかります。
+この関数を持たないFirefoxで実行したときの画面を次に示します。20行目のエラーメッセージがコンソールに出力されています。
 
 <img src="Images/Ch01/html-frame-2.png">
 
@@ -1388,13 +1374,13 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
 
 #### requestVideoFrameCallback関数
 
-この関数から`HTMLVideoElement`にイベントコールバック関数を登録すると、フレームを表示するたびにそれが呼び出されます。ここでは、フレーム表示が発生したら`perFrame()`関数（27～34行目）を呼び出すよう登録しています（36行目）。
+この関数を介して`HTMLVideoElement`に登録したイベントコールバック関数は、フレームが表示されるたびに呼び出されます（36行目）。ここでは、フレーム表示が発生したら`perFrame()`関数（27～34行目）を呼び出すよう登録しています。
 
 ```javascript
  36    videoElem.requestVideoFrameCallback(perFrame);
 ```
 
-この関数はコールバック関数は1回しか呼び出しません。36行目だけだと、最初のフレームのときはコールバックが実行されても、以降は何事も起きません。そこで、`perFrame()`の中で、次のフレームのためのコールバック関数を再度登録します。
+コールバック関数は1回しか呼び出されません。そこで、`perFrame()`の中で、次フレームのためのコールバック関数を再度登録します（33行目）。
 
 ```javascript
  33      videoElem.requestVideoFrameCallback(perFrame);
@@ -1406,7 +1392,7 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
 27    function perFrame(now, metadata) {
 ```
 
-`now`はスクリプトがスタートしてからのミリ秒単位の現在時刻です。`metadata`はこのビデオのメタデータを収容した辞書形式のオブジェクトで、フレームのサイズやここまで提示した総フレーム枚数などが収容されています。メタデータの仕様は次のURLから閲覧できます。ドラフト段階なので、今後変更がある可能性もある点は注意してください。
+`now`はスクリプトがスタートしてからのミリ秒単位の現在時刻です。`metadata`はこのビデオのメタデータを収容した辞書形式のオブジェクトで、フレームのサイズやここまで提示した総フレーム枚数などが収容されています。メタデータの仕様は次のURLから閲覧できます。ドラフト段階なので、今後変更があるかもしれません。
 
 ```https://wicg.github.io/video-rvfc/```
 
@@ -1416,11 +1402,11 @@ Chrome、EdgeなどFirefox以外のブラウザでは`HTMLVideoElement.requestVi
 
 コード①では利用していません。
 
-登録解除をするのは、フレーム処理を明示的に終了するときです。OpenCV.jsは終了時には各種のリソースをメモリから解放しなければならず、解放したらもう処理はできないので、処理を呼び出してしまうとエラーになるからです。利用方法は[7.1節](./07-video.md#71-ビデオフレームと画像を合成する "INTERNAL")で説明します。
+OpenCV.jsスクリプティングでは、終了時に各種のリソースを明示的に解放しなければなりません（[第4章](./04-mat.md "INTERNAL")で説明します）。このとき、同時にフレームコールバックも削除します。OpenCVリソースを解放したあとで誤って呼び出すと、存在しないリソースにアクセスしてしまうからです。
 
 #### コード②
 
-Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firefox.html`は次の通りです。
+`HTMLVideoElement.seekNextFrame()`関数を用いたコード②`html-frame-firefox.html`を次に示します。
 
 ```html
 [File] html-frame-firefox.html
@@ -1458,7 +1444,7 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
  32      setInterval(function() {
  33        videoElem.seekToNextFrame()
  34        .then(function() {
- 35          ctx.drawImage(videoElem, 0, 0, videoElem.offsetWidth, videoElem.offsetHeight);
+ 35          ctx.drawImage(videoElem, 0, 0, canvasElem.width, canvasElem.height);
  36          ctx.font = '16px sans-serif';
  37          ctx.fillText(videoElem.currentTime, 10, 30);
  38        });
@@ -1482,15 +1468,15 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
 ```javascript
  33        videoElem.seekToNextFrame()
  34        .then(function() {
- 35          ctx.drawImage(videoElem, 0, 0, videoElem.offsetWidth, videoElem.offsetHeight);
+ 35          ctx.drawImage(videoElem, 0, 0, canvasElem.width, canvasElem.height);
  36          ctx.font = '16px sans-serif';
  37          ctx.fillText(videoElem.currentTime, 10, 30);
  38        });
 ```
 
-`Promise`オブジェクトが`resolved`状態になったときに渡される引数（34行目）は、調べた範囲ではないようです。この関数はフレーム送りをしたら`seeked`イベントを発生するので、そちらでのイベントハンドラーで処理をする手もあります。
+ここでは`Promise`の解決を待っていますが、フレーム送りがされると`seeked`イベントを発生するので、そちらでのイベントハンドラーで処理をすることもできます。
 
-この関数を繰り返し呼び出すせば、スクリプト側で逐次フレーム送りができます。しかし、そのタイミングはもとの再生速度とは無関係です。つまり、たいていは高速再生になってしまいます。そこで、33～38行目が`setInterval()`の中にくくられているのは、時間調整をするためです。
+関数を繰り返し呼び出せば、逐次的なフレーム送りができます。しかし、そのタイミングはもとの再生速度とは無関係です。そのままでは、たいていは高速再生になります。33～38行目が`setInterval()`にくくられているのは、時間調整のためです。
 
 ```javascript
  32      setInterval(function() {
@@ -1498,13 +1484,13 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
  39      }, 33.33);  // 33 ms = (1000 ms / 30 fps);
 ```
 
-33.33ミリ秒なのは、一般的なビデオのフレームレートが30 fps（frame per second）だからです。ビデオ本来のフレームレートがこれよりも早ければ、コードが提示する映像はスローモーションになります。残念ながら、HTML5にはメディアのメタデータに含まれているフレームレート情報を取得する機能は（現時点では）ありません。OpenCVにはありますが、その機能はOpenCV.jsからは利用できません。
+33.33ミリ秒なのは、一般的なビデオのフレームレートが30 fps（frame per second）だからです。ビデオ本来のフレームレートがこれよりも早ければ、コードが提示する映像はスローモーションになります。残念ながら、HTML5にはメディアのメタデータに含まれているフレームレート情報を取得する機能は（現時点では）ありません。OpenCVの機能も、OpenCV.jsからは利用できません。
 
-コード②の方法には、もとのビデオの再生タイミングを無効にするという副作用があります。たとえば`<video controls>`の操作パネルで一時停止ボタンを押しても、関数が勝手に次のフレームに動かしてしまいます。
+コード②の方法には、もとのビデオの再生タイミングを無効にするという副作用があります。操作パネルで一時停止ボタンを押しても、関数が勝手に次のフレームに動かしてしまいます。
 
 #### コード③
 
-`setInterval()`を用いた方法はどのブラウザでも利用できます。コード`html-frame-timer.html`を次に示します。
+`setInterval()`を用いたコード③`html-frame-timer.html`を次に示します。
 
 ```html
 [File] html-frame-timer.html
@@ -1540,7 +1526,7 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
  30    function perFrame() {
  31      canvasElem.width = videoElem.offsetWidth;
  32      canvasElem.height = videoElem.offsetHeight;
- 33      ctx.drawImage(videoElem, 0, 0, videoElem.offsetWidth, videoElem.offsetHeight);
+ 33      ctx.drawImage(videoElem, 0, 0, canvasElem.width, canvasElem.height);
  34      ctx.font = '16px sans-serif';
  35      ctx.fillText(videoElem.currentTime, 10, 30);
  36      console.log('running');
@@ -1566,7 +1552,7 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
  39    videoElem.addEventListener('play', videoStarted);
 ```
 
-反対に、`suspended`、`pause`、`ended`といった停止関係のイベントが発生したら、`clearInterval()`でタイマーを解除します。登録部分が40～42行目です。同じ恰好の`addEventListener()`を3回書いてもよいのですが、ここではループを形成してます。他に停止した用件があれば40行目の配列に加えるだけなので、少し楽です。
+反対に、`suspended`、`pause`、`ended`といった停止関係のイベントが発生したら、`clearInterval()`でタイマーを解除します（40～42行目）。同じ恰好の`addEventListener()`を3回書いてもよいのですが、ここではループを形成してます。
 
 ```javascript
  40    ['suspend', 'pause', 'ended'].forEach(function(evt) {
@@ -1578,12 +1564,12 @@ Firefoxでは`seekNextFrame()`関数を使います。コード`html-frame-firef
 
 #### どれを使う？
 
-本書ではサポートしているブラウザが多いこと、スタンダードトラックのほぼ最終段階にあり、将来的には標準仕様に組み込まれそうということで、フレーム処理には`HTMLVideoElement.equestVideoFrameCallback()`を用います。Firefoxユーザは、本書のコードを`seekToNextFrame()`を用いた、あるいはインターバルタイマを用いた方法に移植してください。
+本書では、ビデオ処理には`HTMLVideoElement.equestVideoFrameCallback()`を用います。サポートしているブラウザが多いこと、スタンダードトラックのほぼ最終段階にあり、将来的には標準仕様に組み込まれそうだからです。Firefoxユーザは、本書のコードを`seekToNextFrame()`を用いた、あるいはインターバルタイマを用いた方法に移植してください。
 
-ここでは示しませんでしたが、[1.6節](#16-ビデオサムネールを作成する "INTERNAL")で用いた`timeupdate`イベントを利用する手もあります。ただし、発火が0.25秒おき程度と時間精度が低いため、フレームという0.033秒単位の現象を的確に捉えるには不向きです。ただし、実装はよりシンプルです。
+ここでは示しませんでしたが、[1.6節](#16-ビデオサムネールを作成する "INTERNAL")で用いた`timeupdate`イベントを利用する手もあります。ただし、発火が0.25秒おき程度と時間精度が低いのが問題です。とくに、[7.5節](./07-video.md#75-動いているものだけを抜き出す "INTERNAL")や[7.6節](./07-video.md#76-動きの方向を検出する "INTERNAL")のように前後のフレームから動きを検出する処理では、おそらく思ったような結果は得られません。その代わり、実装はシンプルで、どのブラウザでも使えるので、時間精度の必要がなければ、採用を考慮する価値はあります。
 
 重要な点ですが、本節で示したいずれの方法でも、フレームを1枚1枚正確に処理をすることはできません。HTML/JavaScriptは、もともと時間に正確な操作をするようには設計されていないからです。
 
-> W3Cの開発者は、ビデオコーデックに直接アクセスする`WebCodecs`の仕様を現在作成中です。最新の2023年10月12日版はまだドラフト段階ですが、一部のブラウザでは利用可能なようです。使ってみたい方は次のURLを参照してください。
->
-> ```https://w3c.github.io/webcodecs/#videoencoder-interface```
+W3Cは現在、ビデオコーデックに直接アクセスする`WebCodecs`の仕様を作成中です。最新の2023年10月12日版はまだドラフト段階ですが、すでに利用可能なブラウザもあるようです。使ってみたい方は次のURLを参照してください。
+
+```https://w3c.github.io/webcodecs/#videoencoder-interface```

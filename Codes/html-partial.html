@@ -9,7 +9,7 @@
 <h1>部分領域をキャンバスに表示する</h1>
 
 <div>
-  <img id="imageTag" width="320" src="samples/sheep.jpg"/>
+  <img id="imageTag" width="320" src="samples/cows.jpg"/>
   <canvas id="canvasTag1" class="placeholder"></canvas>
   <canvas id="canvasTag2" class="placeholder"></canvas>
 </div>
@@ -21,9 +21,10 @@
   let canvasElem2 = document.getElementById('canvasTag2');
   let ctx2 = canvasElem2.getContext('2d');
 
-  let [x_img, y_img, w_img, h_img] = [65, 549, 415, 315];
+  let [x_img, y_img, w_img, h_img] = [389, 418, 316, 255];
 
   function showImage() {
+    console.log('loaded', performance.now());
     canvasElem1.width = w_img;
     canvasElem1.height = h_img;
     ctx1.drawImage(imgElem,

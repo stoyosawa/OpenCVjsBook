@@ -11,7 +11,8 @@
 <div>
   <video id="videoTag" width="320" controls>
     <source src="samples/cat.mp4" type="video/mp4"/>
-    <track id="trackTag" kind="captions" srclang="ja" default src="samples/cat.vtt"/>
+    <track id="trackTag" kind="captions" srclang="ja" default
+      src="samples/cat.vtt"/>
   </video>
 </div>
 
@@ -20,7 +21,8 @@
   let trackElem = document.getElementById('trackTag');
 
   function showCue(evt) {
-    let cueList = evt.target.track.activeCues;
+    let trackObject = evt.target.track;
+    let cueList = trackObject.activeCues;
     if (cueList.length > 0)
       console.log(`${videoElem.currentTime} ${cueList[0].text}`);
     else

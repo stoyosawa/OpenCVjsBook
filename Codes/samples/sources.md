@@ -6,7 +6,8 @@
 
 画像 | 使用箇所 | サイズ | 投稿者 | URL
 ---|---|---|---|---
-<img src="sheep.jpg" width="100" title="ニュージーランドの羊"/> | 1.2, 1.3 | 1280x884 | VK1960 | `https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/`
+<img src="sheep.jpg" width="100" title="ニュージーランドの羊"/> | 1.2 | 1280x884 | VK1960 | `https://pixabay.com/photos/mountains-sheep-lake-new-zealand-5487160/`
+<img src="cows.jpg" width="100" title="ニュージーランドの子牛"/> | 1.2 | 1280x854 | jeffjuit | `https://pixabay.com/photos/nature-new-zealand-cows-animals-1011595/`
 <img src="cat.png" width="100" title="ぶちねこ, MP4"/> | 1.4, 1.5, 1.6, 1.7, 1.9 | 640x360 | Luiz-Jorge-Artista | `https://pixabay.com/videos/cat-gata-feline-wall-animal-3245/`
 <img src="cable-car.jpg" width="100" title="SFOのケーブルカー"/> | 2.1 | 1280x581 | dretzlaff | `https://pixabay.com/photos/san-francisco-market-street-2369581/`
 <img src="ny.png" width="100" title="NYの人通り"/> | 2.2, 7.3 | 640x360、13秒 | Coverr-Free-Footage | `https://pixabay.com/videos/new-york-city-manhattan-people-cars-1044/`
