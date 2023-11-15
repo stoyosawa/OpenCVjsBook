@@ -121,7 +121,7 @@ HTMLを読み込んだ時点では13行目に従って「OpenCV Loading ...」�
  22    };
 ```
 
-`Module`オブジェクトには、OpenCV.jsが利用可能になった時点で呼び出す関数を指定する`onRuntimeInitialized`プロパティが用意されています（19行目）。`document.addEventListener()`のようなものです。利用できないタイミングでOpenCV.jsの機能を呼び出してもエラーになるだけなので、すべてのOpenCV.jsコードはこのプロパティにセットしたコールバック関数からスタートするように記述しなければなりません。
+`Module`オブジェクトには、OpenCV.jsが利用可能になった時点で呼び出す関数を指定する`onRuntimeInitialized`プロパティが用意されています（19行目）。`window.addEventListener()`のようなものです。利用できないタイミングでOpenCV.jsの機能を呼び出してもエラーになるだけなので、すべてのOpenCV.jsコードはこのプロパティにセットしたコールバック関数からスタートするように記述しなければなりません。
 
 ここでは無名関数をセットしています。中身は、ビルド情報のテキストを返す`cv.getBuildInformation()`関数を呼び出し、そのテキストを13行目の`<pre>`要素の`innerHTML`プロパティに代入しているだけです。
 

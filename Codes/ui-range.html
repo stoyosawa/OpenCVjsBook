@@ -23,26 +23,30 @@
   let rangeElem = document.getElementById('rangeTag');
   let spanElem = document.getElementById('spanTag');
 
+  function render() {
+    ctx.drawImage(imgElem, 0, 0, canvasElem.width, canvasElem.height);
+    spanElem.innerHTML =
+      `${rangeElem.min}≦${rangeElem.value}≦${rangeElem.max}`;
+  }
+
   function imageLoaded() {
     canvasElem.width = imgElem.width;
     canvasElem.height = imgElem.height;
-    ctx.drawImage(imgElem, 0, 0, imgElem.width, imgElem.height);
     rangeElem.min = 10;
     rangeElem.max = imgElem.naturalWidth;
     rangeElem.value = imgElem.width;
-    spanElem.innerHTML = `${rangeElem.min}≦${rangeElem.value}≦${rangeElem.max}`;
     rangeElem.addEventListener('input', sizeChanged);
+    render()
   }
 
   function sizeChanged(evt) {
     let aspect = imgElem.naturalHeight / imgElem.naturalWidth;
     canvasElem.width = Number(rangeElem.value);
     canvasElem.height = Math.floor(aspect * canvasElem.width);
-    ctx.drawImage(imgElem, 0, 0, canvasElem.width, canvasElem.height);
-    spanElem.innerHTML = `${rangeElem.min}≦${rangeElem.value}≦${rangeElem.max}`;
+    render();
   }
 
-  imgElem.addEventListener('load', imageLoaded);
+  window.addEventListener('load', imageLoaded);
 </script>
 
 </body>

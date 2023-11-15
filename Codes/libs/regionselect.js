@@ -8,24 +8,20 @@ class RegionSelect {
 	 */
   constructor(imageTag) {
     this.imgElem = document.getElementById(imageTag);
-    this.divElem = this.imgElem.parentElement;
+    let divElem = this.imgElem.parentElement;
+    divElem.style.position = 'relative';
 
-    let imgWidth = this.imgElem.offsetWidth;
-    let imgHeight = this.imgElem.offsetHeight;
+    let canvasElem = document.createElement('canvas');
+    divElem.appendChild(canvasElem);
+    this.ctx = canvasElem.getContext('2d');
 
-    this.divElem.style.position = 'relative';
-
-    this.canvasElem = document.createElement('canvas');
-    this.ctx = this.canvasElem.getContext('2d');
-    this.divElem.appendChild(this.canvasElem);
-
-    this.canvasElem.width = imgWidth;
-    this.canvasElem.height = imgHeight;
-    this.canvasElem.style.position = 'absolute';
-    this.canvasElem.style.top = '0px';
-    this.canvasElem.style.left = '0px';
-    this.canvasElem.style.backgroundColor = 'transparent';
-    this.canvasElem.style.zIndex = 2;
+    canvasElem.width = this.imgElem.offsetWidth;
+    canvasElem.height = this.imgElem.offsetHeight;
+    canvasElem.style.position = 'absolute';
+    canvasElem.style.top = '0px';
+    canvasElem.style.left = '0px';
+    canvasElem.style.backgroundColor = 'transparent';
+    canvasElem.style.zIndex = 2;
 
     this.x = 0;
     this.y = 0;
@@ -33,9 +29,9 @@ class RegionSelect {
     this.height = 0;
     this.mouseState = undefined;
 
-    this.canvasElem.addEventListener('mousedown', () => this.mouseDown(event));
-    this.canvasElem.addEventListener('mousemove', () => this.mouseMove(event));
-    this.canvasElem.addEventListener('mouseup', () => this.mouseUp(event));
+    canvasElem.addEventListener('mousedown', () => this.mouseDown(event));
+    canvasElem.addEventListener('mousemove', () => this.mouseMove(event));
+    canvasElem.addEventListener('mouseup', () => this.mouseUp(event));
   }
 
   drawRectangle() {

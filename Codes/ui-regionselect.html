@@ -18,21 +18,22 @@
   let canvasElem = document.getElementById('canvasTag');
   let ctx = canvasElem.getContext('2d');
 
-  function imageLoaded() {
-    let rs = new RegionSelect('imageTag');
-    imgElem.addEventListener('regionselect', copyRegion);
-  }
-
   function copyRegion(evt) {
     let [x, y, width, height] = evt.detail;
     let scale = imgElem.naturalWidth / imgElem.width;
     let [x_img, y_img, w_img, h_img] = evt.detail.map(
       elem => Math.floor(elem*scale));
-    canvasElem.width = width;
-    canvasElem.height = height;
-    ctx.drawImage(imgElem, x_img, y_img, w_img, h_img, 0, 0, width, height);
+    canvasElem.width = Math.abs(width);
+    canvasElem.height = Math.abs(height);
+    ctx.drawImage(imgElem, x_img, y_img, w_img, h_img,
+      0, 0, canvasElem.width, canvasElem.height);
     console.log(`Selected: ${evt.detail}
       Source at (${x_img}, ${y_img}) ${w_img}x${h_img}`);
+  }
+
+  function imageLoaded() {
+    let rs = new RegionSelect('imageTag');
+    imgElem.addEventListener('regionselect', copyRegion);
   }
 
   window.addEventListener('load', imageLoaded);
