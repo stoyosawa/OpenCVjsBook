@@ -31,7 +31,7 @@
   let preElem = document.getElementById('preTag');
 
   function showConst(evt) {
-    let re = new RegExp(evt.currentTarget.value);
+    let re = new RegExp(evt.target.value);
     let keys = Object.keys(cv);
 
     let selected = keys.filter(function(elem) {

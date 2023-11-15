@@ -17,14 +17,14 @@
 <script>
   let imgElem = document.getElementById('imageTag');
 
-  var Module = {
-    onRuntimeInitialized: imgProc
-  }
-
   function imgProc() {
-    let src = cv.imread(imgElem);                  // DOMException
+    let src = cv.imread(imgElem);
     cv.imshow('canvasTag', src);
     src.delete();
+  }
+
+  var Module = {
+    onRuntimeInitialized: imgProc
   }
 </script>
 
