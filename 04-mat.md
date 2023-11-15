@@ -38,7 +38,7 @@ OpenCV.jsでピクセルを収容するデータオブジェクトは`cv.Mat`で
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -175,7 +175,7 @@ cv.imshow(                                  // 戻り値なし
 <!-- 372x222 ODG に原画あり -->
 <img src="Images/Ch04/mat-metadata-channels.png" width="300">
 
-モノクロ画像は色味がない強度だけの2次元データなのでチャネル数は1です。通常のカラーはRGBの3色構成なので3です。`cv.Mat`はこうした多様なチャネル数をそれひとつで表現できます。
+モノクロ画像は色味がない強度だけの2次元データなのでチャネル数は1です。通常のカラーはRGBの3色構成なので3です。`cv.Mat`はこうした多様なチャネル数をすべて表現できます。
 
 コンソール出力でチャネル数が4を示すことからわかるように、HTML5の画像形式は4チャネルのRGBAです。モノクロにしか見えない画像でも、チャネル数は4です。透過情報のない3チャネルRGB画像を読み込んだときでも、最大値255（完全不透明）のアルファ値が自動的に補完されます。
 
@@ -298,7 +298,7 @@ cv.imshow(                                  // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -521,7 +521,7 @@ cv.Mat = cv.matFromImageData(               // cv.Matを返す
 利用するには、まず8行目のように`<script>`からJavaScriptファイルを読み込みます（8行目）。ダウンロードしてローカルから読み込んでもかまいません。サイズは45 kB程度です。
 
 ```html
- 8    <script async src="https://chir.ag/projects/ntc/ntc.js"></script>
+  8    <script async src="https://chir.ag/projects/ntc/ntc.js"></script>
 ```
 
 色の値から名前を得ているのが、46～49行目です。
@@ -548,7 +548,7 @@ cv.Mat = cv.matFromImageData(               // cv.Matを返す
 選択した点の位置とその色名は、画像の上に重畳します。これには、[2.4節](./02-ui.md#24-日本語文字を画像に重畳する "INTERNAL")で作成した`Overlay`クラスを使っています（6行目）。
 
 ```html
-  6    <script async src="libs/overlay.js" type="text/javascript"></script>
+  6    <script async src="libs/overlay.js"></script>
 ```
 
 `Overlay`は、OpenCV.jsを除くすべてのリソースが読み込まれたあとで実行される`resourceReady()`関数（59～62行目）でのインスタンス化します。あとはマウス操作があったときに呼び出される`getPixel()`（32～57行目）でテキストを変更します。
@@ -730,7 +730,7 @@ HTML5画像がRGBAなので、`cv.Mat`のデータ型は`cv.CV_8UC4`です。し
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -973,7 +973,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1058,7 +1058,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
  28        let pos = (x + y * mat.cols) * 4;
 ```
 
-代入する値も`Float32Array`でなければなりません。そこで、まず単純に0.8を代入して作成します（20行目）。`Float32Array`コンストラクタ引数に初期値を用いるときは配列（イテラブル）を指定しなければならないので、数値がひとつであっても`[0.8]`のように`[]`でくくります。
+代入する値も`Float32Array`でなければなりません。そこで、まず単純に0.8を代入して作成します（20行目）。`Float32Array`コンストラクタ引数に初期値を用いるときは配列（イテラブル）を指定しなければならないので、数値が1つだけでも`[0.8]`のように`[]`でくくります。
 
 ```javascript
  20      let f = new Float32Array([pix]);
@@ -1115,7 +1115,7 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1279,8 +1279,8 @@ cv.Scalar = cv.Scalar(                      // cv.Scalarを返す
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/regionselect.js" type="text/javascript"></script>
-  7    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/regionselect.js"></script>
+  7    <script async src="libs/opencv.js"></script>
   8  </head>
   9  <body>
  10

@@ -18,7 +18,7 @@
   let imgElem = document.getElementById('imageTag');
   let fileElem = document.getElementById('fileTag');
 
-  function loadImage() {
+  function loadImage(evt) {
     console.log(performance.now());
     let file = fileElem.files[0];
     console.log(`${file.name} Size: ${file.size}, Type: ${file.type}`);

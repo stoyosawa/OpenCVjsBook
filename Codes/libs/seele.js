@@ -24,7 +24,7 @@ function soundOnly(w=320, h=240, fontSize=48) {
   ctx.strokeStyle = color;
   ctx.shadowColor = color;
   ctx.shadowBlur = 11;
-  ctx.strokeText('SOUND ONLY', w/2, h/2);
+  ctx.strokeText(text, w/2, h/2, maxWidth=w);
 
   return canvasElem.toDataURL();
 }

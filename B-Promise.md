@@ -105,8 +105,8 @@ loaded Ntc at 1332.1000000238419
   3  <head>
   4    <meta charset="UTF-8">
   5    <link id="linkTag" rel=stylesheet type="text/css" href="style.css"/>
-  6    <script async id="scriptTagOverlay" src="libs/overlay.js" type="text/javascript"></script>
-  7    <script async id="scriptTagOpencv" src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async id="scriptTagOverlay" src="libs/overlay.js"></script>
+  7    <script async id="scriptTagOpencv" src="libs/opencv.js"></script>
   8    <script async id="scriptTagNtc" src="https://chir.ag/projects/ntc/ntc.js"></script>
   9  </head>
  10  <body>

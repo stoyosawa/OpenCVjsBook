@@ -12,7 +12,8 @@
 <img src="cable-car.jpg" width="100" title="SFOのケーブルカー"/> | 2.1 | 1280x581 | dretzlaff | `https://pixabay.com/photos/san-francisco-market-street-2369581/`
 <img src="ny.png" width="100" title="NYの人通り"/> | 2.2, 7.3 | 640x360、13秒 | Coverr-Free-Footage | `https://pixabay.com/videos/new-york-city-manhattan-people-cars-1044/`
 <img src="san-gimignano.jpg" width="100" title="San Gimignano"/> | 2.4 | 1280x960 | Ben_Kerckx | `https://pixabay.com/photos/san-gimignano-buildings-architecture-228455/`
-<img src="bodega-bay.jpg" width="100" title="Bodega Bay, CA"/> | 2.5, 2.6 | 1280x853 | glynn424 | `https://pixabay.com/photos/school-bodega-bay-california-169135/`
+<img src="bodega-bay.jpg" width="100" title="Bodega Bay, CA"/> | 2.5 | 1280x853 | glynn424 | `https://pixabay.com/photos/san-francisco-skyline-house-tourism-4674351/`
+<img src="bodega-bay.jpg" width="100" title="SFO, houses"/> | 2.6 | 1280x853 | ninjason | `https://pixabay.com/photos/school-bodega-bay-california-169135/`
 <img src="avon-river.jpg" width="100" title="Avon River, Christchurch"/> | 2.7 | 1280x960 |  csharker | `https://pixabay.com/photos/christchurch-new-zealand-bridge-fall-170557/`
 <img src="miyajima.jpg" width="100" title="宮島"/> | 3.2 |  1280x853 | IT-STUDIO | `https://pixabay.com/photos/shrine-torii-sunset-evening-sea-1030442/`
 <img src="pike-street.jpg" width="100" title="Pike Street Market, 看板"/> | 4.1 | 1280x948 | 12019 | `https://pixabay.com/photos/seattle-washington-sunset-dusk-1619505/`

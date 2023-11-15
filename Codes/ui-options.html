@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"></head>
   <link rel=stylesheet type="text/css" href="style.css">
-  <script src="libs/overlay.js" id="scriptTag" type="text/javascript"></script>  
+  <script src="libs/overlay.js"></script>  
 <body>
 
 <h1>プルダウンメニューからフィルタを選択する &lt;select&gt;</h1>
@@ -44,12 +44,10 @@
 
   function filterSelected(evt) {
     let t = evt.target;
-    console.log(t);
     canvasElem.style.filter = t.value;
     overlay.changeText(t.options[t.selectedIndex].innerHTML);
   }
 
-  document.getElementById('sat').addEventListener('change', evt => console.log(evt));
   window.addEventListener('load', imageLoaded);
 </script>
 

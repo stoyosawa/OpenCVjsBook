@@ -15,8 +15,10 @@ OpenCV.jsで必要なファイルは`opencv.js`だけです。サイズは約10 
 通常のJavaScriptファイルと同じように、`<script>`から読み込みます。HTMLファイルと同じディレクトリに置いてあれば、`src="opencv.js"`のように相対パスで`src`属性を設定します。本書のサンプルコードでは`libs`サブディレクトリに置いてあるので、次のように書いています。
 
 ```html
-<script async src="libs/opencv.js" type="text/javascript"></script>
+<script async src="libs/opencv.js"></script>
 ```
+
+> HTML5以降は`type="text/javascript"`は不要です。
 
 並行ダウンロードを指示する`async`属性は加えるべきです。ファイルが4k画像6、7枚分くらいのサイズなので、ローディングにはかなり時間がかかります。`async`属性の挙動については次に示すWHATWGの図解がわかりやすいので、そちらを参照してください（ドキュメントの4.12.1節に記載されています）。
 
@@ -29,8 +31,7 @@ JavaScriptだから読めるだろう、と、エディタでは開かないよ�
 純然たるJavaScriptファイルなので、`src`属性には次節で示す直接ダウンロード先のURLを指定することもできます。
 
 ```html
-<script async src="https://docs.opencv.org/master/opencv.js"
-	type="text/javascript"></script>
+<script async src="https://docs.opencv.org/master/opencv.js"></script>
 ```
 
 この方法は、自分の環境に`opencv.js`のコピーを用意したくない（あるいはできない）ときに便利です。
@@ -79,7 +80,7 @@ URLの間にあるディレクトリ名はバージョンで、上記では4.8.0
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -154,41 +155,40 @@ string cv.getBuildInformation();             // 文字列を返す
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async id="scriptTag" src="libs/opencv.js" type="text/javascript">
-  7      </script>
-  8  </head>
-  9  <body>
- 10
- 11  <h1>OpenCV.js ローディングのタイミング</h1>
- 12
- 13  <script>
- 14    function showTime(message) {
- 15      let datatype = undefined;
- 16      try {
- 17        datatype = cv.CV_8UC1;
- 18      }
- 19      catch {};
- 20      console.log(`${message}: ${datatype} @ ${performance.now()}`);
- 21    }
- 22    showTime('Script started');
- 23
- 24    let scriptElem = document.getElementById('scriptTag');
- 25    scriptElem.addEventListener('load', function() {
- 26      showTime('OpenCV loaded');
- 27    });
- 28
- 29    var Module = {
- 30      onRuntimeInitialized: function() {
- 31        showTime('OpenCV ready');
- 32      }
- 33    };
- 34  </script>
- 35
- 36  </body>
- 37  </html>
+  6    <script async id="scriptTag" src="libs/opencv.js"></script>
+  7  </head>
+  8  <body>
+  9
+ 10  <h1>OpenCV.js ローディングのタイミング</h1>
+ 11
+ 12  <script>
+ 13    function showTime(message) {
+ 14      let datatype = undefined;
+ 15      try {
+ 16        datatype = cv.CV_8UC1;
+ 17      }
+ 18      catch {};
+ 19      console.log(`${message}: ${datatype} @ ${performance.now()}`);
+ 20    }
+ 21    showTime('Script started');
+ 22
+ 23    let scriptElem = document.getElementById('scriptTag');
+ 24    scriptElem.addEventListener('load', function() {
+ 25      showTime('OpenCV loaded');
+ 26    });
+ 27
+ 28    var Module = {
+ 29      onRuntimeInitialized: function() {
+ 30        showTime('OpenCV ready');
+ 31      }
+ 32    };
+ 33  </script>
+ 34
+ 35  </body>
+ 36  </html>
 ```
 
-コードはスクリプト実行開始時（22行目）、`opencv.js`の読み込み完了時（`load`イベント。24～227行目）、そしてOpenCV.jsが準備完了したときの3つのタイミングでその時刻をコンソールに表示します。このとき、OpenCV.jsの定数の１つである`cv.CV_8UC1`（定数値は0）がアクセス可能かをチェックします（15~9行目）。準備ができていればアクセス可能なので、0が印字されます。それ以外では`undefined`です。
+コードはスクリプト実行開始時（21行目）、`opencv.js`の読み込み完了時（`load`イベント。23～26行目）、そしてOpenCV.jsが準備完了したときの3つのタイミングでその時刻をコンソールに表示します。このとき、OpenCV.jsの定数の１つである`cv.CV_8UC1`（定数値は0）がアクセス可能かをチェックします（14~18行目）。準備ができていればアクセス可能なので、0が印字されます。それ以外では`undefined`です。
 
 コードと`opencv.js`は筆者のローカルサーバ（`http://localhost/`）に置かれています。
 
@@ -219,7 +219,7 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -434,7 +434,7 @@ OpenCV ready
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -510,7 +510,7 @@ RegExp /^THRESH_/ extracted 8 keys.
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9

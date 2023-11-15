@@ -37,7 +37,7 @@
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -291,7 +291,7 @@ cv.VideoCapture.read(                       // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -474,7 +474,7 @@ cv.flip(                                    // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -732,7 +732,7 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。Open
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1045,7 +1045,7 @@ cv.circle(                                  // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1226,7 +1226,7 @@ cv.BackgroundSubtractorMOG2.apply(          // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9

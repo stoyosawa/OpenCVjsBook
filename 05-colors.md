@@ -27,7 +27,7 @@ RGBAカラー画像をモノクロ（白黒）化します。
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -148,7 +148,7 @@ cv.cvtColor(                                // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -279,7 +279,7 @@ cv.bitwise_not(                             // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -323,7 +323,7 @@ cv.bitwise_not(                             // 戻り値なし
  47  </html>
 ```
 
-20～26行目に9個の数値を収容した配列が5つあります。これら数値が、画像をセピア調やモノクロに変換するパラメータです。まずは題目のセピア調（21行目）を説明し、残りは順次説明していきます。コードを読むぶんにあたっては、この部分は無視し、29行目に配列のひとつが直接代入されていると考えてください。
+20～26行目に9個の数値を収容した配列が5つあります。これら数値が、画像をセピア調やモノクロに変換するパラメータです。まずは題目のセピア調（21行目）を説明し、残りは順次説明していきます。コードを読むぶんにあたっては、この部分は無視し、29行目に21行目の配列が直接代入されていると考えてください。
 
 #### 線形変換
 
@@ -456,7 +456,7 @@ $$\begin{pmatrix}
 
 最初の行は変換後のRの値ですが、式が $0 r + 0 g + 1 b$ なので、Bの値になります。同様に2行目はGの値、3行目はRの値になります。
 
-##### ひとつだけ色を抜き出す
+##### 1色だけ抜き出す
 
 24行目の`allGreen`は画像を緑だけにします。
 
@@ -516,7 +516,7 @@ R画像からわかるように、赤みの強い赤、ピンク、橙の画像�
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -691,7 +691,7 @@ cv.mean(src).reduce((a, b) => a + b, 0) / 3)
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -860,7 +860,7 @@ OpenCVでもHLSが扱えますが、HSLというSとLの順番が入れ替わっ
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1017,7 +1017,7 @@ HSVチェックボックス（19行目）がチェックされていたら（`ch
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1217,7 +1217,7 @@ number = cv.threshold(                      // 選択閾値
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9

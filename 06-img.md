@@ -43,7 +43,7 @@ OpenCVには多様な機能が満載なので、かぎられた紙面では取�
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -187,8 +187,8 @@ cv.resize(                                  // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
-  7    <script async src="libs/regionselect.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
+  7    <script async src="libs/regionselect.js"></script>
   8  </head>
   9  <body>
  10
@@ -327,7 +327,7 @@ cv.resize(                                  // 戻り値なし
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -638,7 +638,7 @@ OpenCVには、いろいろな場面に対応できる高度なエッジ検出�
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -836,7 +836,7 @@ Cannyアルゴリズムは、OpenCVチュートリアルの「Canny Edge Detecti
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -950,7 +950,7 @@ Cannyアルゴリズムは、OpenCVチュートリアルの「Canny Edge Detecti
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1285,7 +1285,7 @@ OpenCVの多角形や直線の描画関数では、次の表に示す3つの線�
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1531,7 +1531,7 @@ Rotaion: -0.07627090751120597 (-4.370001100024751)
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -1999,7 +1999,7 @@ cv.Mat cv.getRotationMatrix2D(              // cv.Matを返す。
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
   7  </head>
   8  <body>
   9
@@ -2413,8 +2413,8 @@ $$P_1(r_1, g_1, b_1, a_1) + P_2(r_2, g_2, b_2, a_2) = P'(r_1 + r_2, g_1 + g_2, ,
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
-  7    <script async src="libs/overlay.js" type="text/javascript"></script>
+  6    <script async src="libs/opencv.js"></script>
+  7    <script async src="libs/overlay.js"></script>
   8  </head>
   9  <body>
  10

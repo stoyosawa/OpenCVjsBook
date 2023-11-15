@@ -893,7 +893,7 @@ Video properties:
 
 ビデオに字幕を表示します。
 
-技術的には、字幕のタイミングと表示文字列を収容したWebVTTというファイルを用意し、`<video>`要素の間に挟むだけです。HTML5の機能のひとつなので、自力でキャンバスに文字を描くなどの必要はありません。本節ではこのWebVTTのフォーマットを説明するとともに、対応するDOMオブジェクトの`HTMLTrackElement`から字幕情報を抽出する方法、そして字幕（キュー）に変更のあったときに発せられる`cuechange`イベントの使い方を示します。
+技術的には、字幕のタイミングと表示文字列を収容したWebVTTというファイルを用意し、`<video>`要素の間に挟むだけです。HTML5の機能の1つなので、自力でキャンバスに文字を描くなどの必要はありません。本節ではこのWebVTTのフォーマットを説明するとともに、対応するDOMオブジェクトの`HTMLTrackElement`から字幕情報を抽出する方法、そして字幕（キュー）に変更のあったときに発せられる`cuechange`イベントの使い方を示します。
 
 実行例を次の画面に示します。 
 
@@ -914,44 +914,43 @@ Video properties:
   3  <head>
   4    <meta charset="UTF-8">
   5    <link rel=stylesheet type="text/css" href="style.css">
-  6    <script async src="libs/opencv.js" type="text/javascript"></script>
-  7  <body>
-  8
-  9  <h1>ビデオに字幕を加える</h1>
- 10
- 11  <div>
- 12    <video id="videoTag" width="320" controls>
- 13      <source src="samples/cat.mp4" type="video/mp4"/>
- 14      <track id="trackTag" kind="captions" srclang="ja" default
- 15        src="samples/cat.vtt"/>
- 16    </video>
- 17  </div>
- 18
- 19  <script>
- 20    let videoElem = document.getElementById('videoTag');
- 21    let trackElem = document.getElementById('trackTag');
- 22
- 23    function showCue(evt) {
- 24      let trackObject = evt.target.track;
- 25      let cueList = trackObject.activeCues;
- 26      if (cueList.length > 0)
- 27        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
- 28      else
- 29        console.log(`${videoElem.currentTime} Cue changed but no cue`);
- 30    }
- 31
- 32    trackElem.addEventListener('cuechange', showCue);
- 33  </script>
- 34
- 35  </body>
- 36  </html>
+  6  <body>
+  7
+  8  <h1>ビデオに字幕を加える</h1>
+  9
+ 10  <div>
+ 11    <video id="videoTag" width="320" controls>
+ 12      <source src="samples/cat.mp4" type="video/mp4"/>
+ 13      <track id="trackTag" kind="captions" srclang="ja" default
+ 14        src="samples/cat.vtt"/>
+ 15    </video>
+ 16  </div>
+ 17
+ 18  <script>
+ 19    let videoElem = document.getElementById('videoTag');
+ 20    let trackElem = document.getElementById('trackTag');
+ 21
+ 22    function showCue(evt) {
+ 23      let trackObject = evt.target.track;
+ 24      let cueList = trackObject.activeCues;
+ 25      if (cueList.length > 0)
+ 26        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
+ 27      else
+ 28        console.log(`${videoElem.currentTime} Cue changed but no cue`);
+ 29    }
+ 30
+ 31    trackElem.addEventListener('cuechange', showCue);
+ 32  </script>
+ 33
+ 34  </body>
+ 35  </html>
 ```
 
-字幕を加えるだけなら、字幕ファイルと12～16行目のHTML要素だけで片が付きます。スクリプト部分（19～32行目）は、字幕テキストにスクリプトからアクセスする方法を示すために加えたものです。
+字幕を加えるだけなら、字幕ファイルと12～16行目のHTML要素だけで片が付きます。スクリプト部分（18～32行目）は、字幕テキストにスクリプトからアクセスする方法を示すために加えたものです。
 
 #### track要素
 
-ビデオに字幕を加えるには、`<video></video>`の間に`<track`>要素を挟みます（14～15行目）。HTMLの仕様はビデオ（あるいはオーディオ）の特定の時間範囲内に付随するデータ全般をテキストトラックと総称しますが、ここでは字幕と呼びます。
+ビデオに字幕を加えるには、`<video></video>`の間に`<track`>要素を挟みます（13～15行目）。HTMLの仕様はビデオ（あるいはオーディオ）の特定の時間範囲内に付随するデータ全般をテキストトラックと総称しますが、ここでは字幕と呼びます。
 
 ```html
  12    <video id="videoTag" width="320" controls>
@@ -1008,10 +1007,10 @@ Video properties:
 
 #### HTMLTrackElementオブジェクト
 
-字幕情報は、`<track>`オブジェクトの`HTMLTrackElement`（21行目）からアクセスできます。
+字幕情報は、`<track>`オブジェクトの`HTMLTrackElement`（20行目）からアクセスできます。
 
 ```javascript
-21    let trackElem = document.getElementById('trackTag');
+20    let trackElem = document.getElementById('trackTag');
 ```
 
 ただ、字幕テキストなど実際的な情報を取得するには、オブジェクトをかなり遡ります。これらオブジェクトの連携を次の図に模式的に示します。
@@ -1019,39 +1018,39 @@ Video properties:
 <!-- 847x275 ODG ファイルに原画あり -->
 <img src="Images/Ch01/html-caption-objects.png" width="500">
 
-字幕情報は、`HTMLTrackElement`の`track`プロパティに収容されています。ここでは、イベントリスナーの`showCue()`関数で字幕情報処理をしており、その引数にはイベントオブジェクトが引き渡されるので（23行目の`evt`）、`evt.target.track`と書いています（24行目）。
+字幕情報は、`HTMLTrackElement`の`track`プロパティに収容されています。ここでは、イベントリスナーの`showCue()`関数で字幕情報処理をしており、その引数にはイベントオブジェクトが引き渡されるので（22行目の`evt`）、`evt.target.track`と書いています（23行目）。
 
 ```javascript
- 23    function showCue(evt) {
- 24      let trackObject = evt.target.track;
+ 22    function showCue(evt) {
+ 23      let trackObject = evt.target.track;
 ```
 
-`HTMLTrackElement.track`は`TextTrack`というオブジェクトです。この中には`activeCues`という、現在使用中のキューを収容したプロパティが用意されています。複数形であることからわかるように、これは配列のような列挙型オブジェクトです（`TextTrackCueList`）。23行目では、これをいったん変数`cueList`に格納しています。
+`HTMLTrackElement.track`は`TextTrack`というオブジェクトです。この中には`activeCues`という、現在使用中のキューを収容したプロパティが用意されています。複数形であることからわかるように、これは配列のような列挙型オブジェクトです（`TextTrackCueList`）。24行目では、これをいったん変数`cueList`に格納しています。
 
 ```javascript
- 25      let cueList = trackObject.activeCues;
+ 24      let cueList = trackObject.activeCues;
 ```
 
-その時点で字幕が表示されていれば、そこに複数のキューが収容されています。その数は`length`から知ることができます（24行目）。字幕が表示されていなければ、この値は0です。
+その時点で字幕が表示されていれば、そこに複数のキューが収容されています。その数は`length`から知ることができます（25行目）。字幕が表示されていなければ、この値は0です。
 
 ```javascript
- 26      if (cueList.length > 0)
- 27        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
- 28      else
- 29        console.log(`${videoElem.currentTime} Cue changed but no cue`);
+ 25      if (cueList.length > 0)
+ 26        console.log(`${videoElem.currentTime} ${cueList[0].text}`);
+ 27      else
+ 28        console.log(`${videoElem.currentTime} Cue changed but no cue`);
 ```
 
-どのタイミングでも、ここの用例のWebVTTファイルにはキューは1つしかないので、`TextTrackList`の0番目の要素にアクセスします。これは`TextTrackCue`というオブジェクトで、その中には（いろいろありますが）`text`という字幕文字列を収容したプロパティがあります。27行目で表示しているのはこれです。
+どのタイミングでも、ここの用例のWebVTTファイルにはキューは1つしかないので、`TextTrackList`の0番目の要素にアクセスします。これは`TextTrackCue`というオブジェクトで、その中には（いろいろありますが）`text`という字幕文字列を収容したプロパティがあります。26行目で表示しているのはこれです。
 
 #### cuechangeイベント
 
-`HTMLTrackElement`オブジェクトには`cuechange`というイベントが用意されています。その名の通り、字幕に変更があったときに上がってくるものです。変更なので、字幕が表示されたときだけでなく、消えたときにも発生します。ここでは、32行目で処理関数の`showCue()`（22～28行目）を登録しています。
+`HTMLTrackElement`オブジェクトには`cuechange`というイベントが用意されています。その名の通り、字幕に変更があったときに上がってくるものです。変更なので、字幕が表示されたときだけでなく、消えたときにも発生します。ここでは、31行目で処理関数の`showCue()`（22～29行目）を登録しています。
 
 ```javascript
-32    trackElem.addEventListener('cuechange', showCue);
+31    trackElem.addEventListener('cuechange', showCue);
 ```
 
-27、29行目のコンソール出力を次に示します。左に示す時間は`HTMLVideoElement.currentTime`プロパティのものなので、必ずしもWebVTTファイルで指定した時間と一致するわけではありません。
+26、28行目のコンソール出力を次に示します。左に示す時間は`HTMLVideoElement.currentTime`プロパティのものなので、必ずしもWebVTTファイルで指定した時間と一致するわけではありません。
 
 ```
 0.004612 あ、まんまくれるのかにゃ。
@@ -1191,7 +1190,7 @@ Video properties:
 
 ビデオはオンですが、`true`の代わりに詳細設定オブジェクトを指定できます（20～24行目）。この内側オブジェクトのキーはいろいろありますが、よく使うのはカメラサイズを指定する`width`と`height`です。単位はピクセルです。
 
-`facingMode`（23行目）はカメラが複数あるデバイスで、どれを使うかを指示するものです。たとえば、携帯電話でフロントとリアのどちらのカメラを使うかを指定します。ここで用いているenvironmentはリア側（ディスプレイの反対側）です。フロント側（セルフィ側）にするならuserです。PC内蔵カメラのようにひとつしかなければ、どちらを指定してもそれが選択されます。
+`facingMode`（23行目）はカメラが複数あるデバイスで、どれを使うかを指示するものです。たとえば、携帯電話でフロントとリアのどちらのカメラを使うかを指定します。ここで用いているenvironmentはリア側（ディスプレイの反対側）です。フロント側（セルフィ側）にするならuserです。PC内蔵カメラのように1つしかなければ、どちらを指定してもそれが選択されます。
 
 #### カメラが使えない
 
@@ -1276,7 +1275,7 @@ Camera sizes:
 
 続いて、映像を構成するトラックを`MediaStream`オブジェクトから停止します（37～40行目）。まず、`MediaStream`の`getVideoTracks()`からトラックオブジェクトの`MediaStreamTrack`配列を取得します（37行目）。映像メディアは複数のトラックを持つこともあるため、戻り値が配列なところが注意点です。次いで、個々の`MediaStreamTrack`を、その関数である`stop()`からトラックを停止します（39行目）。
 
-トラックは通常ひとつだけなので、37～40行目は`videoElem.srcObject.getVideoTracks()[0].stop()`と1行で書いてもたいていは問題ありません。
+トラックは通常1つだけなので、37～40行目は`videoElem.srcObject.getVideoTracks()[0].stop()`と1行で書いてもたいていは問題ありません。
 
 最後に`videoElem.srcObject`に`undefined`を代入することで無効化します。
 
