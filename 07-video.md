@@ -212,7 +212,7 @@ OpenCVの準備ができれば1ビット目にフラグを立てます（`001`<s
 
 <!-- FunctionDefinition cv.VideoCapture ビデオキャプチャコンストラクタ。 -->
 ```Javascript
-cv.VideoCapture cv.VideoCapture(            // cv.VideoCaptureオブジェクトが返る
+cv.VideoCapture cv.VideoCapture(            // cv.VideoCaptureオブジェクトを返す
     HTMLVideoElement element                // <video>オブジェクト
  );
 ```
@@ -935,7 +935,7 @@ OpenCVでは行列の加算は`cv.add()`、乗算は`cv.multiply()`です。Open
 
 <img src="Images/Ch07/video-transition-2.png">
 
-画像を左右に割る垂直の線が時間経過ともに左から右へと走ります。この線の左側を黒、右側を白で埋めるには、初期状態では真っ黒な画像に、右端から垂線までを`cv.rectangle()`（[6.7節](./06-img.md#67-顔を検出する "INTERNAL")）を用いて白い長方形で埋めます。48行目の`videoElemA.width / period`が垂線の移動速度です。
+画像を左右に割る垂直の線が時間経過ともに左から右へと走ります。この線の左側を黒、右側を白で埋めるには、初期状態ではまっくろな画像に、右端から垂線までを`cv.rectangle()`（[6.7節](./06-img.md#67-顔を検出する "INTERNAL")）を用いて白い長方形で埋めます。48行目の`videoElemA.width / period`が垂線の移動速度です。
 
 ```javascript
  48        let w =  Math.floor(videoElemA.width * pos / period);
@@ -1001,7 +1001,7 @@ cv.circle(                                  // 戻り値なし
 
 関数名のcが小文字であるところが注意点です。大文字の`cv.Circle`は円のパラメータを記述するオブジェクトのコンストラクタですです（[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")）。
 
-> オブジェクトの`cv.Circle`はOpenCV.jsの独自仕様なので、OpenCVリファレンスには記述されていません。
+> オブジェクトの`cv.Circle`はOpenCV.jsの独自仕様なので、リファレンスには記述されていません。
 
 
 

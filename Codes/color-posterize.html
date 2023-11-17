@@ -33,7 +33,7 @@
 
     let nBits = Number(rangeElem.value);
     let mask = 0xFF << (8 - nBits) & 0xFF;
-    console.log(`# of significant bits: ${nBits}, mask: ${mask.toString(2)}`);
+    console.log(`# of bits: ${nBits}, mask: ${mask.toString(2)}`);
 
     let dst = new cv.Mat(src.rows, src.cols, src.type());
 

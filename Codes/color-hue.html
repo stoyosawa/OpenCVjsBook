@@ -42,8 +42,8 @@
       let line = new Array(width).fill(color);
       arr.push(line);
     }
-
     let flat_arr = arr.flat(Infinity);
+  
     let mat = cv.matFromArray(height, width, cv.CV_8UC3, flat_arr);
 
     cv.cvtColor(mat, mat, cv.COLOR_HSV2RGB);

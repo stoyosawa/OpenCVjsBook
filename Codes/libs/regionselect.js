@@ -61,6 +61,14 @@ class RegionSelect {
   mouseUp(evt) {
   	if (this.mouseState === 'down') {
       this.mouseState = undefined;
+      if (this.width < 0) {
+        this.x += this.width;
+        this.width = Math.abs(this.width);
+      }
+      if (this.height < 0) {
+        this.y += this.height;
+        this.height = Math.abs(this.height);
+      }
       let rect = [this.x, this.y, this.width, this.height];
       let regionSelect = new CustomEvent('regionselect', {detail: rect});
       this.imgElem.dispatchEvent(regionSelect);

@@ -35,7 +35,8 @@
     let fgBinary = new cv.Mat();
 
     cv.cvtColor(fg, fgBinary, cv.COLOR_RGBA2GRAY);
-    cv.threshold(fgBinary, fgBinary, 128,  255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
+    cv.threshold(fgBinary, fgBinary, 128,  255,
+      cv.THRESH_BINARY_INV | cv.THRESH_OTSU);
 
     let alpha = Number(rangeElem1.value);
     let beta = Number(rangeElem2.value);

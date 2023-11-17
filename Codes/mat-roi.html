@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<h1>部分領域だけ処理する</h2>
+<h1>部分領域だけ処理する</h1>
 
 <div>
   <img id="imageTag" width="320" src="samples/pike-st-fish.jpg"/>
@@ -32,15 +32,6 @@
     }
   }, 60000);
 
-  function resourceReady() {
-    rs = new RegionSelect('imageTag');
-    imgElem.addEventListener('regionselect', imgProc);
-  }
-
-  function opencvReady() {
-    src = cv.imread(imgElem);
-  }
-
   function imgProc(evt) {
     if (! src || ! rs)
       return;
@@ -58,6 +49,15 @@
 
     mat.delete();
     roi.delete();
+  }
+
+  function resourceReady() {
+    rs = new RegionSelect('imageTag');
+    imgElem.addEventListener('regionselect', imgProc);
+  }
+
+  function opencvReady() {
+    src = cv.imread(imgElem);
   }
 
   window.addEventListener('load', resourceReady);
