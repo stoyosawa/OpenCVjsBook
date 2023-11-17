@@ -16,7 +16,7 @@
 <script>
   let canvasElem = document.getElementById('canvasTag');
 
-  function drawCircle(pix, mat, cx, cy, r) {
+  function drawCircle(mat, pix, cx, cy, r) {
     let f = new Float32Array([pix]);
     let fBuffer = new Uint8Array(f.buffer);
     console.log(`${f} = ${fBuffer}`);
@@ -36,7 +36,7 @@
     let height = 240;
     let mat = new cv.Mat(height, width, cv.CV_32FC1, new cv.Scalar(0.5));
     // mat.setTo(new cv.Scalar(0.7));    
-    drawCircle(0.8, mat, width/2, height/2, height*0.4);
+    drawCircle(mat, 0.8, width/2, height/2, height*0.4);
     cv.imshow('canvasTag', mat);
     mat.delete();
   }

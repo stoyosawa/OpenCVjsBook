@@ -15,15 +15,17 @@
 
 <div id="divTag">
   <img id="imageTag" src="samples/color-gradation.png"/>
-  元 <canvas id="canvasTag1" width="100" height="100" class="placeholder"></canvas>
-  色名 <canvas id="canvasTag2" width="100" height="100" class="placeholder"></canvas>
+  元 <canvas id="canvasTag1" class="placeholder"></canvas>
+  色名 <canvas id="canvasTag2" class="placeholder"></canvas>
 </div>
 
 <script>
   let imgElem = document.getElementById('imageTag');
   let canvasElem1 = document.getElementById('canvasTag1');
+  canvasElem1.width = canvasElem1.height = 100;
   let ctx1 = canvasElem1.getContext('2d');
   let canvasElem2 = document.getElementById('canvasTag2');
+  canvasElem2.width = canvasElem2.height = 100;
   let ctx2 = canvasElem2.getContext('2d');
 
   let mat = undefined;
@@ -40,15 +42,16 @@
       return;
     }
 
-    let col = evt.offsetX;
-    let row = evt.offsetY;
-    let pixel = [... mat.ucharPtr(row, col)].slice(0, 3);
-    let hexValue = '#' + pixel.map(p => p.toString(16).padStart(2, 0)).join('');
+    let c = evt.offsetX;
+    let r = evt.offsetY;
+    let pixel = [... mat.ucharPtr(r, c)].slice(0, -1);
+    let hexValue = '#' + pixel.map(
+      p => p.toString(16).padStart(2, '0')).join('');    
     let match = ntc.name(hexValue);
     let matchName = match[1];
     let matchHex = match[0];
     console.log(`${pixel} ${matchName} ... (${hexValue} => ${matchHex})`);
-    layer.changeText(`(${col}, ${row}) ${matchName}`, fontSize=-1, x=col, y=row);
+    layer.changeText(`(${c}, ${r}) ${matchName}`, fontSize=-1, x=c, y=r);
 
     ctx1.fillStyle = `rgb(${pixel.join(',')})`;
     ctx1.fillRect(0, 0, canvasElem1.width, canvasElem1.height);
@@ -57,7 +60,7 @@
   }
 
   function resourceReady() {
-    layer = new Overlay('divTag', text='Select pixel', x=0, y=0, fontSize=12);
+    layer = new Overlay('divTag', text='Select', x=40, y=40, fontSize=12);
     imgElem.addEventListener('mousedown', getPixel);
   }
 

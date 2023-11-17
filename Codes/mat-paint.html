@@ -9,10 +9,10 @@
 
 <h1>お絵描きツールを作る</h1>
 
-<p><kbd>Ctlr</kbd>を押下しながキャンバス上に点が描かれます。<kbd>Alt</kbd>を押下して少し動かすとcv.Matが解放され、お絵描きが終了します。ペン色はプルダウンメニューの7色から選べます。</p>
+<p><kbd>Ctrl</kbd>を押下しながキャンバス上に点が描かれます。<kbd>Alt</kbd>を押下して少し動かすとcv.Matが解放され、お絵描きが終了します。ペン色はプルダウンメニューの7色から選べます。</p>
 
 <div>
-  <canvas id="canvasTag" width="320" height="240" class="placeholder"></canvas>
+  <canvas id="canvasTag" class="placeholder"></canvas>
 </div>
 <div>
   <select id="selectTag"></select>
@@ -20,6 +20,8 @@
 
 <script> 
   let canvasElem = document.getElementById('canvasTag');
+  canvasElem.width = 320;
+  canvasElem.height = 240;
   let selectElem = document.getElementById('selectTag');
 
   let ctx = canvasElem.getContext('2d');
