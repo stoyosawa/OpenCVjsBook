@@ -1,19 +1,19 @@
 ## 付録A 参考文献
 
-本書で参照した関連するオンラインドキュメントをまとめて示します。
+本書で参照した関連するオンラインドキュメントをアルファベット順に示します。
 
 🇯🇵は日本語、🇺🇸は英語のドキュメントです。オリジナルは英語でも、公式非公式を問わず和訳のあるものは、そちらのURLを記載しています。
 
 <!-- 国旗絵文字は絵文字コード2つからなる。Sublime Text 3 ではまだ対応していないが、ブラウザなら OK。🇯🇵 U+1F1EF U+1F1F5 🇺🇸 U+1F1FA U+1F1F8 -->
 
 - [chair.ag「ntc.js（Name that Color JavaScript）](https://chir.ag/projects/ntc/ "LINK") 🇺🇸 `https://chir.ag/projects/ntc/`   
-Chirag Mehta（`https://chir.ag/`）が開発した、RGB値から最も直近の色を検索するJavaScriptモジュール。現在、1566色が定義されています。
+Chirag Mehta（`https://chir.ag/`）さんが開発した、指定のRGB値に直近の色名を検索するJavaScriptモジュール。現在、1566色が定義されています。
 
 - [emscripten](https://emscripten.org/ "LINK") 🇺🇸 `https://emscripten.org/`  
-C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるようにコンパイルしたコンパイラ。たとえば`Module`のAPIを知りたいときに参照しますが、OpenCV.jsの開発者でもなければ魔除け用です。
+C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるようにコンパイルしたコンパイラ。たとえば`Module`のAPIを知りたいときに参照しますが、OpenCV.jsの開発者でもなければ読むことはあまりないでしょう。
 
 - [emscripten「File System API」](https://emscripten.org/docs/api_reference/Filesystem-API.html "LINK") 🇺🇸 `https://emscripten.org/docs/api_reference/Filesystem-API.html`  
-`cv.FS_createDataFile()`が内部で使っているemscriptenのファイルシステムの詳細。この関数を直接説明するドキュメントではないですが、仮想的なファイルがどのように扱われているかを知るのに重宝します。
+`cv.FS_createDataFile()`が内部で使っているemscriptenのファイルシステムの詳細。この関数を直接説明するドキュメントではないですが、仮想ファイルがどのように扱われているかを知るのに重宝します。
 
 - [evangelion.co.jp「WEB会議などで使える『エヴァンゲリオン壁紙』登場！](https://www.evangelion.co.jp/news/web_screen/ "LINK") 🇯🇵 `https://www.evangelion.co.jp/news/web_screen/`  
 エヴァンゲリオン公式の提供の、あの「SOUND ONLY」などの壁紙です。なお、「個人的利用を目的として提供しています。商業利用、企業宣伝等には利用できません」。
@@ -22,13 +22,13 @@ C/C++で書かれたOpenCVをWeb Assembly（wasm）で利用できるように�
 猫顔検出用のHarrカスケード分類器のモデルデータ。Murtaza Hassan（murtazahassan）さんが作成したチュートリアルリポジトリに含まれています。
 
 - [Github opencv「Haarカスケード分類器のモデルデータ」](https://github.com/opencv/opencv/tree/master/data/haarcascades "LINK") 🇺🇸 `https://github.com/opencv/opencv/tree/master/data/haarcascades`  
-OpenCVのオフィシャルGithubに置かれたHarrカスケード分類器のモデルデータ（xmlファイル）。現在17ファイルが登録されています。
+OpenCVのオフィシャルGithubに置かれたHaarカスケード分類器のモデルデータ（xmlファイル）。現在17ファイルが登録されています。
 
 - [Github nagadomi「lbpcascade_animeface」](https://github.com/nagadomi/lbpcascade_animeface "LINK") 🇺🇸 `https://github.com/nagadomi/lbpcascade_animeface`  
 アニメ顔検出用のカスケード分類器のモデルデータ。nagadomiさんの作品。
 
 - [IANA「Language Subtag Registry」](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) 🇺🇸 `https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry`  
-現在登録されている言語タグをすべて収容したリスト。言語タグは`<track>`の`srclang`属性で指定できるja（日本語）などの文字列です。蛇足ですが、日本語にはjpx（琉球語も含む日本語族）、ojp（日本の古語）、jsl（日本語の手話）といった言語タグも定義されています。さらに蛇足ですが、クリンゴン語はtlhです。
+現在登録されている言語タグをすべて収容したリスト。言語タグは`<track>`の`srclang`属性で指定できるja（日本語）などの文字列です。蛇足ですが、日本語にはjpx（琉球語も含む日本語族）、ojp（日本の古語）、jsl（日本語の手話）といった言語タグも定義されています。エルフ語の1つであるシンダール語はsjnです。
 
 - [LearnOpenCV「Optical Flow in OpenCV (C++/Python)」](https://learnopencv.com/optical-flow-in-opencv/ "INTERNAL") 🇺🇸 `https://learnopencv.com/optical-flow-in-opencv/`  
 オプティカルフローのメジャーな（古典的な）方法であるルーカス＝カナデ方式と、本書で取り上げたファーンバック方式の違いを数式を含めてわかりやすく解説した記事。
@@ -46,7 +46,7 @@ CSSプロパティから基本的な画像処理を実行できる`filter`の説
 `HTMLVideoElement`の親クラスの`HTMLMediaElement`の詳細ページ。`HTMLVideoElement`で利用できるメソッドやプロパティのほとんどはこのクラスから継承しています。
 
 - [MDN「WebAssembly」](https://developer.mozilla.org/ja/docs/WebAssembly "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/WebAssembly`  
-C/C++で書かれたコードをJavaScriptで利用する方法であるWebAssembly（WASM）の解説。
+C/C++で書かれたコードをJavaScriptで利用可能にするWebAssembly（WASM）の解説。
 
 - [MDN「XMLHttpRequest」](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest`  
 スクリプト内から別途HTTP通信を行う`XMLHttpRequest`クラスの詳細ページ。
@@ -56,7 +56,7 @@ MDNの「JavaScriptガイド」に掲載されている`Promise`の用法。
 
 <!-- 地球マーク 🌐 は U+1F310 -->
 - [MDN「Web docs」](https://developer.mozilla.org/ja/docs/Web/JavaScript "LINK") 🇯🇵 `https://developer.mozilla.org/ja/docs/Web/JavaScript`  
-JavaScript、HTML/DOM、CSSの仕様やAPIを紹介するサイトはいくつもありますが、ひとつだけ挙げるとしたら、MDN（Mozilla Developpers Network）のものがメソッド、属性、プロパティが細かいところまで書かれているのでお勧めです。もっとも、素っ気ないところがあるので、慣れないと不親切に感じるかもしれません。ほとんどのリファレンスには和訳が用意されているので、検索で英語版がヒットしたら、そのページ右上の🌐から日本語を選択します。
+JavaScript、HTML/DOM、CSSの仕様やAPIを紹介するサイトはいくつもありますが、1つだけ挙げるとしたら、MDN（Mozilla Developers Network）のものがメソッド、属性、プロパティが細かいところまで書かれているのでお勧めです。もっとも、素っ気ないところがあるので、慣れないと不親切に感じるかもしれません。ほとんどのリファレンスには和訳が用意されているので、検索で英語版がヒットしたら、そのページ右上の🌐から日本語を選択します。
 
 - [OpenCV](https://opencv.org/ "LINK") 🇺🇸 `https://opencv.org/`  
 OpenCV本家のメインページ。メソッド・関数の仕様なら［Documentation］から適当なバージョンへのリンクを選択します。
@@ -83,7 +83,7 @@ OpenCVチュートリアルに掲載されているラプラシアンフィル�
 OpenCVチュートリアル記載のソベルフィルタの理論的解説と関数用法の説明。
 
 - [OpenCVチュートリアル「モルフォロジー変換」](http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html "LINK") 🇯🇵 `http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html`  
-古いOpenCVチュートリアルの翻訳。モルフォロジー演算について日本語で学べるので重宝します。おそらくは鳥取大の先生の個人的なアーカイブなので、長持ちはしないかもしれません。
+古いOpenCVチュートリアルの翻訳（Version 2）。モルフォロジー演算について日本語で学べるので重宝します。鳥取大の先生が個人的に訳したものらしく、Gitlabにソースがあります。
 
 - [OpenCV.jp](http://opencv.jp/ "LINK") 🇯🇵 `http://opencv.jp/`  
 日本のOpenCVユーザによる非公式なリファレンス翻訳。Version 2のものなのでかなり古いですが、最新機能には触れない本書の範囲内ではさほど問題にはなりません。さくっと理解するのには便利でしょう。
@@ -116,7 +116,7 @@ W3Cのワーキンググループが開発中のHTMLビデオ字幕の仕様。�
 Web技術を開発するWHATWG（Web Hypertext Application Technology Working Group）によるHTMLの標準規格。たいていのことはMDNで済みますが、ほんとうの細部を知りたいときに役立ちます。たとえば`<script>`に`async`を付けたときと付けないときの動作の違いは、本ドキュメントの4.12.1節に図入りで説明されています。
 
 - [Wikipedia「HSV色空間」](https://ja.wikipedia.org/wiki/HSV色空間) 🇯🇵 `https://ja.wikipedia.org/wiki/HSV色空間`  
-HSV（HueーSaturationーValue）色空間の説明。類似の色空間にHSLがあり、HTML4/CSSはこちらを使っています。
+HSV（Hue－Saturation－Value）色空間の説明。類似の色空間にHSLがあり、HTML5/CSSはこちらを使っています。
 
 - [Wikipedia「IEEE 754」](https://ja.wikipedia.org/wiki/IEEE_754 "LINK") 🇯🇵 `https://ja.wikipedia.org/wiki/IEEE_754`  
 浮動小数点数の内部表現方法。本書で使う`cv.CV_32F`は32ビット版で、JavaScriptの`number`は64ビット版です。
@@ -133,4 +133,4 @@ HSV（HueーSaturationーValue）色空間の説明。類似の色空間にHSL�
 - [原色大辞典](https://www.colordic.org/ "LINK") 🇯🇵 `https://www.colordic.org/`   
 Web色見本のサイトで、和色のまとまったリストが得られます。
 
-OpenCVに関する書籍はいくつか出版されていますが、おおむね言語別になっています。JavaScript版の和書は現時点では本書以外には刊行されていないので、購入するのなら、APIの近いC/C++版がよいでしょう。
+OpenCVに関する書籍はいくつか出版されていますが、おおむね言語別になっています。JavaScript版の現時点では本書以外には刊行されていないので、購入するのなら、APIの近いC/C++版がよいでしょう（OpenCV.js本は英語にもないようです）。

@@ -45,18 +45,18 @@
   }
 
   function videoStop() {
-    console.log('video stopped');
+    console.log('camera stopped');
     videoElem.pause();
     let tracks = videoElem.srcObject.getTracks();
     tracks[0].stop();
     videoElem.srcObject = undefined;
     videoElem.removeEventListener('pause', videoStop);
     videoElem.cancelVideoFrameCallback(frameCallbackId);
-    readyFlag = 0;
+    readFlag = 0;
   }
 
   function videoReady() {
-    console.log('video ready');
+    console.log('camera started');
     readyFlag |= 2;
     videoElem.width = videoElem.videoWidth;
     videoElem.height = videoElem.videoHeight;
@@ -65,7 +65,7 @@
   }
 
   function opencvReady() {
-    console.log('openv ready');
+    console.log('OpenCV ready');
     readyFlag |= 1;
     perFrame();
   }

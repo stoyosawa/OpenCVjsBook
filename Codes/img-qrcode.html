@@ -36,9 +36,9 @@
     ctx.drawImage(imgElemBg, 0, 0, canvasElem1.width, canvasElem1.height);
     ctx.translate(side/2, side/2);
     ctx.rotate(deg * Math.PI / 180);
-    ctx.drawImage(imgElemQr,
-      0, 0, imgElemQr.width, imgElemQr.height,
-      -imgElemQr.width/2, -imgElemQr.height/2, imgElemQr.width, imgElemQr.height);
+    let w = imgElemQr.width;
+    let h = imgElemQr.height;
+    ctx.drawImage(imgElemQr, 0, 0, w, h, -w/2, -h/2, w, h);
   }
 
   function decodePoints(points) {
@@ -61,8 +61,8 @@
 
   function imgProc() {
     console.log(`Click at ${deg}°`);
-    let imgData = ctx.getImageData(0, 0, canvasElem1.width, canvasElem1.height);
-    let src = cv.matFromImageData(imgData);
+    let data = ctx.getImageData(0, 0, canvasElem1.width, canvasElem1.height);
+    let src = cv.matFromImageData(data);
 
     let detector = new cv.QRCodeDetector();
     let gray = new cv.Mat();

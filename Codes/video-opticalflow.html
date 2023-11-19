@@ -53,7 +53,8 @@
     cap.read(currC4);
     cv.cvtColor(currC4, currC3, cv.COLOR_RGBA2RGB);
     cv.cvtColor(currC3, currU1, cv.COLOR_RGBA2GRAY);
-    cv.calcOpticalFlowFarneback(prevU1, currU1,  flow, 0.5, 3, 13, 3, 5, 1.2, 0);
+    cv.calcOpticalFlowFarneback(prevU1, currU1, flow,
+      0.5, 3, 13, 3, 5, 1.2, 0);
 
     drawFlow(currC3, flow);
     cv.imshow('canvasTag', currC3);

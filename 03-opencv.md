@@ -188,7 +188,7 @@ string cv.getBuildInformation();            // 文字列を返す
  36  </html>
 ```
 
-コードはスクリプト実行開始時（21行目）、`opencv.js`の読み込み完了時（`load`イベント。23～26行目）、そしてOpenCV.jsが準備完了したときの3つのタイミングでその時刻をコンソールに表示します。このとき、OpenCV.jsの定数の1つである`cv.CV_8UC1`（定数値は0）がアクセス可能かをチェックします（14~18行目）。準備ができていればアクセス可能なので、0が印字されます。それ以外では`undefined`です。
+コードはスクリプト実行開始時（21行目）、`opencv.js`の読み込み完了時（`load`イベント。23～26行目）、そしてOpenCV.jsが準備完了したときの3つのタイミングでその時刻をコンソールに表示します。このとき、OpenCVの定数の1つである`cv.CV_8UC1`（定数値は0）がアクセス可能かをチェックします（14~18行目）。準備ができていればアクセス可能なので、0が印字されます。それ以外では`undefined`です。
 
 コンソール出力を次に示します。
 
@@ -246,7 +246,7 @@ OpenCVプログラミングでは、`<img>`あるいは`<canvas>`に読み込ん
  32  </html>
 ```
 
-21行目の`cv.imread()`は`HTMLImageElement`から画像データを読み込む、22行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCV.jsの関数です。意図していることは、[1.2節](./01-html5.md#12-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバスに画像が貼り付けられません。
+21行目の`cv.imread()`は`HTMLImageElement`から画像データを読み込む、22行目の`cv.imshow()`はその画像データを`<canvas>`要素に貼り付けるOpenCVの関数です。意図していることは、[1.2節](./01-html5.md#12-画像をキャンバスに表示する "INTERNAL")の`html-image1.html`と変わりありません。しかし、ローカルファイルシステムから実行すると、キャンバスに画像が貼り付けられません。
 
 <img src="Images/Ch03/opencv-cors-1.png">
 
@@ -389,12 +389,13 @@ C/C++のデータ型 | OpenCV.jsのデータ型 | 注意
 `InputArray`、`OutputArray` | `cv.Mat` | `Input`は入力画像の、`Output`は結果画像を収容するコンテナをそれぞれ指す。
 `Mat` | `cv.Mat` | 画像のコンテナ。[4.1節](./04-mat.md#41-画像の構造を調べる "INTERNAL")参照。
 `std::vector<Mat>` | `cv.MatVector` | 画像を複数収容した配列（C++の`Vector`）。[5.4節](./05-colors.md#54-RGB画像を色成分に分解する "INTERNAL")参照。
-`Point` | `cv.Point` | 画像ピクセルの(x, y)座標を収容する構造体。`Point2f`のように付加情報が加わっているときは中のデータ数とその型を示す（`2f`は2個の浮動小数点数型）。[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")参照。
+`Point` | `cv.Point` | 画像ピクセルの(x, y)座標を収容する構造体。[6.2節](./06-img.md#61-画像をぼかす "INTERNAL")参照。
 `Rect` | `cv.Rect` | 四角形の形状（x, y, width, height)を指定する構造体。[4.7節](./04-mat.md#47-部分領域だけ処理する "INTERNAL")参照。
 `Scalar` | `cv.Scalar` | 複数（1～4）の数値を収容する構造体。[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")参照。
 `Size` | `cv.Size` | 画像の横縦サイズを収容する構造体。[4.4節](./04-mat.md#44-モノクロで円を描く "INTERNAL")参照。
 
-C++の`vector`は型付きの配列（`TypedArray`）のようなもので、同じデータ型を複数個収容します。C++では`vector<InputArray>`のように`<>`の中にデータ型を記述しますが、OpenCV.jsではそれ専用のオブジェクトが用意されます。たとえば、`cv.Mat`なら`cv.MatVector`、`cv.Point`なら`cv.PointVector`です。これらについては、サンプルコードで使用するときに説明します。
+<!-- 本書で使うのは cv.RectVector だけ。cv.PointVector は使わない。cv.SizeVector と cv.ScalarVector は存在しない。-->
+C++の`vector`は型付きの配列（`TypedArray`）のようなもので、同じデータ型を複数個収容します。C++では`vector<InputArray>`のように`<>`の中にデータ型を記述しますが、OpenCV.jsではそれ専用のオブジェクトが用意されます。たとえば、`cv.Mat`なら`cv.MatVector`、`cv.Rect`なら`cv.RectVector`です。
 
 定義がコンストラクタであるときは、JavaScriptの作法にのっとって`new`を加えます。たとえば、C/C++の`Mat()`は、`new cv.Mat()`と読み替えます。
 

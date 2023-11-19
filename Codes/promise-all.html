@@ -3,49 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <link id="linkTag" rel=stylesheet href="style.css"/>
-  <script async id="scrTagOverlay" src="libs/overlay.js"></script>
-  <script async id="scrTagOpencv" src="libs/opencv.js"></script>
-  <script async id="scrTagNtc" src="https://chir.ag/projects/ntc/ntc.js"></script>
+  <script async id="overlayTag" src="libs/overlay.js"></script>
+  <script async id="opencvTag" src="libs/opencv.js"></script>  
 </head>
 <body>
 
 <h1>すべてのリソースを Promise 化する</h1>
 
 <div>
-  <img id="imageTag" src="samples/color-gradation.png"/>
+  <video id="videoTag" width="320" controls src="samples/ny.mp4"/>
 </div>
+
 
 <script> 
   let promises = [];
-  let tags = ['linkTag', 'scrTagOverlay', 'scrTagOpencv', 'scrTagNtc'];
+  let tags = {
+    linkTag: 'load',
+    overlayTag: 'load',
+    videoTag: 'loadeddata'
+  };
 
-  tags.forEach(function(tag) {
-    promises.push(new Promise(function(resolve, reject) {
-      let elem = document.getElementById(tag);
-      elem.addEventListener('load', function() {
-        resolve(`loaded ${tag} at ${performance.now()}`);
+  function returnCompleted(tag) {
+    let event = tags[tag];
+    let elem = document.getElementById(tag);
+
+    return function completed(resolve, reject) {
+      elem.addEventListener(event, function(evt) {
+        let message = `${evt.type} ${tag} at ${performance.now()}`;
+        resolve(message);
       });
-    }));
-  });
+    };
+  }
 
-  promises.push(new Promise(function(resolve,reject){
-    window.addEventListener('load', function() {
-      resolve(`loaded window at ${performance.now()}`);
-    });
-  }));
-
-  promises.push(new Promise(function(resolve, reject) {
+  function opencvCompleted(resolve, reject) {
     Module = {
       onRuntimeInitialized: function() {
-        resolve(`opencvInitialized at ${performance.now()}`);
+        let message = `opencvInitialized at ${performance.now()}`
+        resolve(message);
       }
     }
-  }));
+  }
+
+  Object.keys(tags).forEach(function(tag) {
+    promises.push(new Promise(returnCompleted(tag)));
+  });
+  promises.push(new Promise(opencvCompleted));
+
+  function play(val) {
+    console.log(val.join('\n'));
+    let videoElem = document.getElementById('videoTag');
+    videoElem.muted = true;
+    videoElem.play();
+  }
 
   Promise.all(promises)
-  .then(function(values) {
-    console.log(values.join('\n'));
-  });
+  .then(play);
 </script>
 
 </body>

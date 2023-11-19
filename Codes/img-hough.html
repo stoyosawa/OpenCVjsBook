@@ -45,11 +45,8 @@
 
     let lines = [];
     for(let r=0; r<mat.rows; r++) {
-      let ptr = mat.intPtr(r, 1);
-      let arr = [];
-      for(let i=0; i<ptr.length; i++)
-        arr.push(ptr[i]);
-      lines.push(arr);
+      let ptr = [... mat.intPtr(r, 1)];
+      lines.push(ptr);
     }
 
     console.log(`Hough mat format:

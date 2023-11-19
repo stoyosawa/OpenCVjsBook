@@ -3,30 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <link id="linkTag" rel=stylesheet href="style.css"/>
-  <script async id="scrTagOverlay" src="libs/overlay.js"></script>
-  <script async id="scrTagOpencv" src="libs/opencv.js"></script>
-  <script async id="scrTagNtc" src="https://chir.ag/projects/ntc/ntc.js"></script>
+  <script async id="overlayTag" src="libs/overlay.js"></script>
+  <script async id="opencvTag" src="libs/opencv.js"></script>
 </head>
 <body>
 
 <h1>イベントを Promise 化する</h1>
 
 <div>
-  <img id="imageTag" src="samples/color-gradation.png"/>
+  <video id="videoTag" width="320" controls src="samples/ny.mp4"/>
 </div>
 
 <script>
-  let scrElemNtc = document.getElementById('scrTagNtc');
-
-  let promise = new Promise(function(resolve, reject) {
-    scrElemNtc.addEventListener('load', function() {
-      resolve(`loaded Ntc at ${performance.now()}`);
+  function completed(resolve, reject) {
+    let elem = document.getElementById('videoTag');
+    elem.addEventListener('loadeddata', function(evt) {
+      let message = `loadeddata ${evt.target.id} at ${performance.now()}`;
+      resolve(message);
     });
-  });
+  }
 
-  promise.then(function(val) {
+  function play(val) {
     console.log(val);
-  });
+    let videoElem = document.getElementById('videoTag');
+    videoElem.muted = true;
+    videoElem.play();
+  }
+
+  let promise = new Promise(completed);
+  promise.then(play);
 </script>
 
 </body>

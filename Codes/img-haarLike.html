@@ -22,7 +22,7 @@
       let face = faces.get(i);
       let point1 = new cv.Point(face.x, face.y);
       let point2 = new cv.Point(face.x+face.width, face.y+face.height);
-      cv.rectangle(mat, point1, point2, new cv.Scalar(255, 0, 0), 3);
+      cv.rectangle(mat, point1, point2, new cv.Scalar(255, 255, 255), 3);
     }
   }
 
@@ -40,7 +40,7 @@
     req.open('GET', cascadeFile, true);
     req.onload = function(evt) {
       console.log(`XML request: Status:
-        ${req.status}, Type ${req.responseType}, ReadyState ${req.readyState}`); 
+        ${req.status}, Type ${req.responseType}, State ${req.readyState}`); 
 
       let path = 'boo';
       let data = new Uint8Array(req.response);

@@ -55,7 +55,7 @@
         new cv.Point(size.width-1, size.height-1), color, cv.FILLED);
     }
     else if (type === 'c') {
-      let rMax = Math.hypot(size.width, size.height);
+      let rMax = Math.hypot(size.width/2, size.height/2);
       let r = Math.floor(rMax * (period - pos) / period);
       cv.circle(mask1, new cv.Point(Math.floor(size.width/2),
         Math.floor(size.height/2)), r, color, cv.FILLED);

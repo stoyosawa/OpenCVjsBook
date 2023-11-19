@@ -17,7 +17,7 @@
   <canvas id="canvasTag" width="320" class="placeholder"></canvas>
 </div>
 <div>
-  縮小率（2～30） <input type="range" id="rangeTag" min="2" value="10" max="30"/>
+  縮小率 <input type="range" id="rangeTag" min="2" value="10" max="30"/>
 </div>
 
 <script>
@@ -41,7 +41,8 @@
     let scale = Number(rangeElem.value);
     let mat = new cv.Mat();
     cv.resize(roi, mat, new cv.Size(), 1/scale, 1/scale);
-    cv.resize(mat, mat, new cv.Size(region[2], region[3]), 0, 0, cv.INTER_NEAREST);
+    cv.resize(mat, mat, new cv.Size(region[2], region[3]),
+      0, 0, cv.INTER_NEAREST);
     mat.copyTo(roi);
     cv.imshow('canvasTagMosaic', mat);
     cv.imshow('canvasTag', src);
